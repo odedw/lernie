@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
-import styled from "styled-components";
-import run from "../synth/run";
-const Hydra = require("hydra-synth");
+import React, { useEffect, useRef, useState } from 'react';
+import styled from 'styled-components';
+import run from '../synth/run';
+const Hydra = require('hydra-synth');
 
 const Canvas = styled.canvas`
   height: 100%;
@@ -26,7 +26,7 @@ export default () => {
       run();
       setHasRun(false);
     }
-  }, [canvasRef]);
+  }, [canvasRef, hasRun]);
 
   return <Canvas id="hydra-canvas" ref={canvasRef} />;
 };

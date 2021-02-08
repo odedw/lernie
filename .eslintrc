@@ -1,5 +1,12 @@
 {
-    "rules": {
-      "import/no-anonymous-default-export": 0
+  "extends": ["react-app"],
+  "rules": {
+    "import/no-anonymous-default-export": 0
+  },
+  "overrides": [
+    {
+      "files": ["**/*.ts?(x)"],
+      "rules": {}
     }
-  }
+  ]
+}
