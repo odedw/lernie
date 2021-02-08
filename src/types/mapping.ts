@@ -16,7 +16,8 @@ export type SourceMapping = {
   modulate: ParameterMapping;
 
   // levels
-  blendLevel: ParameterMapping;
+  blend: ParameterMapping;
+  diff: ParameterMapping;
 };
 
 export type Mapping = {

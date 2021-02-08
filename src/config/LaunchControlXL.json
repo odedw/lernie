@@ -1,10 +1,15 @@
 {
   "sources": [
     {
-      "blendLevel": {
+      "blend": {
         "min": 0,
         "max": 1,
         "cc": 77
+      },
+      "diff": {
+        "min": 0,
+        "max": 1,
+        "cc": 78
       },
       "mod1": {
         "min": 0,
@@ -53,11 +58,18 @@
       }
     },
     {
-      "blendLevel": {
+      "blend": {
         "min": 0,
         "max": 1,
         "cc": 84
       },
+
+      "diff": {
+        "min": 0,
+        "max": 1,
+        "cc": 83
+      },
+
       "mod1": {
         "min": 0,
         "max": 80,

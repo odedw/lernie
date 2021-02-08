@@ -2,7 +2,6 @@ import { Input } from 'rmidi';
 import { Mapping, ParameterMapping, SourceMapping } from '../types/mapping';
 import { SourceState } from '../types/state';
 import { state } from './state';
-import WebMidi from 'webmidi';
 
 const mapping: Mapping = require('../config/LaunchControlXL.json');
 
@@ -25,6 +24,12 @@ function bindSource(i: Input, mapping: SourceMapping, state: SourceState) {
   // i.ccBind<SourceState>(mapping.colorama.cc, 'colorama', state, mapping.mod1.min, mapping.mod1.max);
   // i.ccBind<SourceState>(mapping.modulate.cc, 'modulate', state, mapping.mod1.min, mapping.mod1.max);
   // i.ccBind<SourceState>(mapping.blendLevel.cc, 'blendLevel', state, mapping.mod1.min, mapping.mod1.max);
+}
+
+function keyDown(e: KeyboardEvent) {
+  if (e.code === 'KeyR') {
+    state.randomize(mapping.sources[0]);
+  }
 }
 
 export default function setup() {
@@ -57,6 +62,6 @@ export default function setup() {
   //   this.dataBuffers[1] = require("./Lernie/patches/2021-02-06_12_12_34.json");
   //   this.d = this.dataBuffers[0];
   // keyboard actions
-  //   document.addEventListener("keydown", (e) => this.keyDown(e));
+  document.addEventListener('keydown', (e) => keyDown(e));
   // document.getElementById('file-input').addEventListener('change', readSingleFile, false);
 }
