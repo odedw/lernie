@@ -2,6 +2,8 @@ import { Input } from 'rmidi';
 import { Mapping, ParameterMapping, SourceMapping } from '../types/mapping';
 import { SourceState } from '../types/state';
 import { state } from './state';
+import WebMidi from 'webmidi';
+
 const mapping: Mapping = require('../config/LaunchControlXL.json');
 
 function bindParameter(i: Input, mapping: ParameterMapping, name: keyof SourceState, state: SourceState) {
@@ -29,16 +31,13 @@ export default function setup() {
   //midi
   // listInputs();
   Input.create('Launch Control XL').then((i) => {
-    console.log(i);
-    // i.noteOn().subscribe(() => {
-    //   console.log('===========================noteonm');
-    // });
-    // bindSource(i, mapping.sources[0], state.sources[0]);
-    // bindSource(i, mapping.sources[1], state.sources[1]);
+    bindSource(i, mapping.sources[0], state.sources[0]);
+    bindSource(i, mapping.sources[1], state.sources[1]);
     // i = i;
     // this.bindOsc(this.d.sources[0], config.sources[0]);
     // this.b indOsc(this.d.sources[1], config.sources[1]);
   });
+
   // patch memory
   // Input.create('loopMIDI Port').then((i) => {
   //   this.bufferInput = i;
