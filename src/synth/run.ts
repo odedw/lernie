@@ -2,10 +2,10 @@ import { OutputBuffer } from '../types/hydra';
 import { SourceState } from '../types/state';
 import { state } from './state';
 
-function debug(val: number): number {
-  console.log(val);
-  return val;
-}
+// function debug(val: number): number {
+//   console.log(val);
+//   return val;
+// }
 
 function runSource(o: OutputBuffer, sourceState: SourceState, modulationSource: OutputBuffer) {
   osc(
@@ -22,6 +22,11 @@ function runSource(o: OutputBuffer, sourceState: SourceState, modulationSource: 
     .scale(() => sourceState.scale)
     .colorama(() => sourceState.colorama)
     .modulate(src(modulationSource), () => sourceState.modulate)
+    .modulateRotate(
+      src(modulationSource),
+      () => sourceState.modulateRotate,
+      () => sourceState.modulateRotate
+    )
     .out(o);
 }
 export default function run() {
@@ -33,6 +38,6 @@ export default function run() {
     .blend(src(o2), () => state.sources[1].blend)
     .diff(solid(0, 0, 0, 0).blend(src(o1), () => state.sources[0].diff))
     .diff(solid(0, 0, 0, 0).blend(src(o2), () => state.sources[1].diff))
-    // .diff(src(o2), () => state.sources[1].diff)
-    .out();
+    .blend(src(o0), 0.8)
+    .out(o0);
 }

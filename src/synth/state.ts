@@ -11,6 +11,7 @@ const defaultSourceState: SourceState = {
   scale: 1,
   colorama: 0,
   modulate: 0,
+  modulateRotate: 0,
   blend: 0,
   diff: 0,
 };

@@ -14,6 +14,7 @@ export type SourceMapping = {
   scale: ParameterMapping;
   colorama: ParameterMapping;
   modulate: ParameterMapping;
+  modulateRotate: ParameterMapping;
 
   // levels
   blend: ParameterMapping;

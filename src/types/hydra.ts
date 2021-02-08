@@ -8,10 +8,7 @@ export type Buffer = OutputBuffer | SourceBuffer;
 export type CallbackObject = {
   time: number;
 };
-export type NumberParameter =
-  | number
-  | ((co: CallbackObject) => number)
-  | number[];
+export type NumberParameter = number | ((co: CallbackObject) => number) | number[];
 export type HydraStream = {
   // Color
   /**
@@ -22,10 +19,7 @@ export type HydraStream = {
    * @param {NumberParameter} threshold default 0.5
    * @param {NumberParameter} tolerance default 0.1
    */
-  luma: (
-    threshold?: NumberParameter,
-    tolerance?: NumberParameter
-  ) => HydraStream;
+  luma: (threshold?: NumberParameter, tolerance?: NumberParameter) => HydraStream;
   /**
    * @param {NumberParameter} amount default 1.0
    */
@@ -37,11 +31,7 @@ export type HydraStream = {
   /**
    * Colorize texture. Values between 0-1.
    */
-  color: (
-    r: NumberParameter,
-    g: NumberParameter,
-    b: NumberParameter
-  ) => HydraStream;
+  color: (r: NumberParameter, g: NumberParameter, b: NumberParameter) => HydraStream;
   /**
    * @param {NumberParameter} bins default 3.0
    * @param {NumberParameter} gamma default 0.6
@@ -62,27 +52,15 @@ export type HydraStream = {
    * @param {NumberParameter} b default 0.5
    * @param {NumberParameter} a default 0.5
    */
-  shift: (
-    r?: NumberParameter,
-    g?: NumberParameter,
-    b?: NumberParameter,
-    a?: NumberParameter
-  ) => HydraStream;
+  shift: (r?: NumberParameter, g?: NumberParameter, b?: NumberParameter, a?: NumberParameter) => HydraStream;
   /**
    * @param {NumberParameter} threshold default 0.5
    * @param {NumberParameter} tolerance default 0.04
    */
-  thresh: (
-    threshold?: NumberParameter,
-    tolerance?: NumberParameter
-  ) => HydraStream;
+  thresh: (threshold?: NumberParameter, tolerance?: NumberParameter) => HydraStream;
 
   // Geometry
-  scale: (
-    size?: NumberParameter,
-    xMult?: NumberParameter,
-    yMult?: NumberParameter
-  ) => HydraStream;
+  scale: (size?: NumberParameter, xMult?: NumberParameter, yMult?: NumberParameter) => HydraStream;
   kaleid: (nSides?: NumberParameter) => HydraStream;
   pixelate: (x?: NumberParameter, y?: NumberParameter) => HydraStream;
   repeat: (
@@ -102,20 +80,10 @@ export type HydraStream = {
    * @param {NumberParameter} amount default 0.1
    */
   modulate: (texture: HydraStream, amount?: NumberParameter) => HydraStream;
-  modulatePixelate: (
-    texture: HydraStream,
-    multiple?: NumberParameter,
-    offset?: NumberParameter
-  ) => HydraStream;
-  modulateKaleid: (
-    texture: HydraStream,
-    nSides: NumberParameter
-  ) => HydraStream;
-  modulateScale: (
-    texture: HydraStream,
-    multiple?: NumberParameter,
-    offset?: NumberParameter
-  ) => HydraStream;
+  modulateRotate: (texture: HydraStream, multiple: NumberParameter, offset: NumberParameter) => HydraStream;
+  modulatePixelate: (texture: HydraStream, multiple?: NumberParameter, offset?: NumberParameter) => HydraStream;
+  modulateKaleid: (texture: HydraStream, nSides: NumberParameter) => HydraStream;
+  modulateScale: (texture: HydraStream, multiple?: NumberParameter, offset?: NumberParameter) => HydraStream;
   modulateHue: (texture: HydraStream, amount?: NumberParameter) => HydraStream;
   modulateRepeat: (
     texture: HydraStream,
@@ -137,36 +105,16 @@ export type HydraStream = {
 declare global {
   // sources
   const src: (input: Buffer) => HydraStream;
-  const osc: (
-    frequency?: NumberParameter,
-    sync?: NumberParameter,
-    offset?: NumberParameter
-  ) => HydraStream;
+  const osc: (frequency?: NumberParameter, sync?: NumberParameter, offset?: NumberParameter) => HydraStream;
   const gradient: (speed?: NumberParameter) => HydraStream;
   /**
    * Generate Perlin noise.
    * @param {NumberParameter} scale default value
    */
-  const noise: (
-    scale?: NumberParameter,
-    offset?: NumberParameter
-  ) => HydraStream;
-  const shape: (
-    sides?: NumberParameter,
-    radius?: NumberParameter,
-    smoothing?: NumberParameter
-  ) => HydraStream;
-  const solid: (
-    r?: NumberParameter,
-    g?: NumberParameter,
-    b?: NumberParameter,
-    a?: NumberParameter
-  ) => HydraStream;
-  const voronoi: (
-    scale?: NumberParameter,
-    speed?: NumberParameter,
-    blending?: NumberParameter
-  ) => HydraStream;
+  const noise: (scale?: NumberParameter, offset?: NumberParameter) => HydraStream;
+  const shape: (sides?: NumberParameter, radius?: NumberParameter, smoothing?: NumberParameter) => HydraStream;
+  const solid: (r?: NumberParameter, g?: NumberParameter, b?: NumberParameter, a?: NumberParameter) => HydraStream;
+  const voronoi: (scale?: NumberParameter, speed?: NumberParameter, blending?: NumberParameter) => HydraStream;
 
   const render: (buffer?: OutputBuffer) => void;
 
