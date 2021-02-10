@@ -1,5 +1,7 @@
-import { SourceMapping } from './mapping';
+import { Parameter, SourceType } from './mapping';
 
 export type SourceState = {
-  [K in keyof SourceMapping]: number;
+  parameters: Record<Parameter, number>;
+
+  sourceType: SourceType;
 };

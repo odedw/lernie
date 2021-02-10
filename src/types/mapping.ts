@@ -4,21 +4,32 @@ export type ParameterMapping = {
   cc: number;
   channel?: number;
 };
-export type SourceMapping = {
-  mod1: ParameterMapping;
-  mod2: ParameterMapping;
-  mod3: ParameterMapping;
-  rotation: ParameterMapping;
-  kaleid: ParameterMapping;
-  pixelate: ParameterMapping;
-  scale: ParameterMapping;
-  colorama: ParameterMapping;
-  modulate: ParameterMapping;
-  modulateRotate: ParameterMapping;
 
-  // levels
-  blend: ParameterMapping;
-  diff: ParameterMapping;
+export type NoteMapping = {
+  note: string;
+  channel?: number;
+};
+
+export type Parameter =
+  | 'mod1'
+  | 'mod2'
+  | 'mod3'
+  | 'rotation'
+  | 'kaleid'
+  | 'pixelate'
+  | 'scale'
+  | 'colorama'
+  | 'modulate'
+  | 'modulateRotate'
+  | 'blend'
+  | 'diff';
+
+export type SourceType = 'osc' | 'noise' | 'voronoi';
+
+export type SourceMapping = {
+  parameters: Record<Parameter, ParameterMapping>;
+
+  switchSource: NoteMapping;
 };
 
 export type Mapping = {

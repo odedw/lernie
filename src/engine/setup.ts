@@ -1,29 +1,19 @@
 import { Input } from 'rmidi';
-import { Mapping, ParameterMapping, SourceMapping } from '../types/mapping';
+import { Mapping, Parameter, ParameterMapping, SourceMapping } from '../types/mapping';
 import { SourceState } from '../types/state';
 import { state } from './state';
 
 const mapping: Mapping = require('../config/LaunchControlXL.json');
 
-function bindParameter(i: Input, mapping: ParameterMapping, name: keyof SourceState, state: SourceState) {
-  i.ccBind<SourceState>(mapping.cc, name, state, mapping.min, mapping.max);
+function bindParameter(i: Input, mapping: ParameterMapping, parameter: Parameter, state: SourceState) {
+  i.ccBind<Record<Parameter, number>>(mapping.cc, parameter, state.parameters, mapping.min, mapping.max);
 }
 
 function bindSource(i: Input, mapping: SourceMapping, state: SourceState) {
-  Object.keys(state).forEach((k) => {
-    const key = k as keyof SourceState;
-    bindParameter(i, mapping[key], key, state);
+  Object.keys(state.parameters).forEach((k) => {
+    const key = k as Parameter;
+    bindParameter(i, mapping.parameters[key], key, state);
   });
-  // i.ccBind<SourceState>(mapping.mod1.cc, 'mod1', state, mapping.mod1.min, mapping.mod1.max);
-  // i.ccBind<SourceState>(mapping.mod2.cc, 'mod2', state, mapping.mod2.min, mapping.mod2.max);
-  // i.ccBind<SourceState>(mapping.mod3.cc, 'mod3', state, mapping.mod3.min, mapping.mod3.max);
-  // i.ccBind<SourceState>(mapping.rotation.cc, 'rotation', state, mapping.mod1.min, mapping.mod1.max);
-  // i.ccBind<SourceState>(mapping.kaleid.cc, 'kaleid', state, mapping.mod1.min, mapping.mod1.max);
-  // i.ccBind<SourceState>(mapping.pixelate.cc, 'pixelate', state, mapping.mod1.min, mapping.mod1.max);
-  // i.ccBind<SourceState>(mapping.scale.cc, 'scale', state, mapping.mod1.min, mapping.mod1.max);
-  // i.ccBind<SourceState>(mapping.colorama.cc, 'colorama', state, mapping.mod1.min, mapping.mod1.max);
-  // i.ccBind<SourceState>(mapping.modulate.cc, 'modulate', state, mapping.mod1.min, mapping.mod1.max);
-  // i.ccBind<SourceState>(mapping.blendLevel.cc, 'blendLevel', state, mapping.mod1.min, mapping.mod1.max);
 }
 
 function keyDown(e: KeyboardEvent) {

@@ -1,132 +1,136 @@
 {
   "sources": [
     {
-      "blend": {
-        "min": 0,
-        "max": 1,
-        "cc": 77
-      },
-      "diff": {
-        "min": 0,
-        "max": 1,
-        "cc": 78
-      },
-      "mod1": {
-        "min": 0,
-        "max": 80,
-        "cc": 13
-      },
-      "mod2": {
-        "min": -0.5,
-        "max": 0.5,
-        "cc": 14
-      },
-      "mod3": {
-        "min": 0,
-        "max": 10,
-        "cc": 15
-      },
-      "rotation": {
-        "min": 0,
-        "max": 6.283185307179586,
-        "cc": 16
-      },
-      "kaleid": {
-        "min": 1,
-        "max": 50,
-        "cc": 29
-      },
-      "pixelate": {
-        "min": 10,
-        "max": 1500,
-        "cc": 30
-      },
-      "scale": {
-        "min": 0.5,
-        "max": 7,
-        "cc": 31
-      },
-      "colorama": {
-        "min": 0,
-        "max": 1,
-        "cc": 32
-      },
-      "modulate": {
-        "min": -1,
-        "max": 1,
-        "cc": 49
-      },
-      "modulateRotate": {
-        "min": -10,
-        "max": 10,
-        "cc": 50
+      "parameters": {
+        "blend": {
+          "min": 0,
+          "max": 1,
+          "cc": 77
+        },
+        "diff": {
+          "min": 0,
+          "max": 1,
+          "cc": 78
+        },
+        "mod1": {
+          "min": 0,
+          "max": 80,
+          "cc": 13
+        },
+        "mod2": {
+          "min": -0.5,
+          "max": 0.5,
+          "cc": 14
+        },
+        "mod3": {
+          "min": 0,
+          "max": 10,
+          "cc": 15
+        },
+        "rotation": {
+          "min": 0,
+          "max": 6.283185307179586,
+          "cc": 16
+        },
+        "kaleid": {
+          "min": 1,
+          "max": 50,
+          "cc": 29
+        },
+        "pixelate": {
+          "min": 10,
+          "max": 1500,
+          "cc": 30
+        },
+        "scale": {
+          "min": 0.5,
+          "max": 7,
+          "cc": 31
+        },
+        "colorama": {
+          "min": 0,
+          "max": 1,
+          "cc": 32
+        },
+        "modulate": {
+          "min": -1,
+          "max": 1,
+          "cc": 49
+        },
+        "modulateRotate": {
+          "min": -10,
+          "max": 10,
+          "cc": 50
+        }
       },
       "switchSource": {
         "note": "F1"
       }
     },
     {
-      "blend": {
-        "min": 0,
-        "max": 1,
-        "cc": 81
-      },
+      "parameters": {
+        "blend": {
+          "min": 0,
+          "max": 1,
+          "cc": 81
+        },
 
-      "diff": {
-        "min": 0,
-        "max": 1,
-        "cc": 82
-      },
+        "diff": {
+          "min": 0,
+          "max": 1,
+          "cc": 82
+        },
 
-      "mod1": {
-        "min": 0,
-        "max": 80,
-        "cc": 17
-      },
-      "mod2": {
-        "min": -0.5,
-        "max": 0.5,
-        "cc": 18
-      },
-      "mod3": {
-        "min": 0,
-        "max": 10,
-        "cc": 19
-      },
-      "rotation": {
-        "min": 0,
-        "max": 6.283185307179586,
-        "cc": 20
-      },
-      "kaleid": {
-        "min": 1,
-        "max": 50,
-        "cc": 33
-      },
-      "pixelate": {
-        "min": 10,
-        "max": 1500,
-        "cc": 34
-      },
-      "scale": {
-        "min": 0.5,
-        "max": 7,
-        "cc": 35
-      },
-      "colorama": {
-        "min": 0,
-        "max": 1,
-        "cc": 36
-      },
-      "modulate": {
-        "min": -1,
-        "max": 1,
-        "cc": 53
-      },
-      "modulateRotate": {
-        "min": -10,
-        "max": 10,
-        "cc": 54
+        "mod1": {
+          "min": 0,
+          "max": 80,
+          "cc": 17
+        },
+        "mod2": {
+          "min": -0.5,
+          "max": 0.5,
+          "cc": 18
+        },
+        "mod3": {
+          "min": 0,
+          "max": 10,
+          "cc": 19
+        },
+        "rotation": {
+          "min": 0,
+          "max": 6.283185307179586,
+          "cc": 20
+        },
+        "kaleid": {
+          "min": 1,
+          "max": 50,
+          "cc": 33
+        },
+        "pixelate": {
+          "min": 10,
+          "max": 1500,
+          "cc": 34
+        },
+        "scale": {
+          "min": 0.5,
+          "max": 7,
+          "cc": 35
+        },
+        "colorama": {
+          "min": 0,
+          "max": 1,
+          "cc": 36
+        },
+        "modulate": {
+          "min": -1,
+          "max": 1,
+          "cc": 53
+        },
+        "modulateRotate": {
+          "min": -10,
+          "max": 10,
+          "cc": 54
+        }
       },
       "switchSource": {
         "note": "F1"

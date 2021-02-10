@@ -9,23 +9,23 @@ import { state } from './state';
 
 function runSource(o: OutputBuffer, sourceState: SourceState, modulationSource: OutputBuffer) {
   osc(
-    () => sourceState.mod1,
-    () => sourceState.mod2,
-    () => sourceState.mod3
+    () => sourceState.parameters.mod1,
+    () => sourceState.parameters.mod2,
+    () => sourceState.parameters.mod3
   )
-    .rotate(() => sourceState.rotation, 0)
-    .kaleid(() => sourceState.kaleid)
+    .rotate(() => sourceState.parameters.rotation, 0)
+    .kaleid(() => sourceState.parameters.kaleid)
     .pixelate(
-      () => sourceState.pixelate,
-      () => sourceState.pixelate
+      () => sourceState.parameters.pixelate,
+      () => sourceState.parameters.pixelate
     )
-    .scale(() => sourceState.scale)
-    .colorama(() => sourceState.colorama)
-    .modulate(src(modulationSource), () => sourceState.modulate)
+    .scale(() => sourceState.parameters.scale)
+    .colorama(() => sourceState.parameters.colorama)
+    .modulate(src(modulationSource), () => sourceState.parameters.modulate)
     .modulateRotate(
       src(modulationSource),
-      () => sourceState.modulateRotate,
-      () => sourceState.modulateRotate
+      () => sourceState.parameters.modulateRotate,
+      () => sourceState.parameters.modulateRotate
     )
     .out(o);
 }
@@ -34,10 +34,10 @@ export default function run() {
   runSource(o2, state.sources[1], o1);
 
   solid(0, 0, 0, 0)
-    .blend(src(o1), () => state.sources[0].blend)
-    .blend(src(o2), () => state.sources[1].blend)
-    .diff(solid(0, 0, 0, 0).blend(src(o1), () => state.sources[0].diff))
-    .diff(solid(0, 0, 0, 0).blend(src(o2), () => state.sources[1].diff))
+    .blend(src(o1), () => state.sources[0].parameters.blend)
+    .blend(src(o2), () => state.sources[1].parameters.blend)
+    .diff(solid(0, 0, 0, 0).blend(src(o1), () => state.sources[0].parameters.diff))
+    .diff(solid(0, 0, 0, 0).blend(src(o2), () => state.sources[1].parameters.diff))
     .blend(src(o0), 0.8)
     .out(o0);
 }
