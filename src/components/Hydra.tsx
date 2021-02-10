@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import run from '../synth/run';
+import run from '../engine/run';
 const Hydra = require('hydra-synth');
 
 const Canvas = styled.canvas`

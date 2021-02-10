@@ -1,4 +1,4 @@
-import setup from "./synth/setup";
+import setup from "./engine/setup";
 
 export default function init(){
     setup();
