@@ -6,7 +6,7 @@ export type ParameterMapping = {
 };
 
 export type NoteMapping = {
-  note: string;
+  note: number;
   channel?: number;
 };
 
@@ -25,6 +25,7 @@ export type Parameter =
   | 'diff';
 
 export type SourceType = 'osc' | 'noise' | 'voronoi';
+export const allSourceTypes: SourceType[] = ['osc', 'noise', 'voronoi'];
 
 export type SourceMapping = {
   parameters: Record<Parameter, ParameterMapping>;

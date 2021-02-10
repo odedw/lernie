@@ -1,18 +1,36 @@
-import { OutputBuffer } from '../types/hydra';
+import { HydraStream, OutputBuffer } from '../types/hydra';
 import { SourceState } from '../types/state';
 import { state } from './state';
 
-// function debug(val: number): number {
-//   console.log(val);
-//   return val;
-// }
+function debug(val: number): number {
+  console.log(val);
+  return val;
+}
+
+function getSource(sourceState: SourceState): HydraStream {
+  if (sourceState.sourceType === 'noise') {
+    return noise(
+      () => sourceState.parameters.mod1,
+      () => sourceState.parameters.mod2
+    );
+  } else if (sourceState.sourceType === 'voronoi') {
+    return voronoi(
+      () => sourceState.parameters.mod1,
+      () => sourceState.parameters.mod2,
+      () => sourceState.parameters.mod3
+    );
+  } else {
+    return osc(
+      () => sourceState.parameters.mod1,
+      () => sourceState.parameters.mod2,
+      () => sourceState.parameters.mod3
+    );
+  }
+}
 
 function runSource(o: OutputBuffer, sourceState: SourceState, modulationSource: OutputBuffer) {
-  osc(
-    () => sourceState.parameters.mod1,
-    () => sourceState.parameters.mod2,
-    () => sourceState.parameters.mod3
-  )
+  const source = getSource(sourceState);
+  source
     .rotate(() => sourceState.parameters.rotation, 0)
     .kaleid(() => sourceState.parameters.kaleid)
     .pixelate(
@@ -36,8 +54,7 @@ export default function run() {
   solid(0, 0, 0, 0)
     .blend(src(o1), () => state.sources[0].parameters.blend)
     .blend(src(o2), () => state.sources[1].parameters.blend)
-    .diff(solid(0, 0, 0, 0).blend(src(o1), () => state.sources[0].parameters.diff))
-    .diff(solid(0, 0, 0, 0).blend(src(o2), () => state.sources[1].parameters.diff))
-    .blend(src(o0), 0.8)
+    // .diff(solid(0, 0, 0, 0).blend(src(o1), () => state.sources[0].parameters.diff))
+    // .diff(solid(0, 0, 0, 0).blend(src(o2), () => state.sources[1].parameters.diff))
     .out(o0);
 }

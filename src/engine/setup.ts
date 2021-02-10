@@ -1,18 +1,25 @@
 import { Input } from 'rmidi';
-import { Mapping, Parameter, ParameterMapping, SourceMapping } from '../types/mapping';
+import { allSourceTypes, Mapping, Parameter, ParameterMapping, SourceMapping } from '../types/mapping';
 import { SourceState } from '../types/state';
+import run from './run';
 import { state } from './state';
 
 const mapping: Mapping = require('../config/LaunchControlXL.json');
 
-function bindParameter(i: Input, mapping: ParameterMapping, parameter: Parameter, state: SourceState) {
-  i.ccBind<Record<Parameter, number>>(mapping.cc, parameter, state.parameters, mapping.min, mapping.max);
+function bindParameter(i: Input, mapping: ParameterMapping, parameter: Parameter, ss: SourceState) {
+  i.ccBind<Record<Parameter, number>>(mapping.cc, parameter, ss.parameters, mapping.min, mapping.max);
 }
 
 function bindSource(i: Input, mapping: SourceMapping, state: SourceState) {
   Object.keys(state.parameters).forEach((k) => {
     const key = k as Parameter;
     bindParameter(i, mapping.parameters[key], key, state);
+  });
+  i.noteOn(undefined, mapping.switchSource.channel).subscribe((evt) => {    
+    if (evt.note.number === mapping.switchSource.note) {
+      state.sourceType = allSourceTypes[(allSourceTypes.indexOf(state.sourceType) + 1) % allSourceTypes.length];
+      run();
+    }
   });
 }
 
