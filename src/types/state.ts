@@ -1,4 +1,4 @@
-import { Parameter, SourceType } from './mapping';
+import { Parameter, SourceType } from './source';
 
 export type SourceState = {
   parameters: Record<Parameter, number>;

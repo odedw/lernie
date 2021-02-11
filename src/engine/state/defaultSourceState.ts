@@ -1,4 +1,4 @@
-import { SourceState } from '../../types/state';
+import { SourceState, SourceType } from '../../types';
 
 export const generateDefaultSourceState = (): SourceState => ({
   parameters: {
@@ -15,5 +15,5 @@ export const generateDefaultSourceState = (): SourceState => ({
     blend: 0,
     diff: 0,
   },
-  sourceType: 'osc',
+  sourceType: SourceType.osc,
 });

@@ -1,6 +1,5 @@
 import { Input } from 'rmidi';
-import { allSourceTypes, Mapping, Parameter, ParameterMapping, SourceMapping } from '../types/mapping';
-import { SourceState } from '../types/state';
+import { SourceState, Mapping, Parameter, ParameterMapping, SourceMapping, SourceType } from '../types';
 import run from './run';
 import { state } from './state';
 
@@ -15,9 +14,9 @@ function bindSource(i: Input, mapping: SourceMapping, state: SourceState) {
     const key = k as Parameter;
     bindParameter(i, mapping.parameters[key], key, state);
   });
-  i.noteOn(undefined, mapping.switchSource.channel).subscribe((evt) => {    
+  i.noteOn(undefined, mapping.switchSource.channel).subscribe((evt) => {
     if (evt.note.number === mapping.switchSource.note) {
-      state.sourceType = allSourceTypes[(allSourceTypes.indexOf(state.sourceType) + 1) % allSourceTypes.length];
+      state.sourceType = ((Number(state.sourceType) + 1) % Object.keys(SourceType).length) as SourceType;
       run();
     }
   });

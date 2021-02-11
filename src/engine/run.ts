@@ -1,5 +1,4 @@
-import { HydraStream, OutputBuffer } from '../types/hydra';
-import { SourceState } from '../types/state';
+import { SourceState, SourceType, HydraStream, OutputBuffer } from '../types';
 import { state } from './state';
 
 function debug(val: number): number {
@@ -8,12 +7,12 @@ function debug(val: number): number {
 }
 
 function getSource(sourceState: SourceState): HydraStream {
-  if (sourceState.sourceType === 'noise') {
+  if (sourceState.sourceType === SourceType.noise) {
     return noise(
       () => sourceState.parameters.mod1,
       () => sourceState.parameters.mod2
     );
-  } else if (sourceState.sourceType === 'voronoi') {
+  } else if (sourceState.sourceType === SourceType.voronoi) {
     return voronoi(
       () => sourceState.parameters.mod1,
       () => sourceState.parameters.mod2,
@@ -54,7 +53,7 @@ export default function run() {
   solid(0, 0, 0, 0)
     .blend(src(o1), () => state.sources[0].parameters.blend)
     .blend(src(o2), () => state.sources[1].parameters.blend)
-    // .diff(solid(0, 0, 0, 0).blend(src(o1), () => state.sources[0].parameters.diff))
-    // .diff(solid(0, 0, 0, 0).blend(src(o2), () => state.sources[1].parameters.diff))
+    .diff(solid(0, 0, 0, 0).blend(src(o1), () => state.sources[0].parameters.diff))
+    .diff(solid(0, 0, 0, 0).blend(src(o2), () => state.sources[1].parameters.diff))
     .out(o0);
 }

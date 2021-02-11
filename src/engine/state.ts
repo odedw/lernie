@@ -1,5 +1,4 @@
-import { Parameter, SourceMapping } from '../types/mapping';
-import { SourceState } from '../types/state';
+import { SourceState, SourceMapping } from '../types';
 import { generateDefaultSourceState } from './state/defaultSourceState';
 
 export class State {
