@@ -8,13 +8,13 @@ export type Parameter =
   | 'scale'
   | 'colorama'
   | 'modulate'
-  | 'modulateRotate'
-  | 'blend'
-  | 'diff';
+  | 'modulateRotate';
+
+export type Level = 'blend' | 'diff';
 
 export enum SourceType {
   osc = 0,
   noise,
   voronoi,
-  screen
+  screen,
 }

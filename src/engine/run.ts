@@ -57,9 +57,9 @@ export default function run() {
   runSource(o2, state.sources[1], o1);
 
   solid(0, 0, 0, 0)
-    .blend(src(o1), () => state.sources[0].parameters.blend)
-    .blend(src(o2), () => state.sources[1].parameters.blend)
-    .diff(solid(0, 0, 0, 0).blend(src(o1), () => state.sources[0].parameters.diff))
-    .diff(solid(0, 0, 0, 0).blend(src(o2), () => state.sources[1].parameters.diff))
+    .blend(src(o1), () => state.sources[0].levels.blend)
+    .blend(src(o2), () => state.sources[1].levels.blend)
+    .diff(solid(0, 0, 0, 0).blend(src(o1), () => state.sources[0].levels.diff))
+    .diff(solid(0, 0, 0, 0).blend(src(o2), () => state.sources[1].levels.diff))
     .out(o0);
 }

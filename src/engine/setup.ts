@@ -1,5 +1,5 @@
 import { Input } from 'rmidi';
-import { SourceState, Mapping, Parameter, ParameterMapping, SourceMapping, SourceType } from '../types';
+import { SourceState, Mapping, Parameter, ParameterMapping, SourceMapping, SourceType, Level } from '../types';
 import run from './run';
 import { state } from './state';
 import { generateDefaultSourceState } from './state/defaultSourceState';
@@ -9,11 +9,19 @@ const mapping: Mapping = require('../config/LaunchControlXL.json');
 function bindParameter(i: Input, mapping: ParameterMapping, parameter: Parameter, ss: SourceState) {
   i.ccBind<Record<Parameter, number>>(mapping.cc, parameter, ss.parameters, mapping.min, mapping.max);
 }
+function bindLevel(i: Input, mapping: ParameterMapping, level: Level, ss: SourceState) {
+  i.ccBind<Record<Level, number>>(mapping.cc, level, ss.levels, mapping.min, mapping.max);
+}
 
 function bindSource(i: Input, mapping: SourceMapping, ss: SourceState) {
   Object.keys(ss.parameters).forEach((k) => {
     const key = k as Parameter;
     bindParameter(i, mapping.parameters[key], key, ss);
+  });
+
+  Object.keys(ss.levels).forEach((k) => {
+    const key = k as Level;
+    bindLevel(i, mapping.levels[key], key, ss);
   });
 
   // switch source
