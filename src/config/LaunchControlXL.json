@@ -64,7 +64,10 @@
         }
       },
       "switchSource": {
-        "note": 41
+        "note": "F2"
+      },
+      "reset": {
+        "note": "F#2"
       }
     },
     {
@@ -133,7 +136,10 @@
         }
       },
       "switchSource": {
-        "note": 57
+        "note": "A3"
+      },
+      "reset": {
+        "note": "A#3"
       }
     }
   ]

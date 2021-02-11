@@ -2,6 +2,7 @@ import { Input } from 'rmidi';
 import { SourceState, Mapping, Parameter, ParameterMapping, SourceMapping, SourceType } from '../types';
 import run from './run';
 import { state } from './state';
+import { generateDefaultSourceState } from './state/defaultSourceState';
 
 const mapping: Mapping = require('../config/LaunchControlXL.json');
 
@@ -9,16 +10,27 @@ function bindParameter(i: Input, mapping: ParameterMapping, parameter: Parameter
   i.ccBind<Record<Parameter, number>>(mapping.cc, parameter, ss.parameters, mapping.min, mapping.max);
 }
 
-function bindSource(i: Input, mapping: SourceMapping, state: SourceState) {
-  Object.keys(state.parameters).forEach((k) => {
+function bindSource(i: Input, mapping: SourceMapping, ss: SourceState) {
+  Object.keys(ss.parameters).forEach((k) => {
     const key = k as Parameter;
-    bindParameter(i, mapping.parameters[key], key, state);
+    bindParameter(i, mapping.parameters[key], key, ss);
   });
-  i.noteOn(undefined, mapping.switchSource.channel).subscribe((evt) => {
-    if (evt.note.number === mapping.switchSource.note) {
-      state.sourceType = ((Number(state.sourceType) + 1) % Object.keys(SourceType).length) as SourceType;
-      run();
-    }
+
+  // switch source
+  i.noteOn(mapping.switchSource.note, mapping.switchSource.channel).subscribe(() => {
+    ss.sourceType = ((Number(ss.sourceType) + 1) % Object.keys(SourceType).length) as SourceType;
+    run();
+  });
+
+  // reset
+  i.noteOn(mapping.reset.note, mapping.reset.channel).subscribe(() => {
+    const defaultState = generateDefaultSourceState();
+    // copy parameters default state
+    Object.keys(ss.parameters).forEach((k) => {
+      const key = k as Parameter;
+      ss.parameters[key] = defaultState.parameters[key];
+    });
+    run();
   });
 }
 

@@ -1,6 +1,7 @@
 import { SourceState, SourceType, HydraStream, OutputBuffer } from '../types';
 import { state } from './state';
 
+// eslint-disable-next-line
 function debug(val: number): number {
   console.log(val);
   return val;
@@ -18,12 +19,18 @@ function getSource(sourceState: SourceState): HydraStream {
       () => sourceState.parameters.mod2,
       () => sourceState.parameters.mod3
     );
+  } else if (sourceState.sourceType === SourceType.screen) {
+    s0.initScreen();
+    return src(s0).repeat(
+      () => sourceState.parameters.kaleid,
+      () => sourceState.parameters.kaleid
+    );
   } else {
     return osc(
       () => sourceState.parameters.mod1,
       () => sourceState.parameters.mod2,
       () => sourceState.parameters.mod3
-    );
+    ).kaleid(() => sourceState.parameters.kaleid);
   }
 }
 
@@ -31,7 +38,6 @@ function runSource(o: OutputBuffer, sourceState: SourceState, modulationSource: 
   const source = getSource(sourceState);
   source
     .rotate(() => sourceState.parameters.rotation, 0)
-    .kaleid(() => sourceState.parameters.kaleid)
     .pixelate(
       () => sourceState.parameters.pixelate,
       () => sourceState.parameters.pixelate

@@ -1,4 +1,4 @@
-import { Parameter } from "./source";
+import { Parameter } from './source';
 
 export type ParameterMapping = {
   min: number;
@@ -8,13 +8,15 @@ export type ParameterMapping = {
 };
 
 export type NoteMapping = {
-  note: number;
+  note: string;
   channel?: number;
 };
 export type SourceMapping = {
   parameters: Record<Parameter, ParameterMapping>;
 
+  // buttons
   switchSource: NoteMapping;
+  reset: NoteMapping;
 };
 
 export type Mapping = {
