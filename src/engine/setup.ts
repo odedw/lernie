@@ -1,15 +1,15 @@
 import { Input } from 'rmidi';
-import { SourceState, Mapping, Parameter, ParameterMapping, SourceMapping, SourceType, Level } from '../types';
+import { SourceState, Mapping, Parameter, MidiCCBinding, SourceMapping, SourceType, Level } from '../types';
 import run from './run';
 import { state } from './state';
 import { generateDefaultSourceState } from './state/defaultSourceState';
 
 const mapping: Mapping = require('../config/LaunchControlXL.json');
 
-function bindParameter(i: Input, mapping: ParameterMapping, parameter: Parameter, ss: SourceState) {
+function bindParameter(i: Input, mapping: MidiCCBinding, parameter: Parameter, ss: SourceState) {
   i.ccBind<Record<Parameter, number>>(mapping.cc, parameter, ss.parameters, mapping.min, mapping.max);
 }
-function bindLevel(i: Input, mapping: ParameterMapping, level: Level, ss: SourceState) {
+function bindLevel(i: Input, mapping: MidiCCBinding, level: Level, ss: SourceState) {
   i.ccBind<Record<Level, number>>(mapping.cc, level, ss.levels, mapping.min, mapping.max);
 }
 

@@ -1,23 +1,25 @@
 import { Level, Parameter } from './source';
 
-export type ParameterMapping = {
+export type MidiCCBinding = {
   min: number;
   max: number;
   cc: number;
   channel?: number;
 };
 
-export type NoteMapping = {
+export type MidiNoteBinding = {
   note: string;
   channel?: number;
 };
 export type SourceMapping = {
-  parameters: Record<Parameter, ParameterMapping>;
-  levels: Record<Level, ParameterMapping>;
-
+  parameters: Record<Parameter, MidiCCBinding>;
+  levels: Record<Level, MidiCCBinding>;
   // buttons
-  switchSource: NoteMapping;
-  reset: NoteMapping;
+  switchSource: MidiNoteBinding;
+  reset: MidiNoteBinding;
+
+  // ccBindings: Record<string, MidiCCBinding>;
+  // noteBindings: Record<string, MidiNoteBinding>;
 };
 
 export type Mapping = {
