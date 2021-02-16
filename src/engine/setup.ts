@@ -10,11 +10,20 @@ function bindParameter(i: Input, mapping: MidiCCBinding, p: Parameter, ss: Sourc
   i.ccBind<Record<Parameter, number>>(mapping.cc, p, ss.parameters, config.parameters[p].min, config.parameters[p].max);
 }
 
+function bindMod(i: Input, mapping: MidiCCBinding, p: Parameter, ss: SourceState) {
+  i.ccBind<Record<Parameter, number>>(mapping.cc, p, ss.parameters, config.parameters[p].min, config.parameters[p].max);
+}
+
 function bindSource(i: Input, mapping: SourceMapping, ss: SourceState) {
-  Object.keys(ss.parameters).forEach((k) => {
-    const key = k as Parameter;
-    bindParameter(i, mapping.parameters[key], key, ss);
-  });
+  Object.keys(ss.parameters)
+    .forEach((k) => {
+      const key = k as Parameter;
+      if (key !== 'mod1' && key !== 'mod2' && key !== 'mod3') {
+        bindParameter(i, mapping.parameters[key], key, ss);
+      } else {
+        bindMod(i, mapping.parameters[key], key, ss);
+      }
+    });
 
   // switch source
   i.noteOn(mapping.switchSource.note, mapping.switchSource.channel).subscribe(() => {
