@@ -1,4 +1,4 @@
-import { Level, Parameter } from '../types';
+import { Parameter } from '../types';
 
 export type Range = {
   min: number;
@@ -6,7 +6,6 @@ export type Range = {
 };
 export type ParameterConfig = {
   parameters: Record<Parameter, Range>;
-  levels: Record<Level, Range>;
 };
 
 export const config: ParameterConfig = {
@@ -21,8 +20,6 @@ export const config: ParameterConfig = {
     colorama: { min: 0, max: 1 },
     modulate: { min: -1, max: 1 },
     modulateRotate: { min: -10, max: 10 },
-  },
-  levels: {
     blend: { min: 0, max: 1 },
     diff: { min: 0, max: 1 },
   },

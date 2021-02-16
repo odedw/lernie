@@ -1,4 +1,4 @@
-import { Level, Parameter } from './source';
+import { Parameter } from './source';
 
 export type MidiCCBinding = {
   cc: number;
@@ -11,7 +11,6 @@ export type MidiNoteBinding = {
 };
 export type SourceMapping = {
   parameters: Record<Parameter, MidiCCBinding>;
-  levels: Record<Level, MidiCCBinding>;
   // buttons
   switchSource: MidiNoteBinding;
   reset: MidiNoteBinding;

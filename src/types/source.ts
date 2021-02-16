@@ -8,9 +8,9 @@ export type Parameter =
   | 'scale'
   | 'colorama'
   | 'modulate'
-  | 'modulateRotate';
-
-export type Level = 'blend' | 'diff';
+  | 'modulateRotate'
+  | 'blend'
+  | 'diff';
 
 export enum SourceType {
   osc = 0,

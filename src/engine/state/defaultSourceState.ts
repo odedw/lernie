@@ -12,8 +12,6 @@ export const generateDefaultSourceState = (): SourceState => ({
     colorama: 0,
     modulate: 0,
     modulateRotate: 0,
-  },
-  levels: {
     blend: 0,
     diff: 0,
   },

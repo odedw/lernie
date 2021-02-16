@@ -1,6 +1,6 @@
 import { Input } from 'rmidi';
 import { config } from '../config/parameterConfig';
-import { SourceState, Parameter, MidiCCBinding, SourceMapping, SourceType, Level } from '../types';
+import { SourceState, Parameter, MidiCCBinding, SourceMapping, SourceType } from '../types';
 import run from './run';
 import { state } from './state';
 import { generateDefaultSourceState } from './state/defaultSourceState';
@@ -9,19 +9,11 @@ import mapping from '../config/LaunchControlXL';
 function bindParameter(i: Input, mapping: MidiCCBinding, p: Parameter, ss: SourceState) {
   i.ccBind<Record<Parameter, number>>(mapping.cc, p, ss.parameters, config.parameters[p].min, config.parameters[p].max);
 }
-function bindLevel(i: Input, mapping: MidiCCBinding, level: Level, ss: SourceState) {
-  i.ccBind<Record<Level, number>>(mapping.cc, level, ss.levels, config.levels[level].min, config.levels[level].max);
-}
 
 function bindSource(i: Input, mapping: SourceMapping, ss: SourceState) {
   Object.keys(ss.parameters).forEach((k) => {
     const key = k as Parameter;
     bindParameter(i, mapping.parameters[key], key, ss);
-  });
-
-  Object.keys(ss.levels).forEach((k) => {
-    const key = k as Level;
-    bindLevel(i, mapping.levels[key], key, ss);
   });
 
   // switch source

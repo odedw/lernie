@@ -3,11 +3,9 @@ import { Mapping } from '../types';
 const config: Mapping = {
   sources: [
     {
-      levels: {
+      parameters: {
         blend: { cc: 77 },
         diff: { cc: 78 },
-      },
-      parameters: {
         mod1: { cc: 13 },
         mod2: { cc: 14 },
         mod3: { cc: 15 },
@@ -23,11 +21,9 @@ const config: Mapping = {
       reset: { note: 'F#2' },
     },
     {
-      levels: {
+      parameters: {
         blend: { cc: 81 },
         diff: { cc: 82 },
-      },
-      parameters: {
         mod1: { cc: 17 },
         mod2: { cc: 18 },
         mod3: { cc: 19 },
