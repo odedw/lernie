@@ -1,0 +1,47 @@
+import { Mapping } from '../types';
+
+const config: Mapping = {
+  sources: [
+    {
+      levels: {
+        blend: { cc: 77 },
+        diff: { cc: 78 },
+      },
+      parameters: {
+        mod1: { cc: 13 },
+        mod2: { cc: 14 },
+        mod3: { cc: 15 },
+        rotation: { cc: 16 },
+        kaleid: { cc: 29 },
+        pixelate: { cc: 30 },
+        scale: { cc: 31 },
+        colorama: { cc: 32 },
+        modulate: { cc: 49 },
+        modulateRotate: { cc: 50 },
+      },
+      switchSource: { note: 'F2' },
+      reset: { note: 'F#2' },
+    },
+    {
+      levels: {
+        blend: { cc: 81 },
+        diff: { cc: 82 },
+      },
+      parameters: {
+        mod1: { cc: 17 },
+        mod2: { cc: 18 },
+        mod3: { cc: 19 },
+        rotation: { cc: 20 },
+        kaleid: { cc: 33 },
+        pixelate: { cc: 34 },
+        scale: { cc: 35 },
+        colorama: { cc: 36 },
+        modulate: { cc: 53 },
+        modulateRotate: { cc: 54 },
+      },
+      switchSource: { note: 'A3' },
+      reset: { note: 'A#3' },
+    },
+  ],
+};
+export default config;

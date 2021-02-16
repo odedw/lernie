@@ -1,8 +1,6 @@
 import { Level, Parameter } from './source';
 
 export type MidiCCBinding = {
-  min: number;
-  max: number;
   cc: number;
   channel?: number;
 };
