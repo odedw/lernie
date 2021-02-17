@@ -31,19 +31,19 @@ export const config: ParameterConfig = {
       mod3: { min: 0, max: 6.3 },
     },
     [SourceType.noise]: {
-      mod1: { min: 0, max: 10 },
-      mod2: { min: 0, max: 1 },
-      mod3: { min: 0, max: 0.5 },
+      mod1: { min: 0, max: 1 },
+      mod2: { min: 0, max: 0.5 },
+      mod3: { min: 0, max: 10 },
     },
     [SourceType.voronoi]: {
       mod1: { min: 0, max: 80 },
-      mod2: { min: -0.5, max: 0.5 },
-      mod3: { min: 0, max: 10 },
+      mod2: { min: 0, max: 10 },
+      mod3: { min: 0, max: 20 },
     },
     [SourceType.screen]: {
-      mod1: { min: 0, max: 80 },
-      mod2: { min: -0.5, max: 0.5 },
-      mod3: { min: 0, max: 10 },
+      mod1: { min: 1, max: 6 },
+      mod2: { min: 0, max: 2 },
+      mod3: { min: 1, max: 2 },
     },
   },
 };

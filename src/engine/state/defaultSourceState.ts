@@ -22,14 +22,14 @@ const defaultSourceMods = {
     mod3: 0,
   },
   [SourceType.voronoi]: {
-    mod1: 40,
+    mod1: 0,
     mod2: 0,
     mod3: 0,
   },
   [SourceType.screen]: {
-    mod1: 40,
-    mod2: 0,
-    mod3: 0,
+    mod1: 1,
+    mod2: 1,
+    mod3: 1,
   },
 };
 export const generateDefaultSourceState = (sourceType: SourceType, primary: boolean = true): SourceState => {
