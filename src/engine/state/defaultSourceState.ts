@@ -1,19 +1,45 @@
 import { SourceState, SourceType } from '../../types';
-
-export const generateDefaultSourceState = (): SourceState => ({
-  parameters: {
+const defaultParams = {
+  rotation: 0,
+  kaleid: 1,
+  pixelate: 1500,
+  scale: 1,
+  colorama: 0,
+  modulate: 0,
+  modulateRotate: 0,
+  blend: 1,
+  diff: 0,
+};
+const defaultSourceMods = {
+  [SourceType.osc]: {
     mod1: 40,
     mod2: 0,
     mod3: 0,
-    rotation: 0,
-    kaleid: 1,
-    pixelate: 1500,
-    scale: 1,
-    colorama: 0,
-    modulate: 0,
-    modulateRotate: 0,
-    blend: 0,
-    diff: 0,
   },
-  sourceType: SourceType.osc,
-});
+  [SourceType.noise]: {
+    mod1: 0,
+    mod2: 0.8,
+    mod3: 0,
+  },
+  [SourceType.voronoi]: {
+    mod1: 40,
+    mod2: 0,
+    mod3: 0,
+  },
+  [SourceType.screen]: {
+    mod1: 40,
+    mod2: 0,
+    mod3: 0,
+  },
+};
+export const generateDefaultSourceState = (sourceType: SourceType, primary: boolean = true): SourceState => {
+  const res = {
+    parameters: {
+      ...defaultSourceMods[sourceType],
+      ...defaultParams,
+    },
+    sourceType,
+  };
+  res.parameters.blend = primary ? res.parameters.blend : 0;
+  return res;
+};

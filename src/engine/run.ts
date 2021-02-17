@@ -7,30 +7,29 @@ function debug(val: number): number {
   return val;
 }
 
-function getSource(sourceState: SourceState): HydraStream {
-  if (sourceState.sourceType === SourceType.noise) {
-    return noise(
-      () => sourceState.parameters.mod1,
-      () => sourceState.parameters.mod2
+function getSource(ss: SourceState): HydraStream {
+  if (ss.sourceType === SourceType.noise) {
+    return noise(80, () => ss.parameters.mod1).contrast(
+      ({ time }) => ss.parameters.mod2 + Math.sin(time) * ss.parameters.mod3
     );
-  } else if (sourceState.sourceType === SourceType.voronoi) {
+  } else if (ss.sourceType === SourceType.voronoi) {
     return voronoi(
-      () => sourceState.parameters.mod1,
-      () => sourceState.parameters.mod2,
-      () => sourceState.parameters.mod3
+      () => ss.parameters.mod1,
+      () => ss.parameters.mod2,
+      () => ss.parameters.mod3
     );
-  } else if (sourceState.sourceType === SourceType.screen) {
+  } else if (ss.sourceType === SourceType.screen) {
     s0.initScreen();
     return src(s0).repeat(
-      () => sourceState.parameters.kaleid,
-      () => sourceState.parameters.kaleid
+      () => ss.parameters.kaleid,
+      () => ss.parameters.kaleid
     );
   } else {
     return osc(
-      () => sourceState.parameters.mod1,
-      () => sourceState.parameters.mod2,
-      () => sourceState.parameters.mod3
-    ).kaleid(() => sourceState.parameters.kaleid);
+      () => ss.parameters.mod1,
+      () => ss.parameters.mod2,
+      () => ss.parameters.mod3
+    );
   }
 }
 
@@ -42,6 +41,7 @@ function runSource(o: OutputBuffer, sourceState: SourceState, modulationSource: 
       () => sourceState.parameters.pixelate,
       () => sourceState.parameters.pixelate
     )
+    .kaleid(() => sourceState.parameters.kaleid)
     .scale(() => sourceState.parameters.scale)
     .colorama(() => sourceState.parameters.colorama)
     .modulate(src(modulationSource), () => sourceState.parameters.modulate)

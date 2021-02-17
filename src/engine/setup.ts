@@ -10,30 +10,35 @@ function bindParameter(i: Input, mapping: MidiCCBinding, p: Parameter, ss: Sourc
   i.ccBind<Record<Parameter, number>>(mapping.cc, p, ss.parameters, config.parameters[p].min, config.parameters[p].max);
 }
 
-function bindMod(i: Input, mapping: MidiCCBinding, p: Parameter, ss: SourceState) {
-  i.ccBind<Record<Parameter, number>>(mapping.cc, p, ss.parameters, config.parameters[p].min, config.parameters[p].max);
+function bindMod(i: Input, mapping: MidiCCBinding, p: 'mod1' | 'mod2' | 'mod3', ss: SourceState) {
+  i.cc(mapping.cc, mapping.channel).subscribe((e) => {
+    const { min, max } = config.sourceMods[ss.sourceType][p];
+    const unit = (max - min) / 127;
+    ss.parameters[p] = min + unit * e.value;
+  });
 }
 
 function bindSource(i: Input, mapping: SourceMapping, ss: SourceState) {
-  Object.keys(ss.parameters)
-    .forEach((k) => {
-      const key = k as Parameter;
-      if (key !== 'mod1' && key !== 'mod2' && key !== 'mod3') {
-        bindParameter(i, mapping.parameters[key], key, ss);
-      } else {
-        bindMod(i, mapping.parameters[key], key, ss);
-      }
-    });
+  Object.keys(ss.parameters).forEach((k) => {
+    const key = k as Parameter;
+    if (key === 'mod1' || key === 'mod2' || key === 'mod3') {
+      bindMod(i, mapping.parameters[key], key, ss);
+    } else {
+      bindParameter(i, mapping.parameters[key], key, ss);
+    }
+  });
 
   // switch source
   i.noteOn(mapping.switchSource.note, mapping.switchSource.channel).subscribe(() => {
     ss.sourceType = ((Number(ss.sourceType) + 1) % Object.keys(SourceType).length) as SourceType;
+    const defaultParams = generateDefaultSourceState(ss.sourceType).parameters;
+    Object.keys(ss.parameters).forEach((p) => (ss.parameters[p as Parameter] = defaultParams[p as Parameter]));
     run();
   });
 
   // reset
   i.noteOn(mapping.reset.note, mapping.reset.channel).subscribe(() => {
-    const defaultState = generateDefaultSourceState();
+    const defaultState = generateDefaultSourceState(ss.sourceType);
     // copy parameters default state
     Object.keys(ss.parameters).forEach((k) => {
       const key = k as Parameter;

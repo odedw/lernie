@@ -1,4 +1,4 @@
-import { Parameter } from '../types';
+import { Parameter, SourceType } from '../types';
 
 export type Range = {
   min: number;
@@ -6,6 +6,7 @@ export type Range = {
 };
 export type ParameterConfig = {
   parameters: Record<Parameter, Range>;
+  sourceMods: Record<SourceType, Record<'mod1' | 'mod2' | 'mod3', Range>>;
 };
 
 export const config: ParameterConfig = {
@@ -22,5 +23,27 @@ export const config: ParameterConfig = {
     modulateRotate: { min: -10, max: 10 },
     blend: { min: 0, max: 1 },
     diff: { min: 0, max: 1 },
+  },
+  sourceMods: {
+    [SourceType.osc]: {
+      mod1: { min: 0, max: 100 },
+      mod2: { min: -1, max: 1 },
+      mod3: { min: 0, max: 6.3 },
+    },
+    [SourceType.noise]: {
+      mod1: { min: 0, max: 10 },
+      mod2: { min: 0, max: 1 },
+      mod3: { min: 0, max: 0.5 },
+    },
+    [SourceType.voronoi]: {
+      mod1: { min: 0, max: 80 },
+      mod2: { min: -0.5, max: 0.5 },
+      mod3: { min: 0, max: 10 },
+    },
+    [SourceType.screen]: {
+      mod1: { min: 0, max: 80 },
+      mod2: { min: -0.5, max: 0.5 },
+      mod3: { min: 0, max: 10 },
+    },
   },
 };

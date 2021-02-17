@@ -1,8 +1,11 @@
-import { SourceState, SourceMapping } from '../types';
+import { SourceState, SourceMapping, SourceType } from '../types';
 import { generateDefaultSourceState } from './state/defaultSourceState';
 
 export class State {
-  sources: SourceState[] = [generateDefaultSourceState(), generateDefaultSourceState()];
+  sources: SourceState[] = [
+    generateDefaultSourceState(SourceType.osc),
+    generateDefaultSourceState(SourceType.osc, false),
+  ];
 
   randomize(mapping: SourceMapping) {
     // Object.keys(defaultSourceState.parameters).forEach((k) => {
