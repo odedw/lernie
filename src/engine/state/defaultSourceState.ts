@@ -7,6 +7,7 @@ const defaultParams = {
   colorama: 0,
   modulate: 0,
   modulateRotate: 0,
+  modulateScale: 0,
   blend: 1,
   diff: 0,
 };

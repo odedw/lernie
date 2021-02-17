@@ -21,6 +21,7 @@ export const config: ParameterConfig = {
     colorama: { min: 0, max: 1 },
     modulate: { min: -1, max: 1 },
     modulateRotate: { min: -10, max: 10 },
+    modulateScale: { min: -10, max: 10 },
     blend: { min: 0, max: 1 },
     diff: { min: 0, max: 1 },
   },

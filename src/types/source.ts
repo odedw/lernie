@@ -9,6 +9,7 @@ export type Parameter =
   | 'colorama'
   | 'modulate'
   | 'modulateRotate'
+  | 'modulateScale'
   | 'blend'
   | 'diff';
 

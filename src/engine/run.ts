@@ -36,22 +36,23 @@ function getSource(ss: SourceState): HydraStream {
   }
 }
 
-function runSource(o: OutputBuffer, sourceState: SourceState, modulationSource: OutputBuffer) {
-  const source = getSource(sourceState);
+function runSource(o: OutputBuffer, ss: SourceState, modulationSource: OutputBuffer) {
+  const source = getSource(ss);
   source
-    .rotate(() => sourceState.parameters.rotation, 0)
+    .rotate(() => ss.parameters.rotation, 0)
     .pixelate(
-      () => sourceState.parameters.pixelate,
-      () => sourceState.parameters.pixelate
+      () => ss.parameters.pixelate,
+      () => ss.parameters.pixelate
     )
-    .scale(() => sourceState.parameters.scale)
-    .colorama(() => sourceState.parameters.colorama)
-    .modulate(src(modulationSource), () => sourceState.parameters.modulate)
+    .scale(() => ss.parameters.scale)
+    .colorama(() => ss.parameters.colorama)
+    .modulate(src(modulationSource), () => ss.parameters.modulate)
     .modulateRotate(
       src(modulationSource),
-      () => sourceState.parameters.modulateRotate,
-      () => sourceState.parameters.modulateRotate
+      () => ss.parameters.modulateRotate,
+      () => ss.parameters.modulateRotate
     )
+    .modulateScale(src(modulationSource), () => ss.parameters.modulateScale)
     .out(o);
 }
 export default function run() {
