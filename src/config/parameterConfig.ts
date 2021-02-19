@@ -22,6 +22,7 @@ export const config: ParameterConfig = {
     modulate: { min: -1, max: 1 },
     modulateRotate: { min: -10, max: 10 },
     modulateScale: { min: -10, max: 10 },
+    modulateKaleid: { min: 1, max: 50 },
     blend: { min: 0, max: 1 },
     diff: { min: 0, max: 1 },
   },

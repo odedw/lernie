@@ -53,6 +53,7 @@ function runSource(o: OutputBuffer, ss: SourceState, modulationSource: OutputBuf
       () => ss.parameters.modulateRotate
     )
     .modulateScale(src(modulationSource), () => ss.parameters.modulateScale)
+    .modulateHue(src(modulationSource), () => ss.parameters.modulateKaleid)
     .out(o);
 }
 export default function run() {

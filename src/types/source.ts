@@ -10,6 +10,7 @@ export type Parameter =
   | 'modulate'
   | 'modulateRotate'
   | 'modulateScale'
+  | 'modulateKaleid'
   | 'blend'
   | 'diff';
 
