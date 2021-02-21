@@ -8,7 +8,7 @@ const defaultParams = {
   modulate: 0,
   modulateRotate: 0,
   modulateScale: 0,
-  modulateKaleid: 1,
+  repeat: 1,
   blend: 1,
   diff: 0,
 };
@@ -29,14 +29,14 @@ const defaultSourceMods = {
     mod3: 0,
   },
   [SourceType.screen]: {
-    mod1: 1,
+    mod1: 0,
     mod2: 1,
     mod3: 1,
   },
   [SourceType.shape]: {
     mod1: 3,
     mod2: 0.3,
-    mod3: 1,
+    mod3: 0,
   },
 };
 export const generateDefaultSourceState = (sourceType: SourceType, primary: boolean = true): SourceState => {

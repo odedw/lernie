@@ -22,7 +22,7 @@ export const config: ParameterConfig = {
     modulate: { min: -1, max: 1 },
     modulateRotate: { min: -10, max: 10 },
     modulateScale: { min: -10, max: 10 },
-    modulateKaleid: { min: 1, max: 50 },
+    repeat: { min: 1, max: 8 },
     blend: { min: 0, max: 1 },
     diff: { min: 0, max: 1 },
   },
@@ -43,14 +43,14 @@ export const config: ParameterConfig = {
       mod3: { min: 0, max: 20 },
     },
     [SourceType.screen]: {
-      mod1: { min: 1, max: 6 },
+      mod1: { min: 0, max: 1 },
       mod2: { min: 0, max: 2 },
       mod3: { min: 1, max: 2 },
     },
     [SourceType.shape]: {
       mod1: { min: 1, max: 20 },
       mod2: { min: 0, max: 1 },
-      mod3: { min: 1, max: 4 },
+      mod3: { min: -100, max: 100 },
     },
   },
 };

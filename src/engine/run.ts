@@ -21,20 +21,14 @@ function getSource(ss: SourceState): HydraStream {
   } else if (ss.sourceType === SourceType.screen) {
     s0.initScreen();
     return src(s0)
-      .repeat(
-        () => ss.parameters.mod1,
-        () => ss.parameters.mod1
-      )
+      .brightness(() => debug(ss.parameters.mod1))
       .saturate(() => ss.parameters.mod2)
       .scale(1, 1, () => ss.parameters.mod3);
   } else if (ss.sourceType === SourceType.shape) {
     return shape(
       () => ss.parameters.mod1,
       () => ss.parameters.mod2
-    ).repeat(
-      () => ss.parameters.mod3,
-      () => ss.parameters.mod3
-    );
+    ).rotate(({ time }) => ((time * ss.parameters.mod3) % 360) * (Math.PI / 180));
   } else {
     return osc(
       () => ss.parameters.mod1,
@@ -61,7 +55,11 @@ function runSource(o: OutputBuffer, ss: SourceState, modulationSource: OutputBuf
       () => ss.parameters.modulateRotate
     )
     .modulateScale(src(modulationSource), () => ss.parameters.modulateScale)
-    .modulateHue(src(modulationSource), () => ss.parameters.modulateKaleid)
+    .repeat(
+      () => ss.parameters.repeat,
+      () => ss.parameters.repeat
+    )
+    // .modulateHue(src(modulationSource), () => ss.parameters.modulateKaleid)
     .out(o);
 }
 export default function run() {
