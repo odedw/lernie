@@ -33,6 +33,11 @@ const defaultSourceMods = {
     mod2: 1,
     mod3: 1,
   },
+  [SourceType.shape]: {
+    mod1: 3,
+    mod2: 0.3,
+    mod3: 1,
+  },
 };
 export const generateDefaultSourceState = (sourceType: SourceType, primary: boolean = true): SourceState => {
   const res = {

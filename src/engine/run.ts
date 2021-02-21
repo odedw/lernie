@@ -27,6 +27,14 @@ function getSource(ss: SourceState): HydraStream {
       )
       .saturate(() => ss.parameters.mod2)
       .scale(1, 1, () => ss.parameters.mod3);
+  } else if (ss.sourceType === SourceType.shape) {
+    return shape(
+      () => ss.parameters.mod1,
+      () => ss.parameters.mod2
+    ).repeat(
+      () => ss.parameters.mod3,
+      () => ss.parameters.mod3
+    );
   } else {
     return osc(
       () => ss.parameters.mod1,
