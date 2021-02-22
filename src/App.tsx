@@ -2,8 +2,7 @@ import React, { ChangeEvent, useEffect } from 'react';
 import './App.css';
 import Hydra from './components/Hydra';
 import styled from 'styled-components';
-import { loadProject, saveProject } from './storage';
-import { state } from './engine/state';
+import { engine } from './engine/engine';
 
 const Container = styled.div`
   height: 100%;
@@ -13,17 +12,21 @@ const Container = styled.div`
 function keyPress(evt: KeyboardEvent) {
   const k = evt.key.toLowerCase();
   if (k === 's') {
-    saveProject();
+    engine.saveProject();
   } else if (k === 'l') {
     document.getElementById('file-selector')?.click();
   } else if (k === 'r') {
-    state.randomize();
+    engine.randomize();
+  } else if (k === '1') {
+    engine.savePreset(0);
+  } else if (k === '2') {
+    engine.loadPreset(0);
   }
 }
 
 function loadFile(evt: ChangeEvent<HTMLInputElement>) {
   if (evt.target.files && evt.target.files?.length > 0) {
-    loadProject(evt.target.files[0]);
+    engine.loadProject(evt.target.files[0]);
   }
 }
 const FileDrop = styled.input`

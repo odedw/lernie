@@ -1,8 +1,6 @@
 import { Input } from 'rmidi';
 import { config } from '../config/parameterConfig';
-import { SourceState, Parameter, MidiCCBinding, SourceMapping, SourceType } from '../types';
-import run from './run';
-import { state } from './state';
+import { SourceState, Parameter, MidiCCBinding, SourceMapping, SourceType, State } from '../types';
 import { generateDefaultSourceState } from './state/defaultSourceState';
 import mapping from '../config/LaunchControlXL';
 import { Subscription } from 'rxjs';
@@ -27,7 +25,7 @@ function bindMod(i: Input, mapping: MidiCCBinding, p: 'mod1' | 'mod2' | 'mod3', 
   });
 }
 
-function bindSource(i: Input, mapping: SourceMapping, ss: SourceState) {
+function bindSource(i: Input, mapping: SourceMapping, ss: SourceState, onStateChange: () => void) {
   const subs = Object.keys(ss.parameters).map((k) => {
     const key = k as Parameter;
     if (key === 'mod1' || key === 'mod2' || key === 'mod3') {
@@ -43,7 +41,7 @@ function bindSource(i: Input, mapping: SourceMapping, ss: SourceState) {
       ss.sourceType = ((Number(ss.sourceType) + 1) % Object.keys(SourceType).length) as SourceType;
       const defaultParams = generateDefaultSourceState(ss.sourceType).parameters;
       Object.keys(ss.parameters).forEach((p) => (ss.parameters[p as Parameter] = defaultParams[p as Parameter]));
-      run();
+      onStateChange();
     })
   );
 
@@ -56,14 +54,14 @@ function bindSource(i: Input, mapping: SourceMapping, ss: SourceState) {
         const key = k as Parameter;
         ss.parameters[key] = defaultState.parameters[key];
       });
-      run();
+      onStateChange();
     })
   );
 
   return subs;
 }
 
-export default function setup() {
+export default function setup(state: State, onStateChange: () => void) {
   // clear previous setup
   subscriptions.forEach((s) => s.unsubscribe());
 
@@ -71,8 +69,8 @@ export default function setup() {
   // listInputs();
   input.then((i) => {
     subscriptions = [
-      ...bindSource(i, mapping.sources[0], state.sources[0]),
-      ...bindSource(i, mapping.sources[1], state.sources[1]),
+      ...bindSource(i, mapping.sources[0], state.sources[0], onStateChange),
+      ...bindSource(i, mapping.sources[1], state.sources[1], onStateChange),
     ];
   });
 }

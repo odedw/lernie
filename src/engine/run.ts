@@ -1,5 +1,4 @@
-import { SourceState, SourceType, HydraStream, OutputBuffer } from '../types';
-import { state } from './state';
+import { SourceState, SourceType, HydraStream, OutputBuffer, State } from '../types';
 
 // eslint-disable-next-line
 function debug(val: number): number {
@@ -62,7 +61,7 @@ function runSource(o: OutputBuffer, ss: SourceState, modulationSource: OutputBuf
     // .modulateHue(src(modulationSource), () => ss.parameters.modulateKaleid)
     .out(o);
 }
-export default function run() {
+export default function run(state: State) {
   runSource(o1, state.sources[0], o2);
   runSource(o2, state.sources[1], o1);
 

@@ -1,5 +1,5 @@
-import setup from "./engine/setup";
+import { engine } from "./engine";
 
 export default function init(){
-    setup();
+    engine.init();
 }

@@ -40,13 +40,13 @@ const defaultSourceMods = {
   },
 };
 export const generateDefaultSourceState = (sourceType: SourceType, primary: boolean = true): SourceState => {
-  const res = {
-    parameters: {
+  const res = new SourceState(
+    {
       ...defaultSourceMods[sourceType],
       ...defaultParams,
     },
-    sourceType,
-  };
+    sourceType
+  );
   res.parameters.blend = primary ? res.parameters.blend : 0;
   return res;
 };

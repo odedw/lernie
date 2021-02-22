@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import run from '../engine/run';
+import { engine } from '../engine';
 const Hydra = require('hydra-synth');
 
 const Canvas = styled.canvas`
@@ -23,7 +23,7 @@ export default () => {
         //   precision: 'highp',
       });
       hydra.setResolution(w, h);
-      run();
+      engine.run();
       setHasRun(false);
     }
   }, [canvasRef, hasRun]);

@@ -1,7 +1,15 @@
 import { Parameter, SourceType } from './source';
 
-export type SourceState = {
-  parameters: Record<Parameter, number>;
+export class SourceState {
+  parameters!: Record<Parameter, number>;
+  sourceType!: SourceType;
+  constructor(parameters: Record<Parameter, number>, sourceType: SourceType) {
+    this.parameters = parameters;
+    this.sourceType = sourceType;
+  }
+}
 
-  sourceType: SourceType;
+export type State = {
+  sources: SourceState[];
+  presets: SourceState[][];
 };
