@@ -3,6 +3,7 @@ import './App.css';
 import Hydra from './components/Hydra';
 import styled from 'styled-components';
 import { loadProject, saveProject } from './storage';
+import { state } from './engine/state';
 
 const Container = styled.div`
   height: 100%;
@@ -10,10 +11,13 @@ const Container = styled.div`
 `;
 
 function keyPress(evt: KeyboardEvent) {
-  if (evt.key.toLowerCase() === 's') {
+  const k = evt.key.toLowerCase();
+  if (k === 's') {
     saveProject();
-  } else if (evt.key.toLocaleLowerCase() === 'l') {
+  } else if (k === 'l') {
     document.getElementById('file-selector')?.click();
+  } else if (k === 'r') {
+    state.randomize();
   }
 }
 

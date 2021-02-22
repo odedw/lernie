@@ -1,4 +1,5 @@
-import { SourceState, SourceMapping, SourceType } from '../types';
+import { config } from '../config/parameterConfig';
+import { SourceState, SourceType, Parameter } from '../types';
 import { generateDefaultSourceState } from './state/defaultSourceState';
 
 export class State {
@@ -7,18 +8,21 @@ export class State {
     generateDefaultSourceState(SourceType.osc, false),
   ];
 
-  randomize(mapping: SourceMapping) {
-    // Object.keys(defaultSourceState.parameters).forEach((k) => {
-    //   if (Math.random() < 0.5) {
-    //     const key = k as Parameter;
-    //     this.sources[0].parameters[key] =
-    //       Math.random() * (mapping.parameters[key].max - mapping.parameters[key].min + 1) + mapping.parameters[key].min;
-    //     this.sources[1].parameters[key] =
-    //       Math.random() * (mapping.parameters[key].max - mapping.parameters[key].min + 1) + mapping.parameters[key].min;
-    //   }
-    // });
-    // this.sources[0].parameters.modulate = 0;
-    // this.sources[1].parameters.modulate = 0;
+  presets: SourceState[][] = [];
+
+  randomize() {
+    Object.keys(this.sources[0].parameters).forEach((k) => {
+      if (k.startsWith('modulate')) {
+        return;
+      }
+      if (Math.random() < 0.5) {
+        const key = k as Parameter;
+        this.sources[0].parameters[key] =
+          Math.random() * (config.parameters[key].max - config.parameters[key].min + 1) + config.parameters[key].min;
+        this.sources[1].parameters[key] =
+          Math.random() * (config.parameters[key].max - config.parameters[key].min + 1) + config.parameters[key].min;
+      }
+    });
   }
 }
 let state = new State();
