@@ -5,13 +5,22 @@ import run from './run';
 import { state } from './state';
 import { generateDefaultSourceState } from './state/defaultSourceState';
 import mapping from '../config/LaunchControlXL';
+import { Subscription } from 'rxjs';
 
+let subscriptions: Subscription[] = [];
+let input = Input.create('Launch Control XL');
 function bindParameter(i: Input, mapping: MidiCCBinding, p: Parameter, ss: SourceState) {
-  i.ccBind<Record<Parameter, number>>(mapping.cc, p, ss.parameters, config.parameters[p].min, config.parameters[p].max);
+  return i.ccBind<Record<Parameter, number>>(
+    mapping.cc,
+    p,
+    ss.parameters,
+    config.parameters[p].min,
+    config.parameters[p].max
+  );
 }
 
 function bindMod(i: Input, mapping: MidiCCBinding, p: 'mod1' | 'mod2' | 'mod3', ss: SourceState) {
-  i.cc(mapping.cc, mapping.channel).subscribe((e) => {
+  return i.cc(mapping.cc, mapping.channel).subscribe((e) => {
     const { min, max } = config.sourceMods[ss.sourceType][p];
     const unit = (max - min) / 127;
     ss.parameters[p] = min + unit * e.value;
@@ -19,71 +28,51 @@ function bindMod(i: Input, mapping: MidiCCBinding, p: 'mod1' | 'mod2' | 'mod3', 
 }
 
 function bindSource(i: Input, mapping: SourceMapping, ss: SourceState) {
-  Object.keys(ss.parameters).forEach((k) => {
+  const subs = Object.keys(ss.parameters).map((k) => {
     const key = k as Parameter;
     if (key === 'mod1' || key === 'mod2' || key === 'mod3') {
-      bindMod(i, mapping.parameters[key], key, ss);
+      return bindMod(i, mapping.parameters[key], key, ss);
     } else {
-      bindParameter(i, mapping.parameters[key], key, ss);
+      return bindParameter(i, mapping.parameters[key], key, ss);
     }
   });
 
   // switch source
-  i.noteOn(mapping.switchSource.note, mapping.switchSource.channel).subscribe(() => {
-    ss.sourceType = ((Number(ss.sourceType) + 1) % Object.keys(SourceType).length) as SourceType;
-    const defaultParams = generateDefaultSourceState(ss.sourceType).parameters;
-    Object.keys(ss.parameters).forEach((p) => (ss.parameters[p as Parameter] = defaultParams[p as Parameter]));
-    run();
-  });
+  subs.push(
+    i.noteOn(mapping.switchSource.note, mapping.switchSource.channel).subscribe(() => {
+      ss.sourceType = ((Number(ss.sourceType) + 1) % Object.keys(SourceType).length) as SourceType;
+      const defaultParams = generateDefaultSourceState(ss.sourceType).parameters;
+      Object.keys(ss.parameters).forEach((p) => (ss.parameters[p as Parameter] = defaultParams[p as Parameter]));
+      run();
+    })
+  );
 
   // reset
-  i.noteOn(mapping.reset.note, mapping.reset.channel).subscribe(() => {
-    const defaultState = generateDefaultSourceState(ss.sourceType);
-    // copy parameters default state
-    Object.keys(ss.parameters).forEach((k) => {
-      const key = k as Parameter;
-      ss.parameters[key] = defaultState.parameters[key];
-    });
-    run();
-  });
-}
+  subs.push(
+    i.noteOn(mapping.reset.note, mapping.reset.channel).subscribe(() => {
+      const defaultState = generateDefaultSourceState(ss.sourceType);
+      // copy parameters default state
+      Object.keys(ss.parameters).forEach((k) => {
+        const key = k as Parameter;
+        ss.parameters[key] = defaultState.parameters[key];
+      });
+      run();
+    })
+  );
 
-function keyDown(e: KeyboardEvent) {
-  if (e.code === 'KeyR') {
-    state.randomize(mapping.sources[0]);
-  }
+  return subs;
 }
 
 export default function setup() {
+  // clear previous setup
+  subscriptions.forEach((s) => s.unsubscribe());
+
   //midi
   // listInputs();
-  Input.create('Launch Control XL').then((i) => {
-    bindSource(i, mapping.sources[0], state.sources[0]);
-    bindSource(i, mapping.sources[1], state.sources[1]);
-    // i = i;
-    // this.bindOsc(this.d.sources[0], config.sources[0]);
-    // this.b indOsc(this.d.sources[1], config.sources[1]);
+  input.then((i) => {
+    subscriptions = [
+      ...bindSource(i, mapping.sources[0], state.sources[0]),
+      ...bindSource(i, mapping.sources[1], state.sources[1]),
+    ];
   });
-
-  // patch memory
-  // Input.create('loopMIDI Port').then((i) => {
-  //   this.bufferInput = i;
-  //   this.bufferInput.noteOn(null, 1).subscribe((evt) => {
-  //     log.info(evt.note);
-  //     if (evt.note.number === 60) {
-  //       this.d = this.dataBuffers[0];
-  //       this.run();
-  //     } else if (evt.note.number === 62) {
-  //       this.d = this.dataBuffers[1];
-  //       this.run();
-  //     }
-  //   });
-  // });
-  // load
-  //   this.dataBuffers[0] = require("./Lernie/patches/2021-02-06_12_09_46.json");
-  //   this.dataBuffers[1] = require("./Lernie/patches/2021-02-06_12_12_34.json");
-  //   this.d = this.dataBuffers[0];
-  // keyboard actions
-  document.addEventListener('keydown', (e) => keyDown(e));
-  // document.getElementById('file-input').addEventListener('change', readSingleFile, false);
 }

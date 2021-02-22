@@ -21,5 +21,6 @@ export class State {
     // this.sources[1].parameters.modulate = 0;
   }
 }
-
-export const state: State = new State();
+let state = new State();
+export const setState = (newState: State) => (state = newState);
+export { state };
