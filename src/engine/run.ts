@@ -9,14 +9,17 @@ function debug(val: number): number {
 function getSource(ss: SourceState): HydraStream {
   if (ss.sourceType === SourceType.noise) {
     return noise(80, () => ss.parameters.mod1)
-      .contrast(({ time }) => ss.parameters.mod2 + Math.sin(time) * ss.parameters.mod3)
+      .scale(1, 1, 1.7)
+      .contrast(() => ss.parameters.mod2)
       .kaleid(() => ss.parameters.kaleid);
   } else if (ss.sourceType === SourceType.voronoi) {
     return voronoi(
-      40,
+      100,
       () => ss.parameters.mod1,
       () => ss.parameters.mod2
-    ).kaleid(() => ss.parameters.kaleid);
+    )
+      .scale(1, 1, 1.7)
+      .kaleid(() => ss.parameters.kaleid);
   } else if (ss.sourceType === SourceType.screen) {
     s0.initScreen();
     return src(s0)
@@ -27,7 +30,9 @@ function getSource(ss: SourceState): HydraStream {
     return shape(
       () => ss.parameters.mod1,
       () => ss.parameters.mod2
-    ).rotate(({ time }) => ((time * ss.parameters.mod3) % 360) * (Math.PI / 180));
+    )
+      .scale(1, 1, 1.5)
+      .rotate(({ time }) => ((time * ss.parameters.mod3) % 360) * (Math.PI / 180));
   } else {
     return osc(
       () => ss.parameters.mod1,
@@ -55,7 +60,7 @@ function runSource(o: OutputBuffer, ss: SourceState, modulationSource: OutputBuf
       () => ss.parameters.modulateRotate
     )
     .modulateScale(src(modulationSource), () => ss.parameters.modulateScale)
-    // .modulate(o, () => ss.parameters.selfModulate)
+    .modulate(o, () => ss.parameters.selfModulate)
     .repeat(
       () => ss.parameters.repeat,
       () => ss.parameters.repeat
