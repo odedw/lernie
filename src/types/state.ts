@@ -12,4 +12,5 @@ export class SourceState {
 export type State = {
   sources: SourceState[];
   presets: SourceState[][];
+  shift: boolean;
 };

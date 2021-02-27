@@ -9651,10 +9651,10 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^3.0.0"
     inherits "^2.0.1"
 
-rmidi@^1.0.5:
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/rmidi/-/rmidi-1.0.5.tgz#0f456366a1159d969336bd4e7babae6054fad4f0"
-  integrity sha512-7CAiyYkXuHqLAvYEH2SsT8+G1ssLG8Fe74Ay8t0noV+P+SWU6XuTUNjPLm/Ucl5I+D8K2rrKcw/Za3J9WxT6VQ==
+rmidi@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/rmidi/-/rmidi-1.0.6.tgz#7ec46a0d8f91307ca3843224222d1b7ca8c2f6a1"
+  integrity sha512-BikZS9Arps0be8Z/Gz/9KxTEtAFh8Fc4FqDWJXs896tHGOTW35kt6TnzC2rK4qjySnUj7bThjb97z4SR9tVCwQ==
   dependencies:
     rxjs "^6.6.3"
     typescript "^4.1.3"

@@ -5,7 +5,7 @@ import { generateDefaultSourceState } from './state/defaultSourceState';
 import mapping from '../config/LaunchControlXL';
 import { Subscription } from 'rxjs';
 
-let subscriptions: Subscription[] = [];
+let sourceSubscriptions: Subscription[] = [];
 let input = Input.create('Launch Control XL');
 function bindParameter(i: Input, mapping: MidiCCBinding, p: Parameter, ss: SourceState) {
   return i.ccBind<Record<Parameter, number>>(
@@ -61,16 +61,43 @@ function bindSource(i: Input, mapping: SourceMapping, ss: SourceState, onStateCh
   return subs;
 }
 
-export default function setup(state: State, onStateChange: () => void) {
+export function setupSources(state: State, onStateChange: () => void) {
   // clear previous setup
-  subscriptions.forEach((s) => s.unsubscribe());
+  sourceSubscriptions.forEach((s) => s.unsubscribe());
 
   //midi
   // listInputs();
   input.then((i) => {
-    subscriptions = [
+    sourceSubscriptions = [
       ...bindSource(i, mapping.sources[0], state.sources[0], onStateChange),
       ...bindSource(i, mapping.sources[1], state.sources[1], onStateChange),
     ];
+
+    // debug
+    // subscriptions.push(
+    //   i.noteOn().subscribe((e) => {
+    //     console.log(`${e.note.name}${e.note.octave}`);
+    //   })
+    // );
+  });
+}
+
+export function setupPresets(state: State, savePreset: (index: number) => void, loadPreset: (index: number) => void) {
+  input.then((i) => {
+    i.noteOn(mapping.shift.note, mapping.shift.channel).subscribe(() => {
+      state.shift = true;
+    });
+    i.noteOff(mapping.shift.note, mapping.shift.channel).subscribe(() => {
+      state.shift = false;
+    });
+    mapping.presets.forEach((preset, index) => {
+      i.noteOn(preset.note, preset.channel).subscribe(() => {
+        if (state.shift) {
+          savePreset(index);
+        } else {
+          loadPreset(index);
+        }
+      });
+    });
   });
 }

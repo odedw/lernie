@@ -47,5 +47,17 @@ const config: Mapping = {
       reset: { note: 'A#3' },
     },
   ],
+  shift: { note: 'C8' },
+  presets: [
+    { note: 'C#5' },
+    { note: 'D5' },
+    { note: 'D#5' },
+    { note: 'E5' },
+    { note: 'F6' },
+    { note: 'F#6' },
+    { note: 'G6' },
+    { note: 'G#6' },
+  ],
 };
+
 export default config;

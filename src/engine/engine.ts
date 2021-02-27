@@ -3,7 +3,7 @@ import { config } from '../config/parameterConfig';
 import { downloadObjectAsJson, loadFile } from '../storage';
 import { Parameter, SourceState, SourceType, State } from '../types';
 import run from './run';
-import setup from './setup';
+import { setupSources, setupPresets } from './setup';
 import { generateDefaultSourceState } from './state/defaultSourceState';
 
 export class Engine {
@@ -12,10 +12,14 @@ export class Engine {
     this.state = {
       sources: [generateDefaultSourceState(SourceType.osc), generateDefaultSourceState(SourceType.osc, false)],
       presets: [],
+      shift: false,
     };
+    this.savePreset = this.savePreset.bind(this);
+    this.loadPreset = this.loadPreset.bind(this);
   }
   init() {
-    setup(this.state, () => run(this.state));
+    setupSources(this.state, () => run(this.state));
+    setupPresets(this.state, this.savePreset, this.loadPreset);
   }
   run() {
     run(this.state);
@@ -47,7 +51,7 @@ export class Engine {
       this.state.sources[0] = this.cloneSourceState(this.state.presets[index][0]);
       this.state.sources[1] = this.cloneSourceState(this.state.presets[index][1]);
     }
-    setup(this.state, () => run(this.state));
+    setupSources(this.state, () => run(this.state));
     run(this.state);
   }
 
@@ -61,7 +65,7 @@ export class Engine {
         try {
           const state = JSON.parse(str) as State;
           this.state = state;
-          setup(this.state, () => run(this.state));
+          setupSources(this.state, () => run(this.state));
           run(this.state);
         } catch (err) {
           console.error('failed to parse file', err);
