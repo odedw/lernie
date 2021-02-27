@@ -25,6 +25,7 @@ export const config: ParameterConfig = {
     repeat: { min: 1, max: 8 },
     blend: { min: 0, max: 1 },
     diff: { min: 0, max: 1 },
+    feedback: { min: 0, max: 1 },
   },
   sourceMods: {
     [SourceType.osc]: {

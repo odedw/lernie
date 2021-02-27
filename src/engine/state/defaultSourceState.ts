@@ -11,6 +11,7 @@ const defaultParams = {
   repeat: 1,
   blend: 1,
   diff: 0,
+  feedback: 0,
 };
 const defaultSourceMods = {
   [SourceType.osc]: {

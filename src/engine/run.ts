@@ -40,6 +40,7 @@ function getSource(ss: SourceState): HydraStream {
 function runSource(o: OutputBuffer, ss: SourceState, modulationSource: OutputBuffer) {
   const source = getSource(ss);
   source
+    .blend(o, () => ss.parameters.feedback)
     .rotate(() => ss.parameters.rotation, 0)
     .pixelate(
       () => ss.parameters.pixelate,
@@ -58,7 +59,6 @@ function runSource(o: OutputBuffer, ss: SourceState, modulationSource: OutputBuf
       () => ss.parameters.repeat,
       () => ss.parameters.repeat
     )
-    // .modulateHue(src(modulationSource), () => ss.parameters.modulateKaleid)
     .out(o);
 }
 export default function run(state: State) {

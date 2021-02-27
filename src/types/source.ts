@@ -12,7 +12,8 @@ export type Parameter =
   | 'modulateScale'
   | 'repeat'
   | 'blend'
-  | 'diff';
+  | 'diff'
+  | 'feedback';
 
 export enum SourceType {
   osc = 0,

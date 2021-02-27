@@ -94,8 +94,8 @@ export type HydraStream = {
   ) => HydraStream;
 
   // Operators
-  add: (texture: HydraStream, amount?: NumberParameter) => HydraStream;
-  blend: (texture: HydraStream, amount?: NumberParameter) => HydraStream;
+  add: (texture: HydraStream | OutputBuffer, amount?: NumberParameter) => HydraStream;
+  blend: (texture: HydraStream | OutputBuffer, amount?: NumberParameter) => HydraStream;
   diff: (texture: HydraStream, amount?: NumberParameter) => HydraStream;
 
   // Out
