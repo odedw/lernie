@@ -79,7 +79,7 @@ export type HydraStream = {
   /**
    * @param {NumberParameter} amount default 0.1
    */
-  modulate: (texture: HydraStream, amount?: NumberParameter) => HydraStream;
+  modulate: (texture: HydraStream | OutputBuffer, amount?: NumberParameter) => HydraStream;
   modulateRotate: (texture: HydraStream, multiple: NumberParameter, offset: NumberParameter) => HydraStream;
   modulatePixelate: (texture: HydraStream, multiple?: NumberParameter, offset?: NumberParameter) => HydraStream;
   modulateKaleid: (texture: HydraStream, nSides: NumberParameter) => HydraStream;
@@ -95,8 +95,11 @@ export type HydraStream = {
 
   // Operators
   add: (texture: HydraStream | OutputBuffer, amount?: NumberParameter) => HydraStream;
+  layer: (texture: HydraStream | OutputBuffer, amount?: NumberParameter) => HydraStream;
   blend: (texture: HydraStream | OutputBuffer, amount?: NumberParameter) => HydraStream;
-  diff: (texture: HydraStream, amount?: NumberParameter) => HydraStream;
+  mult: (texture: HydraStream | OutputBuffer, amount?: NumberParameter) => HydraStream;
+  diff: (texture: HydraStream | OutputBuffer, amount?: NumberParameter) => HydraStream;
+  mask: (texture: HydraStream | OutputBuffer, reps?: NumberParameter, offset?: NumberParameter) => HydraStream;
 
   // Out
   out: (buffer?: OutputBuffer) => void;

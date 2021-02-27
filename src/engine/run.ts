@@ -55,6 +55,7 @@ function runSource(o: OutputBuffer, ss: SourceState, modulationSource: OutputBuf
       () => ss.parameters.modulateRotate
     )
     .modulateScale(src(modulationSource), () => ss.parameters.modulateScale)
+    // .modulate(o, () => ss.parameters.selfModulate)
     .repeat(
       () => ss.parameters.repeat,
       () => ss.parameters.repeat
@@ -68,6 +69,12 @@ export default function run(state: State) {
   solid(0, 0, 0, 0)
     .blend(src(o1), () => state.sources[0].parameters.blend)
     .blend(src(o2), () => state.sources[1].parameters.blend)
+    // .layer(src(o1), () => state.sources[0].parameters.diff)
+    // .layer(src(o2), () => state.sources[1].parameters.diff)
+    // .mult(src(o1), () => state.sources[0].parameters.diff)
+    // .mult(src(o2), () => state.sources[1].parameters.diff)
+    // .mask(src(o1), 3, () => state.sources[0].parameters.diff)
+    // .mask(src(o2), 3, () => state.sources[1].parameters.diff)
     .diff(solid(0, 0, 0, 0).blend(src(o1), () => state.sources[0].parameters.diff))
     .diff(solid(0, 0, 0, 0).blend(src(o2), () => state.sources[1].parameters.diff))
     .out(o0);

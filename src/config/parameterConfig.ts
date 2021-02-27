@@ -26,6 +26,7 @@ export const config: ParameterConfig = {
     blend: { min: 0, max: 1 },
     diff: { min: 0, max: 1 },
     feedback: { min: 0, max: 1 },
+    selfModulate: { min: 0, max: 1 },
   },
   sourceMods: {
     [SourceType.osc]: {

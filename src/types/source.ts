@@ -13,7 +13,8 @@ export type Parameter =
   | 'repeat'
   | 'blend'
   | 'diff'
-  | 'feedback';
+  | 'feedback'
+  | 'selfModulate';
 
 export enum SourceType {
   osc = 0,
