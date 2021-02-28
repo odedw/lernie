@@ -23,7 +23,7 @@ export default () => {
         //   precision: 'highp',
       });
       hydra.setResolution(w, h);
-      engine.run();
+      engine.run(w / h);
       setHasRun(false);
     }
   }, [canvasRef, hasRun]);

@@ -6,10 +6,10 @@ function debug(val: number): number {
   return val;
 }
 
-function getSource(ss: SourceState): HydraStream {
+function getSource(ss: SourceState, screenRatio: number): HydraStream {
   if (ss.sourceType === SourceType.noise) {
     return noise(80, () => ss.parameters.mod1)
-      .scale(1, 1, 1.7)
+      .scale(1, 1, screenRatio)
       .contrast(() => ss.parameters.mod2)
       .kaleid(() => ss.parameters.kaleid);
   } else if (ss.sourceType === SourceType.voronoi) {
@@ -18,7 +18,7 @@ function getSource(ss: SourceState): HydraStream {
       () => ss.parameters.mod1,
       () => ss.parameters.mod2
     )
-      .scale(1, 1, 1.7)
+      .scale(1, 1, screenRatio)
       .kaleid(() => ss.parameters.kaleid);
   } else if (ss.sourceType === SourceType.screen) {
     s0.initScreen();
@@ -27,12 +27,14 @@ function getSource(ss: SourceState): HydraStream {
       .saturate(() => ss.parameters.mod2)
       .scale(1, 1, () => ss.parameters.mod3);
   } else if (ss.sourceType === SourceType.shape) {
-    return shape(
-      () => ss.parameters.mod1,
-      () => ss.parameters.mod2
-    )
-      .scale(1, 1, 1.5)
-      .rotate(({ time }) => ((time * ss.parameters.mod3) % 360) * (Math.PI / 180));
+    return (
+      shape(
+        () => ss.parameters.mod1,
+        () => ss.parameters.mod2
+      )
+        // .scale(1, 1, screenRatio)
+        .rotate(({ time }) => ((time * ss.parameters.mod3) % 360) * (Math.PI / 180))
+    );
   } else {
     return osc(
       () => ss.parameters.mod1,
@@ -42,8 +44,8 @@ function getSource(ss: SourceState): HydraStream {
   }
 }
 
-function runSource(o: OutputBuffer, ss: SourceState, modulationSource: OutputBuffer) {
-  const source = getSource(ss);
+function runSource(o: OutputBuffer, ss: SourceState, modulationSource: OutputBuffer, screenRatio: number) {
+  const source = getSource(ss, screenRatio);
   source
     .blend(o, () => ss.parameters.feedback)
     .rotate(() => ss.parameters.rotation, 0)
@@ -67,9 +69,9 @@ function runSource(o: OutputBuffer, ss: SourceState, modulationSource: OutputBuf
     )
     .out(o);
 }
-export default function run(state: State) {
-  runSource(o1, state.sources[0], o2);
-  runSource(o2, state.sources[1], o1);
+export default function run(state: State, screenRatio: number) {
+  runSource(o1, state.sources[0], o2, screenRatio);
+  runSource(o2, state.sources[1], o1, screenRatio);
 
   solid(0, 0, 0, 0)
     .blend(src(o1), () => state.sources[0].parameters.blend)

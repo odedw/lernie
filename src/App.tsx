@@ -3,10 +3,12 @@ import './App.css';
 import Hydra from './components/Hydra';
 import styled from 'styled-components';
 import { engine } from './engine/engine';
+import Scope from './components/Scope';
 
 const Container = styled.div`
   height: 100%;
   width: 100%;
+  position: relative;
 `;
 
 function keyPress(evt: KeyboardEvent) {
@@ -36,14 +38,11 @@ const FileDrop = styled.input`
 function App() {
   useEffect(() => {
     window.addEventListener('keypress', keyPress);
-    // window.addEventListener('drop', fileDrop);
-    // setTimeout(() => {
-    //   document.getElementById('file-selector')?.click();
-    // }, 2000);
   }, []);
   return (
     <Container>
       <Hydra />
+      <Scope />
       <FileDrop type="file" id="file-selector" accept=".json" onChange={(e) => loadFile(e)} />
     </Container>
   );

@@ -3,11 +3,14 @@ import { config } from '../config/parameterConfig';
 import { downloadObjectAsJson, loadFile } from '../storage';
 import { Parameter, SourceState, SourceType, State } from '../types';
 import run from './run';
+import ScopeSubjects from './ScopeSubjects';
 import { setupSources, setupPresets } from './setup';
 import { generateDefaultSourceState } from './state/defaultSourceState';
 
 export class Engine {
   state: State;
+  scopeSubjects = new ScopeSubjects();
+  screenRatio: number = 1;
   constructor() {
     this.state = {
       sources: [generateDefaultSourceState(SourceType.osc), generateDefaultSourceState(SourceType.osc, false)],
@@ -18,11 +21,14 @@ export class Engine {
     this.loadPreset = this.loadPreset.bind(this);
   }
   init() {
-    setupSources(this.state, () => run(this.state));
+    setupSources(this.state, () => run(this.state, this.screenRatio), this.scopeSubjects);
     setupPresets(this.state, this.savePreset, this.loadPreset);
   }
-  run() {
-    run(this.state);
+  run(screenRatio?: number) {
+    if (screenRatio) {
+      this.screenRatio = screenRatio;
+    }
+    run(this.state, this.screenRatio);
   }
   randomize() {
     Object.keys(this.state.sources[0].parameters).forEach((k) => {
@@ -51,8 +57,8 @@ export class Engine {
       this.state.sources[0] = this.cloneSourceState(this.state.presets[index][0]);
       this.state.sources[1] = this.cloneSourceState(this.state.presets[index][1]);
     }
-    setupSources(this.state, () => run(this.state));
-    run(this.state);
+    setupSources(this.state, () => run(this.state, this.screenRatio), this.scopeSubjects);
+    run(this.state, this.screenRatio);
   }
 
   saveProject() {
@@ -65,8 +71,8 @@ export class Engine {
         try {
           const state = JSON.parse(str) as State;
           this.state = state;
-          setupSources(this.state, () => run(this.state));
-          run(this.state);
+          setupSources(this.state, () => run(this.state, this.screenRatio), this.scopeSubjects);
+          run(this.state, this.screenRatio);
         } catch (err) {
           console.error('failed to parse file', err);
         }
