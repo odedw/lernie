@@ -4,6 +4,7 @@ import { Parameter, SourceType } from '../types';
 export type ParameterChangeEvent = {
   parameter: Parameter;
   value: number;
+  sourceIndex: number;
 };
 
 export default class ScopeSubjects {

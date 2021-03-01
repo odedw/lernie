@@ -8,18 +8,27 @@ import ScopeSubjects from './ScopeSubjects';
 
 let sourceSubscriptions: Subscription[] = [];
 let input = Input.create('Launch Control XL');
-function bindParameter(i: Input, mapping: MidiCCBinding, p: Parameter, ss: SourceState, subjects: ScopeSubjects) {
+
+function bindParameter(
+  i: Input,
+  sourceIndex: number,
+  mapping: MidiCCBinding,
+  p: Parameter,
+  ss: SourceState,
+  subjects: ScopeSubjects
+) {
   return i.cc(mapping.cc, mapping.channel).subscribe((e) => {
     const { min, max } = config.parameters[p];
     const unit = (max - min) / 127;
     ss.parameters[p] = min + unit * e.value;
 
-    subjects.parameterChange.next({ value: ss.parameters[p], parameter: p });
+    subjects.parameterChange.next({ value: ss.parameters[p], parameter: p, sourceIndex });
   });
 }
 
 function bindMod(
   i: Input,
+  sourceIndex: number,
   mapping: MidiCCBinding,
   p: 'mod1' | 'mod2' | 'mod3',
   ss: SourceState,
@@ -30,12 +39,13 @@ function bindMod(
     const unit = (max - min) / 127;
     ss.parameters[p] = min + unit * e.value;
 
-    subjects.parameterChange.next({ value: ss.parameters[p], parameter: p });
+    subjects.parameterChange.next({ value: ss.parameters[p], parameter: p, sourceIndex });
   });
 }
 
 function bindSource(
   i: Input,
+  sourceIndex: number,
   mapping: SourceMapping,
   ss: SourceState,
   refreshState: () => void,
@@ -44,9 +54,9 @@ function bindSource(
   const subs = Object.keys(ss.parameters).map((k) => {
     const key = k as Parameter;
     if (key === 'mod1' || key === 'mod2' || key === 'mod3') {
-      return bindMod(i, mapping.parameters[key], key, ss, subjects);
+      return bindMod(i, sourceIndex, mapping.parameters[key], key, ss, subjects);
     } else {
-      return bindParameter(i, mapping.parameters[key], key, ss, subjects);
+      return bindParameter(i, sourceIndex, mapping.parameters[key], key, ss, subjects);
     }
   });
 
@@ -86,8 +96,8 @@ export function setupSources(state: State, refreshState: () => void, subjects: S
   // listInputs();
   input.then((i) => {
     sourceSubscriptions = [
-      ...bindSource(i, mapping.sources[0], state.sources[0], refreshState, subjects),
-      ...bindSource(i, mapping.sources[1], state.sources[1], refreshState, subjects),
+      ...bindSource(i, 0, mapping.sources[0], state.sources[0], refreshState, subjects),
+      ...bindSource(i, 1, mapping.sources[1], state.sources[1], refreshState, subjects),
     ];
 
     // debug
