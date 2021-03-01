@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { engine } from '../engine';
 import { SourceType } from '../types';
@@ -18,24 +18,36 @@ const Text = styled.div`
   // -webkit-text-stroke-color: #111;
 `;
 let timer: NodeJS.Timeout;
-
-export default () => {
+type Props = {
+  enabled: boolean;
+};
+const Scope: React.FC<Props> = ({ enabled }) => {
   const [text, setText] = useState('');
-  const show = (text: string) => {
-    setText(text);
-    if (timer) {
-      clearTimeout(timer);
-    }
-    timer = setTimeout(() => {
-      setText('');
-    }, 1000);
-  };
+  const show = useCallback(
+    (text: string, force: boolean = false) => {
+      if (!enabled && !force) {
+        return;
+      }
+      setText(text);
+      if (timer) {
+        clearTimeout(timer);
+      }
+      timer = setTimeout(() => {
+        setText('');
+      }, 1000);
+    },
+    [setText, enabled]
+  );
   useEffect(() => {
     const sub = merge(
       engine.scopeSubjects.sourceTypeChange.pipe(map((t) => SourceType[t].toString())),
       engine.scopeSubjects.parameterChange.pipe(map((e) => `${e.parameter}: ${e.value.toFixed(2)}`))
     ).subscribe(show);
     return () => sub.unsubscribe();
-  }, []);
+  }, [show]);
+  useEffect(() => {
+    show(`Scope ${enabled ? 'on' : 'off'}`, true);
+  }, [enabled, show]);
   return <Text>{text}</Text>;
 };
+export default Scope;

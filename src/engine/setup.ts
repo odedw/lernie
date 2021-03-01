@@ -9,13 +9,6 @@ import ScopeSubjects from './ScopeSubjects';
 let sourceSubscriptions: Subscription[] = [];
 let input = Input.create('Launch Control XL');
 function bindParameter(i: Input, mapping: MidiCCBinding, p: Parameter, ss: SourceState, subjects: ScopeSubjects) {
-  // return i.ccBind<Record<Parameter, number>>(
-  //   mapping.cc,
-  //   p,
-  //   ss.parameters,
-  //   config.parameters[p].min,
-  //   config.parameters[p].max
-  // );
   return i.cc(mapping.cc, mapping.channel).subscribe((e) => {
     const { min, max } = config.parameters[p];
     const unit = (max - min) / 127;
