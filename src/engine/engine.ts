@@ -1,3 +1,4 @@
+import gsap from 'gsap';
 import moment from 'moment';
 import { config } from '../config/parameterConfig';
 import { downloadObjectAsJson, loadFile } from '../storage';
@@ -53,11 +54,18 @@ export class Engine {
   }
 
   loadPreset(index: number) {
-    if (this.state.presets[index] && this.state.presets[index].length === 2) {
-      this.state.sources[0] = this.cloneSourceState(this.state.presets[index][0]);
-      this.state.sources[1] = this.cloneSourceState(this.state.presets[index][1]);
+    if (!this.state.presets[index] || this.state.presets[index].length !== this.state.sources.length) {
+      return;
     }
-    setupSources(this.state, () => run(this.state, this.screenRatio), this.scopeSubjects);
+    this.state.sources.forEach((s, i) => {
+      const preset = this.state.presets[index][i];
+      s.sourceType = preset.sourceType;
+      gsap.to(s.parameters, {
+        ...preset.parameters,
+        duration: 10,
+        repeat: 0,
+      });
+    });
     run(this.state, this.screenRatio);
   }
 

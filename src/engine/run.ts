@@ -64,8 +64,8 @@ function runSource(o: OutputBuffer, ss: SourceState, modulationSource: OutputBuf
     .modulateScale(src(modulationSource), () => ss.parameters.modulateScale)
     .modulate(o, () => ss.parameters.selfModulate)
     .repeat(
-      () => ss.parameters.repeat,
-      () => ss.parameters.repeat
+      () => ss.parameters.repeatXY,
+      () => ss.parameters.repeatXY
     )
     .out(o);
 }

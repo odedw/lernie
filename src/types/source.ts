@@ -10,7 +10,7 @@ export type Parameter =
   | 'modulate'
   | 'modulateRotate'
   | 'modulateScale'
-  | 'repeat'
+  | 'repeatXY' // can't be named 'repeat' as it collides with gsap :(
   | 'blend'
   | 'diff'
   | 'feedback'

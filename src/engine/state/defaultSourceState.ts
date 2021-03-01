@@ -8,7 +8,7 @@ const defaultParams = {
   modulate: 0,
   modulateRotate: 0,
   modulateScale: 0,
-  repeat: 1,
+  repeatXY: 1,
   blend: 1,
   diff: 0,
   feedback: 0,
