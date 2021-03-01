@@ -41,7 +41,9 @@ const Scope: React.FC<Props> = ({ enabled }) => {
   useEffect(() => {
     const sub = merge(
       engine.scopeSubjects.sourceTypeChange.pipe(map((t) => SourceType[t].toString())),
-      engine.scopeSubjects.parameterChange.pipe(map((e) => `${e.parameter}: ${e.value.toFixed(2)}`))
+      engine.scopeSubjects.parameterChange.pipe(map((e) => `${e.parameter}: ${e.value.toFixed(2)}`)),
+      engine.scopeSubjects.loadPreset.pipe(map((i) => `Load preset ${i + 1}`)),
+      engine.scopeSubjects.savePreset.pipe(map((i) => `Save preset ${i + 1}`))
     ).subscribe(show);
     return () => sub.unsubscribe();
   }, [show]);

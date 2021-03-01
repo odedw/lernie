@@ -4,7 +4,7 @@ import { downloadObjectAsJson, loadFile } from '../storage';
 import { Parameter, SourceState, SourceType, State } from '../types';
 import run from './run';
 import ScopeSubjects from './ScopeSubjects';
-import { setupSources, setupPresets } from './setup';
+import { setupSources, setupPresets } from './setupMidi';
 import { generateDefaultSourceState } from './state/defaultSourceState';
 
 export class Engine {
@@ -22,7 +22,7 @@ export class Engine {
   }
   init() {
     setupSources(this.state, () => run(this.state, this.screenRatio), this.scopeSubjects);
-    setupPresets(this.state, this.savePreset, this.loadPreset);
+    setupPresets(this.state, this.savePreset, this.loadPreset, this.scopeSubjects);
   }
   run(screenRatio?: number) {
     if (screenRatio) {

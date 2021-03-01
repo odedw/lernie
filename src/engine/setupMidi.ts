@@ -99,7 +99,12 @@ export function setupSources(state: State, refreshState: () => void, subjects: S
   });
 }
 
-export function setupPresets(state: State, savePreset: (index: number) => void, loadPreset: (index: number) => void) {
+export function setupPresets(
+  state: State,
+  savePreset: (index: number) => void,
+  loadPreset: (index: number) => void,
+  subjects: ScopeSubjects
+) {
   input.then((i) => {
     i.noteOn(mapping.shift.note, mapping.shift.channel).subscribe(() => {
       state.shift = true;
@@ -111,8 +116,10 @@ export function setupPresets(state: State, savePreset: (index: number) => void, 
       i.noteOn(preset.note, preset.channel).subscribe(() => {
         if (state.shift) {
           savePreset(index);
+          subjects.savePreset.next(index);
         } else {
           loadPreset(index);
+          subjects.loadPreset.next(index);
         }
       });
     });
