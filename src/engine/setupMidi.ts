@@ -65,7 +65,9 @@ function bindSource(
     i.noteOn(mapping.switchSource.note, mapping.switchSource.channel).subscribe(() => {
       ss.sourceType = ((Number(ss.sourceType) + 1) % Object.keys(SourceType).length) as SourceType;
       const defaultParams = generateDefaultSourceState(ss.sourceType).parameters;
-      Object.keys(ss.parameters).forEach((p) => (ss.parameters[p as Parameter] = defaultParams[p as Parameter]));
+      Object.keys(ss.parameters)
+        .filter((p) => !['blend', 'diff'].includes(p))
+        .forEach((p) => (ss.parameters[p as Parameter] = defaultParams[p as Parameter]));
       refreshState();
 
       subjects.sourceTypeChange.next(ss.sourceType);
@@ -81,7 +83,6 @@ function bindSource(
         const key = k as Parameter;
         ss.parameters[key] = defaultState.parameters[key];
       });
-      refreshState();
     })
   );
 

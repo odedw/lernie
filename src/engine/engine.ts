@@ -57,6 +57,7 @@ export class Engine {
     if (!this.state.presets[index] || this.state.presets[index].length !== this.state.sources.length) {
       return;
     }
+    const rerun = this.state.presets[index].some((p, i) => p.sourceType !== this.state.sources[i].sourceType);
     this.state.sources.forEach((s, i) => {
       const preset = this.state.presets[index][i];
       s.sourceType = preset.sourceType;
@@ -66,7 +67,9 @@ export class Engine {
         repeat: 0,
       });
     });
-    run(this.state, this.screenRatio);
+    if (rerun) {
+      run(this.state, this.screenRatio);
+    }
   }
 
   saveProject() {
