@@ -23,7 +23,7 @@ function getSource(ss: SourceState, screenRatio: number): HydraStream {
   } else if (ss.sourceType === SourceType.screen) {
     s0.initScreen();
     return src(s0)
-      .brightness(() => debug(ss.parameters.mod1))
+      .brightness(() => ss.parameters.mod1)
       .saturate(() => ss.parameters.mod2)
       .scale(1, 1, () => ss.parameters.mod3);
   } else if (ss.sourceType === SourceType.shape) {

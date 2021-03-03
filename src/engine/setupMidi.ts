@@ -1,6 +1,6 @@
 import { Input } from 'rmidi';
 import { config } from '../config/parameterConfig';
-import { SourceState, Parameter, MidiCCBinding, SourceMapping, SourceType, State } from '../types';
+import { SourceState, Parameter, MidiCCBinding, SourceMapping, SourceType, State, SourceTypeValues } from '../types';
 import { generateDefaultSourceState } from './state/defaultSourceState';
 import mapping from '../config/LaunchControlXL';
 import { Subscription } from 'rxjs';
@@ -63,7 +63,13 @@ function bindSource(
   // switch source
   subs.push(
     i.noteOn(mapping.switchSource.note, mapping.switchSource.channel).subscribe(() => {
-      ss.sourceType = ((Number(ss.sourceType) + 1) % Object.keys(SourceType).length) as SourceType;
+      ss.sourceType = ((Number(ss.sourceType) + 1) % SourceTypeValues.length) as SourceType;
+      console.log('===========================');
+      console.log(Object.values(SourceType));
+      console.log(Object.values(SourceType).length);
+      console.log(ss.sourceType);
+      console.log('===========================');
+
       const defaultParams = generateDefaultSourceState(ss.sourceType).parameters;
       Object.keys(ss.parameters)
         .filter((p) => !['blend', 'diff'].includes(p))
