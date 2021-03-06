@@ -7,7 +7,7 @@ import run from './run';
 import ScopeSubjects from './ScopeSubjects';
 import { setupSources, setupPresets } from './setupMidi';
 import { generateDefaultSourceState } from './state/defaultSourceState';
-import { merge } from 'rxjs';
+// import { merge } from 'rxjs';
 
 export class Engine {
   state: State;

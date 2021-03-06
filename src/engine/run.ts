@@ -25,16 +25,21 @@ function getSource(ss: SourceState, screenRatio: number): HydraStream {
     return src(s0)
       .brightness(() => ss.parameters.mod1)
       .saturate(() => ss.parameters.mod2)
-      .scale(1, 1, () => ss.parameters.mod3);
+      .color(
+        () => Math.floor(ss.parameters.mod3 / 100) / 9,
+        () => Math.floor((ss.parameters.mod3 % 100) / 10) / 9,
+        () => {
+          return Math.floor((ss.parameters.mod3 % 10) / 9);
+        }
+      );
+    // .scale(1, 1, () => ss.parameters.mod3);
   } else if (ss.sourceType === SourceType.shape) {
-    return (
-      shape(
-        () => ss.parameters.mod1,
-        () => ss.parameters.mod2
-      )
-        // .scale(1, 1, screenRatio)
-        .rotate(({ time }) => ((time * ss.parameters.mod3) % 360) * (Math.PI / 180))
-    );
+    return shape(
+      () => ss.parameters.mod1,
+      () => ss.parameters.mod2
+    )
+      .scale(1, 1, screenRatio)
+      .rotate(({ time }) => ((time * ss.parameters.mod3) % 360) * (Math.PI / 180));
   } else {
     return osc(
       () => ss.parameters.mod1,

@@ -33,7 +33,7 @@ const defaultSourceMods = {
   [SourceType.screen]: {
     mod1: 0,
     mod2: 1,
-    mod3: 1,
+    mod3: 1000,
   },
   [SourceType.shape]: {
     mod1: 3,

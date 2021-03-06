@@ -47,7 +47,7 @@ export const config: ParameterConfig = {
     [SourceType.screen]: {
       mod1: { min: 0, max: 1 },
       mod2: { min: 0, max: 2 },
-      mod3: { min: 1, max: 2 },
+      mod3: { min: 0, max: 999 },
     },
     [SourceType.shape]: {
       mod1: { min: 1, max: 20 },

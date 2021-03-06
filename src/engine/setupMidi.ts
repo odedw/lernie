@@ -64,11 +64,6 @@ function bindSource(
   subs.push(
     i.noteOn(mapping.switchSource.note, mapping.switchSource.channel).subscribe(() => {
       ss.sourceType = ((Number(ss.sourceType) + 1) % SourceTypeValues.length) as SourceType;
-      console.log('===========================');
-      console.log(Object.values(SourceType));
-      console.log(Object.values(SourceType).length);
-      console.log(ss.sourceType);
-      console.log('===========================');
 
       const defaultParams = generateDefaultSourceState(ss.sourceType).parameters;
       Object.keys(ss.parameters)
