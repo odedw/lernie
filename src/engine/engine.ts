@@ -76,7 +76,7 @@ export class Engine {
       s.sourceType = preset.sourceType;
       gsap.to(s.parameters, {
         ...preset.parameters,
-        duration: 10,
+        duration: 0.001,
         repeat: 0,
       });
     });
