@@ -21,7 +21,7 @@ const FileDrop = styled.input`
 `;
 
 function App() {
-  const [scopeEnabled, setScopeEnabled] = useState(false);
+  const [scopeEnabled, setScopeEnabled] = useState(true);
 
   useEffect(() => {
     function keyPress(evt: KeyboardEvent) {
