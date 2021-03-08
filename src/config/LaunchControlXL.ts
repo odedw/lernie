@@ -48,6 +48,7 @@ const config: Mapping = {
     },
   ],
   shift: { note: 'C8' },
+  lfo1: { note: 'B7' },
   presets: [
     { note: 'C#5' },
     { note: 'D5' },

@@ -1,4 +1,6 @@
-import { SourceState, SourceType, HydraStream, OutputBuffer, State } from '../types';
+import { SourceState, SourceType, HydraStream, OutputBuffer, State, Parameter, CallbackObject } from '../types';
+import { LFO } from './LFO';
+import { config } from '../config/parameterConfig';
 
 // eslint-disable-next-line
 function debug(val: number): number {
@@ -6,25 +8,35 @@ function debug(val: number): number {
   return val;
 }
 
-function getSource(ss: SourceState, screenRatio: number): HydraStream {
+function getValueGenerator(ss: SourceState, p: Parameter, lfo: LFO): (co: CallbackObject) => number {
+  return ({ time }) => {
+    // console.log(
+    //   (lfo.getValue(time) * (config.parameters[p].max - config.parameters[p].min) + config.parameters[p].min) *
+    //     ss.lfo[p]
+    // );
+    return (
+      ss.parameters[p] +
+      (lfo.getValue(time) * (config.parameters[p].max - config.parameters[p].min) + config.parameters[p].min) *
+        ss.lfo[p]
+    );
+  };
+}
+
+function getSource(ss: SourceState, screenRatio: number, lfo: LFO): HydraStream {
   if (ss.sourceType === SourceType.noise) {
-    return noise(80, () => ss.parameters.mod1)
+    return noise(80, getValueGenerator(ss, 'mod1', lfo))
       .scale(1, 1, screenRatio)
-      .contrast(() => ss.parameters.mod2)
-      .kaleid(() => ss.parameters.kaleid);
+      .contrast(getValueGenerator(ss, 'mod2', lfo))
+      .kaleid(getValueGenerator(ss, 'kaleid', lfo));
   } else if (ss.sourceType === SourceType.voronoi) {
-    return voronoi(
-      100,
-      () => ss.parameters.mod1,
-      () => ss.parameters.mod2
-    )
+    return voronoi(100, getValueGenerator(ss, 'mod1', lfo), getValueGenerator(ss, 'mod2', lfo))
       .scale(1, 1, screenRatio)
-      .kaleid(() => ss.parameters.kaleid);
+      .kaleid(getValueGenerator(ss, 'kaleid', lfo));
   } else if (ss.sourceType === SourceType.screen) {
     s0.initScreen();
     return src(s0)
-      .brightness(() => ss.parameters.mod1)
-      .saturate(() => ss.parameters.mod2)
+      .brightness(getValueGenerator(ss, 'mod1', lfo))
+      .saturate(getValueGenerator(ss, 'mod2', lfo))
       .color(
         () => Math.floor(ss.parameters.mod3 / 100) / 9,
         () => Math.floor((ss.parameters.mod3 % 100) / 10) / 9,
@@ -32,62 +44,46 @@ function getSource(ss: SourceState, screenRatio: number): HydraStream {
           return Math.floor((ss.parameters.mod3 % 10) / 9);
         }
       );
-    // .scale(1, 1, () => ss.parameters.mod3);
   } else if (ss.sourceType === SourceType.shape) {
-    return shape(
-      () => ss.parameters.mod1,
-      () => ss.parameters.mod2
-    )
+    return shape(getValueGenerator(ss, 'mod1', lfo), getValueGenerator(ss, 'mod2', lfo))
       .scale(1, 1, screenRatio)
       .rotate(({ time }) => ((time * ss.parameters.mod3) % 360) * (Math.PI / 180));
   } else {
     return osc(
-      () => ss.parameters.mod1,
-      () => ss.parameters.mod2,
-      () => ss.parameters.mod3
+      getValueGenerator(ss, 'mod1', lfo),
+      getValueGenerator(ss, 'mod2', lfo),
+      getValueGenerator(ss, 'mod3', lfo)
     ).kaleid(() => ss.parameters.kaleid);
   }
 }
 
-function runSource(o: OutputBuffer, ss: SourceState, modulationSource: OutputBuffer, screenRatio: number) {
-  const source = getSource(ss, screenRatio);
+function runSource(o: OutputBuffer, ss: SourceState, modulationSource: OutputBuffer, screenRatio: number, lfo: LFO) {
+  const source = getSource(ss, screenRatio, lfo);
   source
-    .blend(o, () => ss.parameters.feedback)
-    .rotate(() => ss.parameters.rotation, 0)
-    .pixelate(
-      () => ss.parameters.pixelate,
-      () => ss.parameters.pixelate
-    )
-    .scale(() => ss.parameters.scale)
-    .colorama(() => ss.parameters.colorama)
-    .modulate(src(modulationSource), () => ss.parameters.modulate)
+    .blend(o, getValueGenerator(ss, 'feedback', lfo))
+    .rotate(getValueGenerator(ss, 'rotation', lfo), 0)
+    .pixelate(getValueGenerator(ss, 'pixelate', lfo), getValueGenerator(ss, 'pixelate', lfo))
+    .scale(getValueGenerator(ss, 'scale', lfo))
+    .colorama(getValueGenerator(ss, 'colorama', lfo))
+    .modulate(src(modulationSource), getValueGenerator(ss, 'modulate', lfo))
     .modulateRotate(
       src(modulationSource),
-      () => ss.parameters.modulateRotate,
-      () => ss.parameters.modulateRotate
+      getValueGenerator(ss, 'modulateRotate', lfo),
+      getValueGenerator(ss, 'modulateRotate', lfo)
     )
-    .modulateScale(src(modulationSource), () => ss.parameters.modulateScale)
-    .modulate(o, () => ss.parameters.selfModulate)
-    .repeat(
-      () => ss.parameters.repeatXY,
-      () => ss.parameters.repeatXY
-    )
+    .modulateScale(src(modulationSource), getValueGenerator(ss, 'modulateScale', lfo))
+    .modulate(o, getValueGenerator(ss, 'selfModulate', lfo))
+    .repeat(getValueGenerator(ss, 'repeatXY', lfo), getValueGenerator(ss, 'repeatXY', lfo))
     .out(o);
 }
-export default function run(state: State, screenRatio: number) {
-  runSource(o1, state.sources[0], o2, screenRatio);
-  runSource(o2, state.sources[1], o1, screenRatio);
+export default function run(state: State, screenRatio: number, lfo1: LFO) {
+  runSource(o1, state.sources[0], o2, screenRatio, lfo1);
+  runSource(o2, state.sources[1], o1, screenRatio, lfo1);
 
   solid(0, 0, 0, 0)
-    .blend(src(o1), () => state.sources[0].parameters.blend)
-    .blend(src(o2), () => state.sources[1].parameters.blend)
-    // .layer(src(o1), () => state.sources[0].parameters.diff)
-    // .layer(src(o2), () => state.sources[1].parameters.diff)
-    // .mult(src(o1), () => state.sources[0].parameters.diff)
-    // .mult(src(o2), () => state.sources[1].parameters.diff)
-    // .mask(src(o1), 3, () => state.sources[0].parameters.diff)
-    // .mask(src(o2), 3, () => state.sources[1].parameters.diff)
-    .diff(solid(0, 0, 0, 0).blend(src(o1), () => state.sources[0].parameters.diff))
-    .diff(solid(0, 0, 0, 0).blend(src(o2), () => state.sources[1].parameters.diff))
+    .blend(src(o1), getValueGenerator(state.sources[0], 'blend', lfo1))
+    .blend(src(o2), getValueGenerator(state.sources[1], 'blend', lfo1))
+    .diff(solid(0, 0, 0, 0).blend(src(o1), getValueGenerator(state.sources[0], 'diff', lfo1)))
+    .diff(solid(0, 0, 0, 0).blend(src(o2), getValueGenerator(state.sources[1], 'diff', lfo1)))
     .out(o0);
 }

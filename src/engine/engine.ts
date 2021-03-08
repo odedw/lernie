@@ -3,6 +3,7 @@ import moment from 'moment';
 import { config } from '../config/parameterConfig';
 import { downloadObjectAsJson, loadFile } from '../storage';
 import { Parameter, SourceState, SourceType, State } from '../types';
+import { LFO } from './LFO';
 import run from './run';
 import ScopeSubjects from './ScopeSubjects';
 import { setupSources, setupPresets } from './setupMidi';
@@ -13,17 +14,19 @@ export class Engine {
   state: State;
   scopeSubjects = new ScopeSubjects();
   screenRatio: number = 1;
+  lfo1 = new LFO();
   constructor() {
     this.state = {
       sources: [generateDefaultSourceState(SourceType.osc), generateDefaultSourceState(SourceType.osc, false)],
       presets: [],
       shift: false,
+      lfo1: false,
     };
     this.savePreset = this.savePreset.bind(this);
     this.loadPreset = this.loadPreset.bind(this);
   }
   init() {
-    setupSources(this.state, () => run(this.state, this.screenRatio), this.scopeSubjects);
+    setupSources(this.state, () => run(this.state, this.screenRatio, this.lfo1), this.scopeSubjects);
     setupPresets(this.state, this.savePreset, this.loadPreset, this.scopeSubjects);
 
     // debug
@@ -39,7 +42,7 @@ export class Engine {
     if (screenRatio) {
       this.screenRatio = screenRatio;
     }
-    run(this.state, this.screenRatio);
+    run(this.state, this.screenRatio, this.lfo1);
   }
   randomize() {
     Object.keys(this.state.sources[0].parameters).forEach((k) => {
@@ -78,7 +81,7 @@ export class Engine {
       });
     });
     if (rerun) {
-      run(this.state, this.screenRatio);
+      run(this.state, this.screenRatio, this.lfo1);
     }
   }
 
@@ -92,8 +95,8 @@ export class Engine {
         try {
           const state = JSON.parse(str) as State;
           this.state = state;
-          setupSources(this.state, () => run(this.state, this.screenRatio), this.scopeSubjects);
-          run(this.state, this.screenRatio);
+          setupSources(this.state, () => run(this.state, this.screenRatio, this.lfo1), this.scopeSubjects);
+          run(this.state, this.screenRatio, this.lfo1);
         } catch (err) {
           console.error('failed to parse file', err);
         }

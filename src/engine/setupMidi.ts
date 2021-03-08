@@ -1,6 +1,6 @@
 import { Input } from 'rmidi';
 import { config } from '../config/parameterConfig';
-import { SourceState, Parameter, MidiCCBinding, SourceMapping, SourceType, State, SourceTypeValues } from '../types';
+import { Parameter, MidiCCBinding, SourceMapping, SourceType, State, SourceTypeValues } from '../types';
 import { generateDefaultSourceState } from './state/defaultSourceState';
 import mapping from '../config/LaunchControlXL';
 import { Subscription } from 'rxjs';
@@ -14,50 +14,38 @@ function bindParameter(
   sourceIndex: number,
   mapping: MidiCCBinding,
   p: Parameter,
-  ss: SourceState,
-  subjects: ScopeSubjects
+  s: State,
+  subjects: ScopeSubjects,
+  isLfoPressed: () => boolean
 ) {
   return i.cc(mapping.cc, mapping.channel).subscribe((e) => {
-    const { min, max } = config.parameters[p];
-    const unit = (max - min) / 127;
-    ss.parameters[p] = min + unit * e.value;
-
-    subjects.parameterChange.next({ value: ss.parameters[p], parameter: p, sourceIndex });
-  });
-}
-
-function bindMod(
-  i: Input,
-  sourceIndex: number,
-  mapping: MidiCCBinding,
-  p: 'mod1' | 'mod2' | 'mod3',
-  ss: SourceState,
-  subjects: ScopeSubjects
-) {
-  return i.cc(mapping.cc, mapping.channel).subscribe((e) => {
-    const { min, max } = config.sourceMods[ss.sourceType][p];
-    const unit = (max - min) / 127;
-    ss.parameters[p] = min + unit * e.value;
-
-    subjects.parameterChange.next({ value: ss.parameters[p], parameter: p, sourceIndex });
+    const ss = s.sources[sourceIndex];
+    if (isLfoPressed()) {
+      // send LFO to param
+      ss.lfo[p] = e.value / 127; // always between 0 and 1
+      subjects.lfoChange.next({ value: ss.lfo[p], parameter: p, sourceIndex });
+    } else {
+      const { min, max } = // mod1/2/3 change between source types
+        p === 'mod1' || p === 'mod2' || p === 'mod3' ? config.sourceMods[ss.sourceType][p] : config.parameters[p];
+      const unit = (max - min) / 127;
+      ss.parameters[p] = min + unit * e.value;
+      subjects.parameterChange.next({ value: ss.parameters[p], parameter: p, sourceIndex });
+    }
   });
 }
 
 function bindSource(
   i: Input,
+  s: State,
   sourceIndex: number,
   mapping: SourceMapping,
-  ss: SourceState,
   refreshState: () => void,
   subjects: ScopeSubjects
 ) {
+  const ss = s.sources[sourceIndex];
   const subs = Object.keys(ss.parameters).map((k) => {
     const key = k as Parameter;
-    if (key === 'mod1' || key === 'mod2' || key === 'mod3') {
-      return bindMod(i, sourceIndex, mapping.parameters[key], key, ss, subjects);
-    } else {
-      return bindParameter(i, sourceIndex, mapping.parameters[key], key, ss, subjects);
-    }
+    return bindParameter(i, sourceIndex, mapping.parameters[key], key, s, subjects, () => s.lfo1);
   });
 
   // switch source
@@ -98,17 +86,28 @@ export function setupSources(state: State, refreshState: () => void, subjects: S
   // listInputs();
   input.then((i) => {
     sourceSubscriptions = [
-      ...bindSource(i, 0, mapping.sources[0], state.sources[0], refreshState, subjects),
-      ...bindSource(i, 1, mapping.sources[1], state.sources[1], refreshState, subjects),
+      ...bindSource(i, state, 0, mapping.sources[0], refreshState, subjects),
+      ...bindSource(i, state, 1, mapping.sources[1], refreshState, subjects),
     ];
 
     // debug
-    // subscriptions.push(
-    //   i.noteOn().subscribe((e) => {
-    //     console.log(`${e.note.name}${e.note.octave}`);
-    //   })
-    // );
+    // i.noteOn().subscribe((e) => {
+    //   console.log(`${e.note.name}${e.note.octave}`);
+    // });
   });
+}
+
+function bindBoolean(i: Input, state: State, k: 'lfo1' | 'shift', note: string, channel?: number): Subscription[] {
+  return [
+    i.noteOn(mapping[k].note, mapping[k].channel).subscribe(() => {
+      state[k] = true;
+      // console.log(`${k} down`);
+    }),
+    i.noteOff(mapping[k].note, mapping[k].channel).subscribe(() => {
+      state[k] = false;
+      // console.log(`${k} up`);
+    }),
+  ];
 }
 
 export function setupPresets(
@@ -118,12 +117,8 @@ export function setupPresets(
   subjects: ScopeSubjects
 ) {
   input.then((i) => {
-    i.noteOn(mapping.shift.note, mapping.shift.channel).subscribe(() => {
-      state.shift = true;
-    });
-    i.noteOff(mapping.shift.note, mapping.shift.channel).subscribe(() => {
-      state.shift = false;
-    });
+    bindBoolean(i, state, 'shift', mapping.shift.note, mapping.shift.channel);
+    bindBoolean(i, state, 'lfo1', mapping.lfo1.note, mapping.lfo1.channel);
     mapping.presets.forEach((preset, index) => {
       i.noteOn(preset.note, preset.channel).subscribe(() => {
         if (state.shift) {

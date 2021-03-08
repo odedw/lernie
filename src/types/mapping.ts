@@ -22,6 +22,7 @@ export type SourceMapping = {
 export type Mapping = {
   sources: SourceMapping[];
   shift: MidiNoteBinding;
+  lfo1: MidiNoteBinding;
   presets: [
     MidiNoteBinding,
     MidiNoteBinding,

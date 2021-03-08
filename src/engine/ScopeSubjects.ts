@@ -9,6 +9,7 @@ export type ParameterChangeEvent = {
 
 export default class ScopeSubjects {
   parameterChange = new Subject<ParameterChangeEvent>();
+  lfoChange = new Subject<ParameterChangeEvent>();
   sourceTypeChange = new Subject<SourceType>();
   loadPreset = new Subject<number>();
   savePreset = new Subject<number>();
