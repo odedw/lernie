@@ -2,7 +2,6 @@ import { SourceState, SourceType, HydraStream, OutputBuffer, State, Parameter, C
 import { LFO } from './LFO';
 import { config } from '../config/parameterConfig';
 
-// test
 // eslint-disable-next-line
 function debug(val: number): number {
   console.log(val);
