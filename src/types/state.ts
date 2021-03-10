@@ -1,4 +1,5 @@
-import { Parameter, SourceType } from './source';
+import { SourceType } from './source';
+import { Parameter } from './parameters';
 
 export class SourceState {
   parameters!: Record<Parameter, number>;

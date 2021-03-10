@@ -1,4 +1,4 @@
-import { Parameter } from './source';
+import { Parameter } from './parameters';
 
 export type MidiCCBinding = {
   cc: number;
