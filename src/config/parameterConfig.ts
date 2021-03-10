@@ -18,7 +18,7 @@ export const config: ParameterConfig = {
     kaleid: { min: 1, max: 50 },
     pixelate: { min: 10, max: 1500 },
     scale: { min: 0.5, max: 7 },
-    colorama: { min: 0, max: 1 },
+    colorama: { min: -0.001, max: 1 },
     modulate: { min: -1, max: 1 },
     modulateRotate: { min: -10, max: 10 },
     modulateScale: { min: -10, max: 10 },
@@ -45,9 +45,9 @@ export const config: ParameterConfig = {
       mod3: { min: 0, max: 20 },
     },
     [SourceType.screen]: {
-      mod1: { min: -1, max: 1 },
-      mod2: { min: 0, max: 2 },
-      mod3: { min: 0, max: 999 },
+      mod1: { min: 0, max: 1 },
+      mod2: { min: 0, max: 1 },
+      mod3: { min: 0, max: 1 },
     },
     [SourceType.shape]: {
       mod1: { min: 1, max: 20 },

@@ -4,7 +4,7 @@ const defaultParams = {
   kaleid: 1,
   pixelate: 1500,
   scale: 1,
-  colorama: 0,
+  colorama: -0.001,
   modulate: 0,
   modulateRotate: 0,
   modulateScale: 0,
@@ -31,9 +31,9 @@ const defaultSourceMods = {
     mod3: 0,
   },
   [SourceType.screen]: {
-    mod1: 0,
+    mod1: 1,
     mod2: 1,
-    mod3: 1000,
+    mod3: 1,
   },
   [SourceType.shape]: {
     mod1: 3,

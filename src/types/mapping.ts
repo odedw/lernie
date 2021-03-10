@@ -14,9 +14,6 @@ export type SourceMapping = {
   // buttons
   switchSource: MidiNoteBinding;
   reset: MidiNoteBinding;
-
-  // ccBindings: Record<string, MidiCCBinding>;
-  // noteBindings: Record<string, MidiNoteBinding>;
 };
 
 export type Mapping = {

@@ -34,16 +34,16 @@ function getSource(ss: SourceState, screenRatio: number, lfo: LFO): HydraStream 
       .kaleid(getValueGenerator(ss, 'kaleid', lfo));
   } else if (ss.sourceType === SourceType.screen) {
     s0.initScreen();
-    return src(s0)
-      .brightness(getValueGenerator(ss, 'mod1', lfo))
-      .saturate(getValueGenerator(ss, 'mod2', lfo))
-      .color(
-        () => Math.floor(ss.parameters.mod3 / 100) / 9,
-        () => Math.floor((ss.parameters.mod3 % 100) / 10) / 9,
-        () => {
-          return Math.floor((ss.parameters.mod3 % 10) / 9);
-        }
-      );
+    return (
+      src(s0)
+        .brightness(getValueGenerator(ss, 'kaleid', lfo))
+        // .saturate(getValueGenerator(ss, 'mod2', lfo))
+        .color(
+          getValueGenerator(ss, 'mod1', lfo),
+          getValueGenerator(ss, 'mod2', lfo),
+          getValueGenerator(ss, 'mod3', lfo)
+        )
+    );
   } else if (ss.sourceType === SourceType.shape) {
     return shape(getValueGenerator(ss, 'mod1', lfo), getValueGenerator(ss, 'mod2', lfo))
       .scale(1, 1, screenRatio)
