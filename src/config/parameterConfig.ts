@@ -15,7 +15,7 @@ export const config: ParameterConfig = {
     mod2: { min: -0.5, max: 0.5 },
     mod3: { min: 0, max: 10 },
     rotation: { min: 0, max: 6.283185307179586 },
-    kaleid: { min: 1, max: 50 },
+    brightness: { min: -1, max: 1 },
     pixelate: { min: 10, max: 1500 },
     scale: { min: 0.5, max: 7 },
     colorama: { min: -0.001, max: 1 },

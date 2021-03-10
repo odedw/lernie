@@ -1,10 +1,11 @@
 import { SourceState, SourceType } from '../../types';
 const defaultParams = {
   rotation: 0,
-  kaleid: 1,
+  // kaleid: 1,
+  brightness: 0,
   pixelate: 1500,
   scale: 1,
-  colorama: -0.001,
+  colorama: 0,
   modulate: 0,
   modulateRotate: 0,
   modulateScale: 0,

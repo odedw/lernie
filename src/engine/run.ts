@@ -26,17 +26,19 @@ function getSource(ss: SourceState, screenRatio: number, lfo: LFO): HydraStream 
   if (ss.sourceType === SourceType.noise) {
     return noise(80, getValueGenerator(ss, 'mod1', lfo))
       .scale(1, 1, screenRatio)
-      .contrast(getValueGenerator(ss, 'mod2', lfo))
-      .kaleid(getValueGenerator(ss, 'kaleid', lfo));
+      .contrast(getValueGenerator(ss, 'mod2', lfo));
+    // .kaleid(getValueGenerator(ss, 'kaleid', lfo));
   } else if (ss.sourceType === SourceType.voronoi) {
-    return voronoi(100, getValueGenerator(ss, 'mod1', lfo), getValueGenerator(ss, 'mod2', lfo))
-      .scale(1, 1, screenRatio)
-      .kaleid(getValueGenerator(ss, 'kaleid', lfo));
+    return voronoi(100, getValueGenerator(ss, 'mod1', lfo), getValueGenerator(ss, 'mod2', lfo)).scale(
+      1,
+      1,
+      screenRatio
+    );
+    // .kaleid(getValueGenerator(ss, 'kaleid', lfo));
   } else if (ss.sourceType === SourceType.screen) {
     s0.initScreen();
     return (
       src(s0)
-        .brightness(getValueGenerator(ss, 'kaleid', lfo))
         // .saturate(getValueGenerator(ss, 'mod2', lfo))
         .color(
           getValueGenerator(ss, 'mod1', lfo),
@@ -53,7 +55,8 @@ function getSource(ss: SourceState, screenRatio: number, lfo: LFO): HydraStream 
       getValueGenerator(ss, 'mod1', lfo),
       getValueGenerator(ss, 'mod2', lfo),
       getValueGenerator(ss, 'mod3', lfo)
-    ).kaleid(() => ss.parameters.kaleid);
+    );
+    // .kaleid(() => ss.parameters.kaleid);
   }
 }
 
@@ -74,6 +77,7 @@ function runSource(o: OutputBuffer, ss: SourceState, modulationSource: OutputBuf
     .modulateScale(src(modulationSource), getValueGenerator(ss, 'modulateScale', lfo))
     .modulate(o, getValueGenerator(ss, 'selfModulate', lfo))
     .repeat(getValueGenerator(ss, 'repeatXY', lfo), getValueGenerator(ss, 'repeatXY', lfo))
+    .brightness(getValueGenerator(ss, 'brightness', lfo))
     .out(o);
 }
 export default function run(state: State, screenRatio: number, lfo1: LFO) {
