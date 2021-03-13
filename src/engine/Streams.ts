@@ -8,14 +8,16 @@ export type ParameterChangeEvent = {
 };
 
 export type SourceTypeChange = {
-  sourceIndex:number;
+  sourceIndex: number;
   type: SourceType;
-}
+};
 
-export default class Streams {
+export class Streams {
   parameterChange = new Subject<ParameterChangeEvent>();
   lfoChange = new Subject<ParameterChangeEvent>();
   sourceTypeChange = new Subject<SourceTypeChange>();
   loadPreset = new Subject<number>();
   savePreset = new Subject<number>();
 }
+
+export default new Streams();

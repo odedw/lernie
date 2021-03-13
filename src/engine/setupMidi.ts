@@ -4,7 +4,7 @@ import { Parameter, MidiCCBinding, SourceMapping, SourceType, State, SourceTypeV
 import { generateDefaultSourceState } from './state/defaultSourceState';
 import mapping from '../config/LaunchControlXL';
 import { Subscription } from 'rxjs';
-import Streams from './Streams';
+import streams from './streams';
 
 let sourceSubscriptions: Subscription[] = [];
 let input = Input.create('Launch Control XL');
@@ -15,7 +15,6 @@ function bindParameter(
   mapping: MidiCCBinding,
   p: Parameter,
   s: State,
-  subjects: Streams,
   isLfoPressed: () => boolean
 ) {
   return i.cc(mapping.cc, mapping.channel).subscribe((e) => {
@@ -23,29 +22,22 @@ function bindParameter(
     if (isLfoPressed()) {
       // send LFO to param
       ss.lfo[p] = e.value / 127; // always between 0 and 1
-      subjects.lfoChange.next({ value: ss.lfo[p], parameter: p, sourceIndex });
+      streams.lfoChange.next({ value: ss.lfo[p], parameter: p, sourceIndex });
     } else {
       const { min, max } = // mod1/2/3 change between source types
         p === 'mod1' || p === 'mod2' || p === 'mod3' ? config.sourceMods[ss.sourceType][p] : config.parameters[p];
       const unit = (max - min) / 127;
       ss.parameters[p] = min + unit * e.value;
-      subjects.parameterChange.next({ value: ss.parameters[p], parameter: p, sourceIndex });
+      streams.parameterChange.next({ value: ss.parameters[p], parameter: p, sourceIndex });
     }
   });
 }
 
-function bindSource(
-  i: Input,
-  s: State,
-  sourceIndex: number,
-  mapping: SourceMapping,
-  refreshState: () => void,
-  subjects: Streams
-) {
+function bindSource(i: Input, s: State, sourceIndex: number, mapping: SourceMapping) {
   const ss = s.sources[sourceIndex];
   const subs = Object.keys(ss.parameters).map((k) => {
     const key = k as Parameter;
-    return bindParameter(i, sourceIndex, mapping.parameters[key], key, s, subjects, () => s.lfo1);
+    return bindParameter(i, sourceIndex, mapping.parameters[key], key, s, () => s.lfo1);
   });
 
   // switch source
@@ -59,7 +51,7 @@ function bindSource(
         .forEach((p) => (ss.parameters[p as Parameter] = defaultParams[p as Parameter]));
       // refreshState();
 
-      subjects.sourceTypeChange.next({ type: ss.sourceType, sourceIndex });
+      streams.sourceTypeChange.next({ type: ss.sourceType, sourceIndex });
     })
   );
 
@@ -78,7 +70,7 @@ function bindSource(
   return subs;
 }
 
-export function setupSources(state: State, refreshState: () => void, subjects: Streams) {
+export function setupSources(state: State) {
   // clear previous setup
   sourceSubscriptions.forEach((s) => s.unsubscribe());
 
@@ -86,8 +78,8 @@ export function setupSources(state: State, refreshState: () => void, subjects: S
   // listInputs();
   input.then((i) => {
     sourceSubscriptions = [
-      ...bindSource(i, state, 0, mapping.sources[0], refreshState, subjects),
-      ...bindSource(i, state, 1, mapping.sources[1], refreshState, subjects),
+      ...bindSource(i, state, 0, mapping.sources[0]),
+      ...bindSource(i, state, 1, mapping.sources[1]),
     ];
 
     // debug
@@ -97,7 +89,7 @@ export function setupSources(state: State, refreshState: () => void, subjects: S
   });
 }
 
-function bindBoolean(i: Input, state: State, k: 'lfo1' | 'shift', note: string, channel?: number): Subscription[] {
+function bindBoolean(i: Input, state: State, k: 'lfo1' | 'shift'): Subscription[] {
   return [
     i.noteOn(mapping[k].note, mapping[k].channel).subscribe(() => {
       state[k] = true;
@@ -110,23 +102,18 @@ function bindBoolean(i: Input, state: State, k: 'lfo1' | 'shift', note: string, 
   ];
 }
 
-export function setupPresets(
-  state: State,
-  savePreset: (index: number) => void,
-  loadPreset: (index: number) => void,
-  subjects: Streams
-) {
+export function setupPresets(state: State, savePreset: (index: number) => void, loadPreset: (index: number) => void) {
   input.then((i) => {
-    bindBoolean(i, state, 'shift', mapping.shift.note, mapping.shift.channel);
-    bindBoolean(i, state, 'lfo1', mapping.lfo1.note, mapping.lfo1.channel);
+    bindBoolean(i, state, 'shift');
+    bindBoolean(i, state, 'lfo1');
     mapping.presets.forEach((preset, index) => {
       i.noteOn(preset.note, preset.channel).subscribe(() => {
         if (state.shift) {
           savePreset(index);
-          subjects.savePreset.next(index);
+          streams.savePreset.next(index);
         } else {
           loadPreset(index);
-          subjects.loadPreset.next(index);
+          streams.loadPreset.next(index);
         }
       });
     });

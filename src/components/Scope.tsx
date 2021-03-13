@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { engine } from '../engine';
+import streams from '../engine/streams';
 import { SourceType } from '../types';
 import { merge } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -51,15 +51,11 @@ const Scope: React.FC<Props> = ({ enabled }) => {
   );
   useEffect(() => {
     const sub = merge(
-      engine.streams.sourceTypeChange.pipe(map((e) => `${e.sourceIndex + 1} - ${SourceType[e.type].toString()}`)),
-      engine.streams.parameterChange.pipe(
-        map((e) => `${e.sourceIndex + 1} - ${e.parameter}: ${e.value.toFixed(2)}`)
-      ),
-      engine.streams.lfoChange.pipe(
-        map((e) => `${e.sourceIndex + 1} - LFO - ${e.parameter}: ${Math.floor(e.value * 100)}%`)
-      ),
-      engine.streams.loadPreset.pipe(map((i) => `Load preset ${i + 1}`)),
-      engine.streams.savePreset.pipe(map((i) => `Save preset ${i + 1}`))
+      streams.sourceTypeChange.pipe(map((e) => `${e.sourceIndex + 1} - ${SourceType[e.type].toString()}`)),
+      streams.parameterChange.pipe(map((e) => `${e.sourceIndex + 1} - ${e.parameter}: ${e.value.toFixed(2)}`)),
+      streams.lfoChange.pipe(map((e) => `${e.sourceIndex + 1} - LFO - ${e.parameter}: ${Math.floor(e.value * 100)}%`)),
+      streams.loadPreset.pipe(map((i) => `Load preset ${i + 1}`)),
+      streams.savePreset.pipe(map((i) => `Save preset ${i + 1}`))
     ).subscribe(show);
     return () => sub.unsubscribe();
   }, [show]);

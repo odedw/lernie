@@ -5,14 +5,13 @@ import { downloadObjectAsJson, loadFile } from '../storage';
 import { Parameter, SourceState, SourceType, State } from '../types';
 import { LFO } from './LFO';
 import run, { runSource } from './runHydra';
-import Streams from './Streams';
+import streams from './streams';
 import { setupSources, setupPresets } from './setupMidi';
 import { generateDefaultSourceState } from './state/defaultSourceState';
 // import { merge } from 'rxjs';
 
 export class Engine {
   state: State;
-  streams = new Streams();
   screenRatio: number = 1;
   lfo1 = new LFO();
   constructor() {
@@ -26,9 +25,9 @@ export class Engine {
     this.loadPreset = this.loadPreset.bind(this);
   }
   init() {
-    setupSources(this.state, () => run(this.state, this.screenRatio, this.lfo1), this.streams);
-    setupPresets(this.state, this.savePreset, this.loadPreset, this.streams);
-    this.streams.sourceTypeChange.subscribe((e) => {
+    setupSources(this.state);
+    setupPresets(this.state, this.savePreset, this.loadPreset);
+    streams.sourceTypeChange.subscribe((e) => {
       runSource(this.state, e.sourceIndex, this.screenRatio, this.lfo1);
     });
 
@@ -98,7 +97,7 @@ export class Engine {
         try {
           const state = JSON.parse(str) as State;
           this.state = state;
-          setupSources(this.state, () => run(this.state, this.screenRatio, this.lfo1), this.streams);
+          setupSources(this.state);
           run(this.state, this.screenRatio, this.lfo1);
         } catch (err) {
           console.error('failed to parse file', err);
