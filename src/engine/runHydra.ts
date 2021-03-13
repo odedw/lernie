@@ -1,4 +1,4 @@
-import { SourceState, SourceType, HydraStream, OutputBuffer, State, Parameter, CallbackObject } from '../types';
+import { SourceState, SourceType, HydraStream, State, Parameter, CallbackObject, SourceBuffer } from '../types';
 import { LFO } from './LFO';
 import { config } from '../config/parameterConfig';
 
@@ -22,7 +22,7 @@ function getValueGenerator(ss: SourceState, p: Parameter, lfo: LFO): (co: Callba
   };
 }
 
-function getSource(ss: SourceState, screenRatio: number, lfo: LFO): HydraStream {
+function getSource(ss: SourceState, sb: SourceBuffer, screenRatio: number, lfo: LFO): HydraStream {
   if (ss.sourceType === SourceType.noise) {
     return noise(80, getValueGenerator(ss, 'mod1', lfo))
       .scale(1, 1, screenRatio)
@@ -36,9 +36,9 @@ function getSource(ss: SourceState, screenRatio: number, lfo: LFO): HydraStream 
     );
     // .kaleid(getValueGenerator(ss, 'kaleid', lfo));
   } else if (ss.sourceType === SourceType.screen) {
-    s0.initScreen();
+    sb.initScreen();
     return (
-      src(s0)
+      src(sb)
         // .saturate(getValueGenerator(ss, 'mod2', lfo))
         .color(
           getValueGenerator(ss, 'mod1', lfo),
@@ -60,29 +60,26 @@ function getSource(ss: SourceState, screenRatio: number, lfo: LFO): HydraStream 
   }
 }
 
-function getBuffersBySourceIndex(i: number) {
-  return [
-    [o1, o2],
-    [o2, o1],
-  ][i];
-}
+const outputBufferByIndex = (i: number) => [o1, o2][i];
+const modSourceByIndex = (i: number) => [o2, o1][i];
+const sourceBufferByIndex = (i: number) => [s0, s1][i];
+
 export function runSource(s: State, i: number, screenRatio: number, lfo: LFO) {
   const ss = s.sources[i];
-  const [o, modulationSource] = getBuffersBySourceIndex(i);
-  const source = getSource(ss, screenRatio, lfo);
+  const o = outputBufferByIndex(i);
+  const sb = sourceBufferByIndex(i);
+  const ms = modSourceByIndex(i);
+
+  const source = getSource(ss, sb, screenRatio, lfo);
   source
     .blend(o, getValueGenerator(ss, 'feedback', lfo))
     .rotate(getValueGenerator(ss, 'rotation', lfo), 0)
     .pixelate(getValueGenerator(ss, 'pixelate', lfo), getValueGenerator(ss, 'pixelate', lfo))
     .scale(getValueGenerator(ss, 'scale', lfo))
     .colorama(getValueGenerator(ss, 'colorama', lfo))
-    .modulate(src(modulationSource), getValueGenerator(ss, 'modulate', lfo))
-    .modulateRotate(
-      src(modulationSource),
-      getValueGenerator(ss, 'modulateRotate', lfo),
-      getValueGenerator(ss, 'modulateRotate', lfo)
-    )
-    .modulateScale(src(modulationSource), getValueGenerator(ss, 'modulateScale', lfo))
+    .modulate(src(ms), getValueGenerator(ss, 'modulate', lfo))
+    .modulateRotate(src(ms), getValueGenerator(ss, 'modulateRotate', lfo), getValueGenerator(ss, 'modulateRotate', lfo))
+    .modulateScale(src(ms), getValueGenerator(ss, 'modulateScale', lfo))
     .modulate(o, getValueGenerator(ss, 'selfModulate', lfo))
     .repeat(getValueGenerator(ss, 'repeatXY', lfo), getValueGenerator(ss, 'repeatXY', lfo))
     .brightness(getValueGenerator(ss, 'brightness', lfo))
