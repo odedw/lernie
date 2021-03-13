@@ -51,15 +51,15 @@ const Scope: React.FC<Props> = ({ enabled }) => {
   );
   useEffect(() => {
     const sub = merge(
-      engine.scopeSubjects.sourceTypeChange.pipe(map((t) => SourceType[t].toString())),
-      engine.scopeSubjects.parameterChange.pipe(
+      engine.streams.sourceTypeChange.pipe(map((e) => `${e.sourceIndex + 1} - ${SourceType[e.type].toString()}`)),
+      engine.streams.parameterChange.pipe(
         map((e) => `${e.sourceIndex + 1} - ${e.parameter}: ${e.value.toFixed(2)}`)
       ),
-      engine.scopeSubjects.lfoChange.pipe(
-        map((e) => `${e.sourceIndex + 1} - LFO - ${e.parameter}: ${Math.floor(e.value*100)}%`)
+      engine.streams.lfoChange.pipe(
+        map((e) => `${e.sourceIndex + 1} - LFO - ${e.parameter}: ${Math.floor(e.value * 100)}%`)
       ),
-      engine.scopeSubjects.loadPreset.pipe(map((i) => `Load preset ${i + 1}`)),
-      engine.scopeSubjects.savePreset.pipe(map((i) => `Save preset ${i + 1}`))
+      engine.streams.loadPreset.pipe(map((i) => `Load preset ${i + 1}`)),
+      engine.streams.savePreset.pipe(map((i) => `Save preset ${i + 1}`))
     ).subscribe(show);
     return () => sub.unsubscribe();
   }, [show]);

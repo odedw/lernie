@@ -4,7 +4,7 @@ import { Parameter, MidiCCBinding, SourceMapping, SourceType, State, SourceTypeV
 import { generateDefaultSourceState } from './state/defaultSourceState';
 import mapping from '../config/LaunchControlXL';
 import { Subscription } from 'rxjs';
-import ScopeSubjects from './ScopeSubjects';
+import Streams from './Streams';
 
 let sourceSubscriptions: Subscription[] = [];
 let input = Input.create('Launch Control XL');
@@ -15,7 +15,7 @@ function bindParameter(
   mapping: MidiCCBinding,
   p: Parameter,
   s: State,
-  subjects: ScopeSubjects,
+  subjects: Streams,
   isLfoPressed: () => boolean
 ) {
   return i.cc(mapping.cc, mapping.channel).subscribe((e) => {
@@ -40,7 +40,7 @@ function bindSource(
   sourceIndex: number,
   mapping: SourceMapping,
   refreshState: () => void,
-  subjects: ScopeSubjects
+  subjects: Streams
 ) {
   const ss = s.sources[sourceIndex];
   const subs = Object.keys(ss.parameters).map((k) => {
@@ -57,9 +57,9 @@ function bindSource(
       Object.keys(ss.parameters)
         .filter((p) => !['blend', 'diff'].includes(p))
         .forEach((p) => (ss.parameters[p as Parameter] = defaultParams[p as Parameter]));
-      refreshState();
+      // refreshState();
 
-      subjects.sourceTypeChange.next(ss.sourceType);
+      subjects.sourceTypeChange.next({ type: ss.sourceType, sourceIndex });
     })
   );
 
@@ -78,7 +78,7 @@ function bindSource(
   return subs;
 }
 
-export function setupSources(state: State, refreshState: () => void, subjects: ScopeSubjects) {
+export function setupSources(state: State, refreshState: () => void, subjects: Streams) {
   // clear previous setup
   sourceSubscriptions.forEach((s) => s.unsubscribe());
 
@@ -114,7 +114,7 @@ export function setupPresets(
   state: State,
   savePreset: (index: number) => void,
   loadPreset: (index: number) => void,
-  subjects: ScopeSubjects
+  subjects: Streams
 ) {
   input.then((i) => {
     bindBoolean(i, state, 'shift', mapping.shift.note, mapping.shift.channel);

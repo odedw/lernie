@@ -7,10 +7,15 @@ export type ParameterChangeEvent = {
   sourceIndex: number;
 };
 
-export default class ScopeSubjects {
+export type SourceTypeChange = {
+  sourceIndex:number;
+  type: SourceType;
+}
+
+export default class Streams {
   parameterChange = new Subject<ParameterChangeEvent>();
   lfoChange = new Subject<ParameterChangeEvent>();
-  sourceTypeChange = new Subject<SourceType>();
+  sourceTypeChange = new Subject<SourceTypeChange>();
   loadPreset = new Subject<number>();
   savePreset = new Subject<number>();
 }

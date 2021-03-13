@@ -60,7 +60,15 @@ function getSource(ss: SourceState, screenRatio: number, lfo: LFO): HydraStream 
   }
 }
 
-function runSource(o: OutputBuffer, ss: SourceState, modulationSource: OutputBuffer, screenRatio: number, lfo: LFO) {
+function getBuffersBySourceIndex(i: number) {
+  return [
+    [o1, o2],
+    [o2, o1],
+  ][i];
+}
+export function runSource(s: State, i: number, screenRatio: number, lfo: LFO) {
+  const ss = s.sources[i];
+  const [o, modulationSource] = getBuffersBySourceIndex(i);
   const source = getSource(ss, screenRatio, lfo);
   source
     .blend(o, getValueGenerator(ss, 'feedback', lfo))
@@ -81,8 +89,8 @@ function runSource(o: OutputBuffer, ss: SourceState, modulationSource: OutputBuf
     .out(o);
 }
 export default function run(state: State, screenRatio: number, lfo1: LFO) {
-  runSource(o1, state.sources[0], o2, screenRatio, lfo1);
-  runSource(o2, state.sources[1], o1, screenRatio, lfo1);
+  runSource(state, 0, screenRatio, lfo1);
+  runSource(state, 1, screenRatio, lfo1);
 
   solid(0, 0, 0, 0)
     .blend(src(o1), getValueGenerator(state.sources[0], 'blend', lfo1))
