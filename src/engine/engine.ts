@@ -8,18 +8,20 @@ import run, { runSource } from './runHydra';
 import streams from './streams';
 import { setupSources, setupPresets } from './setupMidi';
 import { generateDefaultSourceState } from './state/defaultSourceState';
-// import { merge } from 'rxjs';
 
 export class Engine {
   state: State;
   screenRatio: number = 1;
-  lfo1 = new LFO();
+  // lfo1 = new LFO();
+  // lfo2 = new LFO(5);
+  lfos = [new LFO(), new LFO(2)];
   constructor() {
     this.state = {
       sources: [generateDefaultSourceState(SourceType.osc), generateDefaultSourceState(SourceType.osc, false)],
       presets: [],
       shift: false,
       lfo1: false,
+      lfo2: false,
     };
     this.savePreset = this.savePreset.bind(this);
     this.loadPreset = this.loadPreset.bind(this);
@@ -28,7 +30,7 @@ export class Engine {
     setupSources(this.state);
     setupPresets(this.state, this.savePreset, this.loadPreset);
     streams.sourceTypeChange.subscribe((e) => {
-      runSource(this.state, e.sourceIndex, this.screenRatio, this.lfo1);
+      runSource(this.state, e.sourceIndex, this.screenRatio, this.lfos);
     });
 
     // debug
@@ -44,7 +46,7 @@ export class Engine {
     if (screenRatio) {
       this.screenRatio = screenRatio;
     }
-    run(this.state, this.screenRatio, this.lfo1);
+    run(this.state, this.screenRatio, this.lfos);
   }
   randomize() {
     Object.keys(this.state.sources[0].parameters).forEach((k) => {
@@ -83,7 +85,7 @@ export class Engine {
       });
     });
     if (rerun) {
-      run(this.state, this.screenRatio, this.lfo1);
+      run(this.state, this.screenRatio, this.lfos);
     }
   }
 
@@ -98,7 +100,7 @@ export class Engine {
           const state = JSON.parse(str) as State;
           this.state = state;
           setupSources(this.state);
-          run(this.state, this.screenRatio, this.lfo1);
+          run(this.state, this.screenRatio, this.lfos);
         } catch (err) {
           console.error('failed to parse file', err);
         }

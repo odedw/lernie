@@ -19,10 +19,11 @@ function bindParameter(
 ) {
   return i.cc(mapping.cc, mapping.channel).subscribe((e) => {
     const ss = s.sources[sourceIndex];
-    if (isLfoPressed()) {
+    if (s.lfo1 || s.lfo2) {
+      const lfoParameters = s.lfo1 ? ss.lfos[0] : ss.lfos[1];
       // send LFO to param
-      ss.lfo[p] = -1 + (2 * e.value) / 127; // always between -1 and 1
-      streams.lfoChange.next({ value: ss.lfo[p], parameter: p, sourceIndex });
+      lfoParameters[p] = -1 + (2 * e.value) / 127; // always between -1 and 1
+      streams.lfoChange.next({ value: lfoParameters[p], parameter: p, sourceIndex, lfoIndex: s.lfo1 ? 1 : 2 });
     } else {
       const { min, max } = // mod1/2/3 change between source types
         p === 'mod1' || p === 'mod2' || p === 'mod3' ? config.sourceMods[ss.sourceType][p] : config.parameters[p];
@@ -62,7 +63,7 @@ function bindSource(i: Input, s: State, sourceIndex: number, mapping: SourceMapp
       Object.keys(ss.parameters).forEach((k) => {
         const key = k as Parameter;
         ss.parameters[key] = defaultState.parameters[key];
-        ss.lfo[key] = 0;
+        ss.lfos.forEach((lfo) => (lfo[key] = 0));
       });
     })
   );
@@ -89,7 +90,7 @@ export function setupSources(state: State) {
   });
 }
 
-function bindBoolean(i: Input, state: State, k: 'lfo1' | 'shift'): Subscription[] {
+function bindBoolean(i: Input, state: State, k: 'lfo1' | 'shift' | 'lfo2'): Subscription[] {
   return [
     i.noteOn(mapping[k].note, mapping[k].channel).subscribe(() => {
       state[k] = true;
@@ -106,6 +107,7 @@ export function setupPresets(state: State, savePreset: (index: number) => void, 
   input.then((i) => {
     bindBoolean(i, state, 'shift');
     bindBoolean(i, state, 'lfo1');
+    bindBoolean(i, state, 'lfo2');
     mapping.presets.forEach((preset, index) => {
       i.noteOn(preset.note, preset.channel).subscribe(() => {
         if (state.shift) {

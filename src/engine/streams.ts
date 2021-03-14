@@ -7,6 +7,10 @@ export type ParameterChangeEvent = {
   sourceIndex: number;
 };
 
+export type LfoDestinationChange = ParameterChangeEvent & {
+  lfoIndex: number;
+};
+
 export type SourceTypeChange = {
   sourceIndex: number;
   type: SourceType;
@@ -14,7 +18,7 @@ export type SourceTypeChange = {
 
 export class Streams {
   parameterChange = new Subject<ParameterChangeEvent>();
-  lfoChange = new Subject<ParameterChangeEvent>();
+  lfoChange = new Subject<LfoDestinationChange>();
   sourceTypeChange = new Subject<SourceTypeChange>();
   loadPreset = new Subject<number>();
   savePreset = new Subject<number>();
