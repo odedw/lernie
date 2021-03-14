@@ -10,15 +10,19 @@ function debug(val: number): number {
 
 function getValueGenerator(ss: SourceState, p: Parameter, lfo: LFO): (co: CallbackObject) => number {
   return ({ time }) => {
-    // console.log(
-    //   (lfo.getValue(time) * (config.parameters[p].max - config.parameters[p].min) + config.parameters[p].min) *
-    //     ss.lfo[p]
-    // );
-    return (
-      ss.parameters[p] +
-      (lfo.getValue(time) * (config.parameters[p].max - config.parameters[p].min) + config.parameters[p].min) *
-        ss.lfo[p]
-    );
+    const lfoValue = ss.lfo[p] < 0 ? 1 - lfo.getValue(time) : lfo.getValue(time);
+
+    let value = ss.parameters[p];
+
+    // add lfo
+    value += lfoValue * Math.abs(ss.lfo[p]) * (config.parameters[p].max - config.parameters[p].min);
+    // clamp
+    value = Math.min(Math.max(config.parameters[p].min, value), config.parameters[p].max);
+
+    // if (p === 'blend') {
+    // console.log(value, lfoValue * Math.abs(ss.lfo[p]) * (config.parameters[p].max - config.parameters[p].min));
+    // }
+    return value;
   };
 }
 

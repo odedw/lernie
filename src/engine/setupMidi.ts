@@ -21,7 +21,7 @@ function bindParameter(
     const ss = s.sources[sourceIndex];
     if (isLfoPressed()) {
       // send LFO to param
-      ss.lfo[p] = e.value / 127; // always between 0 and 1
+      ss.lfo[p] = -1 + (2 * e.value) / 127; // always between -1 and 1
       streams.lfoChange.next({ value: ss.lfo[p], parameter: p, sourceIndex });
     } else {
       const { min, max } = // mod1/2/3 change between source types
