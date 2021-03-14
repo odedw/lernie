@@ -49,7 +49,6 @@ function bindSource(i: Input, s: State, sourceIndex: number, mapping: SourceMapp
       Object.keys(ss.parameters)
         .filter((p) => !['blend', 'diff'].includes(p))
         .forEach((p) => (ss.parameters[p as Parameter] = defaultParams[p as Parameter]));
-      // refreshState();
 
       streams.sourceTypeChange.next({ type: ss.sourceType, sourceIndex });
     })
@@ -63,6 +62,7 @@ function bindSource(i: Input, s: State, sourceIndex: number, mapping: SourceMapp
       Object.keys(ss.parameters).forEach((k) => {
         const key = k as Parameter;
         ss.parameters[key] = defaultState.parameters[key];
+        ss.lfo[key] = 0;
       });
     })
   );
