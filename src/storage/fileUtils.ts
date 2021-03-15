@@ -1,10 +1,4 @@
-
 export function loadFile(file: File): Promise<string> {
-  // Check if the file is an image.
-  //   if (file.type && file.type.indexOf('json') === -1) {
-  // console.log('File is not a project file.', file.type, file);
-  // return;
-  //   }
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.addEventListener('load', (event) => {

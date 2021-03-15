@@ -93,19 +93,6 @@ export function setupSources(state: State, keyState: KeyState): Promise<void> {
   });
 }
 
-// function bindBoolean(i: Input, state: State, k: 'lfo1' | 'shift' | 'lfo2'): Subscription[] {
-//   return [
-//     i.noteOn(mapping[k].note, mapping[k].channel).subscribe(() => {
-//       state[k] = true;
-//       // console.log(`${k} down`);
-//     }),
-//     i.noteOff(mapping[k].note, mapping[k].channel).subscribe(() => {
-//       state[k] = false;
-//       // console.log(`${k} up`);
-//     }),
-//   ];
-// }
-
 const isMatch = (p: { note: string; channel?: number }, e: { note: { name: any; octave: any }; channel: any }) =>
   p.note === `${e.note.name}${e.note.octave}` && (!p.channel || p.channel === e.channel);
 

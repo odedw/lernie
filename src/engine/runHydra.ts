@@ -9,7 +9,6 @@ function debug(val: number): number {
 }
 
 function getValueGenerator(ss: SourceState, p: Parameter, lfos: LFO[]): (co: CallbackObject) => number {
-  // console.log()
   return ({ time }) => {
     let value = ss.parameters[p];
 
