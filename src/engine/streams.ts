@@ -9,7 +9,7 @@ export type ParameterValueChangeEvent = {
   sourceIndex: number;
 };
 
-export type LfoDestinationChange = ParameterValueChangeEvent & {
+export type LfoDestinationValueChange = ParameterValueChangeEvent & {
   lfoIndex: number;
 };
 
@@ -20,7 +20,7 @@ export type SourceTypeChange = {
 
 export class Streams {
   parameterValueChange = new Subject<ParameterValueChangeEvent>();
-  lfoChange = new Subject<LfoDestinationChange>();
+  lfoDestinationValueChange = new Subject<LfoDestinationValueChange>();
   sourceTypeChange = new Subject<SourceTypeChange>();
   loadPreset!: Observable<number>;
   savePreset!: Observable<number>;

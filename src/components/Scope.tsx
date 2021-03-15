@@ -53,7 +53,7 @@ const Scope: React.FC<Props> = ({ enabled }) => {
     const sub = merge(
       streams.sourceTypeChange.pipe(map((e) => `${e.sourceIndex + 1} - ${SourceType[e.type].toString()}`)),
       streams.parameterValueChange.pipe(map((e) => `${e.sourceIndex + 1} - ${e.parameter}: ${e.value.toFixed(2)}`)),
-      streams.lfoChange.pipe(
+      streams.lfoDestinationValueChange.pipe(
         map((e) => `${e.sourceIndex + 1} - LFO ${e.lfoIndex + 1}- ${e.parameter}: ${Math.floor(e.value * 100)}%`)
       ),
       streams.loadPreset.pipe(map((i) => `Load preset ${i + 1}`)),

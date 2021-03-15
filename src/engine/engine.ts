@@ -41,6 +41,9 @@ export class Engine {
       streams.parameterValueChange.subscribe(
         (e) => (this.state.sources[e.sourceIndex].parameters[e.parameter] = e.value)
       );
+      streams.lfoDestinationValueChange.subscribe(
+        (e) => (this.state.sources[e.sourceIndex].lfos[e.lfoIndex][e.parameter] = e.value)
+      );
     });
 
     // debug

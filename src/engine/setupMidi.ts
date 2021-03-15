@@ -23,16 +23,14 @@ function bindParameter(
     const ss = s.sources[sourceIndex];
     if (keyState.lfo1 || keyState.lfo2) {
       const lfoIndex = keyState.lfo1 ? 0 : 1;
-      const lfoParameters = ss.lfos[lfoIndex];
       // send LFO to param
-      lfoParameters[p] = -1 + (2 * e.value) / 127; // always between -1 and 1
-      streams.lfoChange.next({ value: lfoParameters[p], parameter: p, sourceIndex, lfoIndex });
+      const value = -1 + (2 * e.value) / 127; // always between -1 and 1
+      streams.lfoDestinationValueChange.next({ value, parameter: p, sourceIndex, lfoIndex });
     } else {
       const { min, max } = // mod1/2/3 change between source types
         p === 'mod1' || p === 'mod2' || p === 'mod3' ? config.sourceMods[ss.sourceType][p] : config.parameters[p];
       const unit = (max - min) / 127;
       const value = min + unit * e.value;
-      // ss.parameters[p] = min + unit * e.value;
       streams.parameterValueChange.next({ value, parameter: p, sourceIndex });
     }
   });
