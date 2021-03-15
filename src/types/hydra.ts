@@ -105,6 +105,16 @@ export type HydraStream = {
   out: (buffer?: OutputBuffer) => void;
 };
 
+export type HydraAudio = {
+  hide: () => void;
+  show: () => void;
+  setBins: (bins: number) => void;
+  setCutoff: (frequency: number) => void;
+  setScale: (amount: number) => void;
+  setSmooth: (amount: number) => void;
+  fft: number[];
+};
+
 declare global {
   // sources
   const src: (input: Buffer) => HydraStream;
@@ -130,4 +140,7 @@ declare global {
   const s1: SourceBuffer;
   const s2: SourceBuffer;
   const s3: SourceBuffer;
+
+  // audio
+  const a: HydraAudio;
 }
