@@ -31,8 +31,9 @@ function bindParameter(
       const { min, max } = // mod1/2/3 change between source types
         p === 'mod1' || p === 'mod2' || p === 'mod3' ? config.sourceMods[ss.sourceType][p] : config.parameters[p];
       const unit = (max - min) / 127;
-      ss.parameters[p] = min + unit * e.value;
-      streams.parameterChange.next({ value: ss.parameters[p], parameter: p, sourceIndex });
+      const value = min + unit * e.value;
+      // ss.parameters[p] = min + unit * e.value;
+      streams.parameterValueChange.next({ value, parameter: p, sourceIndex });
     }
   });
 }
@@ -93,7 +94,7 @@ export function setupSources(state: State, keyState: KeyState): Promise<void> {
   });
 }
 
-const isMatch = (p: { note: string; channel?: number }, e: { note: { name: any; octave: any }; channel: any }) =>
+const isNoteMatch = (p: { note: string; channel?: number }, e: { note: { name: any; octave: any }; channel: any }) =>
   p.note === `${e.note.name}${e.note.octave}` && (!p.channel || p.channel === e.channel);
 
 export function setupPresets(state: KeyState): Promise<void> {
@@ -102,20 +103,20 @@ export function setupPresets(state: KeyState): Promise<void> {
     const allKeys = Object.keys(mapping.keys).map((k) => k as Key);
 
     streams.keyDown = noteOn.pipe(
-      filter((e) => allKeys.some((k) => isMatch(mapping.keys[k], e))),
-      map((e) => allKeys.find((k) => isMatch(mapping.keys[k], e))!)
+      filter((e) => allKeys.some((k) => isNoteMatch(mapping.keys[k], e))),
+      map((e) => allKeys.find((k) => isNoteMatch(mapping.keys[k], e))!)
     );
     streams.keyUp = i.noteOff().pipe(
-      filter((e) => allKeys.some((k) => isMatch(mapping.keys[k], e))),
-      map((e) => allKeys.find((k) => isMatch(mapping.keys[k], e))!)
+      filter((e) => allKeys.some((k) => isNoteMatch(mapping.keys[k], e))),
+      map((e) => allKeys.find((k) => isNoteMatch(mapping.keys[k], e))!)
     );
     streams.loadPreset = noteOn.pipe(
-      filter((e) => mapping.presets.some((p) => isMatch(p, e))),
-      map((e) => mapping.presets.findIndex((p) => isMatch(p, e)))
+      filter((e) => mapping.presets.some((p) => isNoteMatch(p, e))),
+      map((e) => mapping.presets.findIndex((p) => isNoteMatch(p, e)))
     );
     streams.savePreset = noteOn.pipe(
-      filter((e) => state.shift && mapping.presets.some((p) => isMatch(p, e))),
-      map((e) => mapping.presets.findIndex((p) => isMatch(p, e)))
+      filter((e) => state.shift && mapping.presets.some((p) => isNoteMatch(p, e))),
+      map((e) => mapping.presets.findIndex((p) => isNoteMatch(p, e)))
     );
   });
 }

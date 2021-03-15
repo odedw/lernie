@@ -3,13 +3,13 @@ import { Subject } from 'rxjs/internal/Subject';
 import { Parameter, SourceType } from '../types';
 import { Key } from '../types/Keys';
 
-export type ParameterChangeEvent = {
+export type ParameterValueChangeEvent = {
   parameter: Parameter;
   value: number;
   sourceIndex: number;
 };
 
-export type LfoDestinationChange = ParameterChangeEvent & {
+export type LfoDestinationChange = ParameterValueChangeEvent & {
   lfoIndex: number;
 };
 
@@ -19,7 +19,7 @@ export type SourceTypeChange = {
 };
 
 export class Streams {
-  parameterChange = new Subject<ParameterChangeEvent>();
+  parameterValueChange = new Subject<ParameterValueChangeEvent>();
   lfoChange = new Subject<LfoDestinationChange>();
   sourceTypeChange = new Subject<SourceTypeChange>();
   loadPreset!: Observable<number>;

@@ -38,6 +38,9 @@ export class Engine {
       });
       streams.keyDown.subscribe((e) => (this.keyState[e] = true));
       streams.keyUp.subscribe((e) => (this.keyState[e] = false));
+      streams.parameterValueChange.subscribe(
+        (e) => (this.state.sources[e.sourceIndex].parameters[e.parameter] = e.value)
+      );
     });
 
     // debug
