@@ -54,7 +54,7 @@ const Scope: React.FC<Props> = ({ enabled }) => {
       streams.sourceTypeChange.pipe(map((e) => `${e.sourceIndex + 1} - ${SourceType[e.type].toString()}`)),
       streams.parameterChange.pipe(map((e) => `${e.sourceIndex + 1} - ${e.parameter}: ${e.value.toFixed(2)}`)),
       streams.lfoChange.pipe(
-        map((e) => `${e.sourceIndex + 1} - LFO ${e.lfoIndex}- ${e.parameter}: ${Math.floor(e.value * 100)}%`)
+        map((e) => `${e.sourceIndex + 1} - LFO ${e.lfoIndex + 1}- ${e.parameter}: ${Math.floor(e.value * 100)}%`)
       ),
       streams.loadPreset.pipe(map((i) => `Load preset ${i + 1}`)),
       streams.savePreset.pipe(map((i) => `Save preset ${i + 1}`))

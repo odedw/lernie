@@ -1,3 +1,4 @@
+import { Key } from './Keys';
 import { Parameter } from './parameters';
 
 export type MidiCCBinding = {
@@ -18,9 +19,7 @@ export type SourceMapping = {
 
 export type Mapping = {
   sources: SourceMapping[];
-  shift: MidiNoteBinding;
-  lfo1: MidiNoteBinding;
-  lfo2: MidiNoteBinding;
+  keys: Record<Key, MidiNoteBinding>;
   presets: [
     MidiNoteBinding,
     MidiNoteBinding,
@@ -31,5 +30,4 @@ export type Mapping = {
     MidiNoteBinding,
     MidiNoteBinding
   ];
-  // 73,89
 };

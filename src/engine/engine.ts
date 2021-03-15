@@ -8,32 +8,36 @@ import run, { runSource } from './runHydra';
 import streams from './streams';
 import { setupSources, setupPresets } from './setupMidi';
 import { generateDefaultSourceState } from './state/defaultSourceState';
+import { KeyState } from '../types/Keys';
 
 export class Engine {
   state: State;
   screenRatio: number = 1;
-  // lfo1 = new LFO();
-  // lfo2 = new LFO(5);
   lfos = [new LFO(), new LFO(2)];
+  keyState: KeyState = {
+    lfo1: false,
+    lfo2: false,
+    shift: false,
+  };
+
   constructor() {
     this.state = {
       sources: [generateDefaultSourceState(SourceType.osc), generateDefaultSourceState(SourceType.osc, false)],
       presets: [],
-      shift: false,
-      lfo1: false,
-      lfo2: false,
     };
     this.savePreset = this.savePreset.bind(this);
     this.loadPreset = this.loadPreset.bind(this);
   }
   init(): Promise<any> {
-    return Promise.all([setupSources(this.state), setupPresets(this.state)]).then(() => {
+    return Promise.all([setupSources(this.state, this.keyState), setupPresets(this.keyState)]).then(() => {
       // subscriptions
       streams.savePreset.subscribe((i) => this.savePreset(i));
       streams.loadPreset.subscribe((i) => this.loadPreset(i));
       streams.sourceTypeChange.subscribe((e) => {
         runSource(this.state, e.sourceIndex, this.screenRatio, this.lfos);
       });
+      streams.keyDown.subscribe((e) => (this.keyState[e] = true));
+      streams.keyUp.subscribe((e) => (this.keyState[e] = false));
     });
 
     // debug
@@ -102,7 +106,7 @@ export class Engine {
         try {
           const state = JSON.parse(str) as State;
           this.state = state;
-          setupSources(this.state);
+          setupSources(this.state, this.keyState);
           run(this.state, this.screenRatio, this.lfos);
         } catch (err) {
           console.error('failed to parse file', err);

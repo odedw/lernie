@@ -6,6 +6,7 @@ import mapping from '../config/LaunchControlXL';
 import { Subscription } from 'rxjs';
 import streams from './streams';
 import { filter, map } from 'rxjs/operators';
+import { Key, KeyState } from '../types/Keys';
 
 let sourceSubscriptions: Subscription[] = [];
 let input = Input.create('Launch Control XL');
@@ -16,15 +17,16 @@ function bindParameter(
   mapping: MidiCCBinding,
   p: Parameter,
   s: State,
-  isLfoPressed: () => boolean
+  keyState: KeyState
 ) {
   return i.cc(mapping.cc, mapping.channel).subscribe((e) => {
     const ss = s.sources[sourceIndex];
-    if (s.lfo1 || s.lfo2) {
-      const lfoParameters = s.lfo1 ? ss.lfos[0] : ss.lfos[1];
+    if (keyState.lfo1 || keyState.lfo2) {
+      const lfoIndex = keyState.lfo1 ? 0 : 1;
+      const lfoParameters = ss.lfos[lfoIndex];
       // send LFO to param
       lfoParameters[p] = -1 + (2 * e.value) / 127; // always between -1 and 1
-      streams.lfoChange.next({ value: lfoParameters[p], parameter: p, sourceIndex, lfoIndex: s.lfo1 ? 1 : 2 });
+      streams.lfoChange.next({ value: lfoParameters[p], parameter: p, sourceIndex, lfoIndex });
     } else {
       const { min, max } = // mod1/2/3 change between source types
         p === 'mod1' || p === 'mod2' || p === 'mod3' ? config.sourceMods[ss.sourceType][p] : config.parameters[p];
@@ -35,11 +37,11 @@ function bindParameter(
   });
 }
 
-function bindSource(i: Input, s: State, sourceIndex: number, mapping: SourceMapping) {
+function bindSource(i: Input, s: State, sourceIndex: number, mapping: SourceMapping, keyState: KeyState) {
   const ss = s.sources[sourceIndex];
   const subs = Object.keys(ss.parameters).map((k) => {
     const key = k as Parameter;
-    return bindParameter(i, sourceIndex, mapping.parameters[key], key, s, () => s.lfo1);
+    return bindParameter(i, sourceIndex, mapping.parameters[key], key, s, keyState);
   });
 
   // switch source
@@ -72,7 +74,7 @@ function bindSource(i: Input, s: State, sourceIndex: number, mapping: SourceMapp
   return subs;
 }
 
-export function setupSources(state: State): Promise<void> {
+export function setupSources(state: State, keyState: KeyState): Promise<void> {
   // clear previous setup
   sourceSubscriptions.forEach((s) => s.unsubscribe());
 
@@ -80,8 +82,8 @@ export function setupSources(state: State): Promise<void> {
   // listInputs();
   return input.then((i) => {
     sourceSubscriptions = [
-      ...bindSource(i, state, 0, mapping.sources[0]),
-      ...bindSource(i, state, 1, mapping.sources[1]),
+      ...bindSource(i, state, 0, mapping.sources[0], keyState),
+      ...bindSource(i, state, 1, mapping.sources[1], keyState),
     ];
 
     // debug
@@ -91,32 +93,40 @@ export function setupSources(state: State): Promise<void> {
   });
 }
 
-function bindBoolean(i: Input, state: State, k: 'lfo1' | 'shift' | 'lfo2'): Subscription[] {
-  return [
-    i.noteOn(mapping[k].note, mapping[k].channel).subscribe(() => {
-      state[k] = true;
-      // console.log(`${k} down`);
-    }),
-    i.noteOff(mapping[k].note, mapping[k].channel).subscribe(() => {
-      state[k] = false;
-      // console.log(`${k} up`);
-    }),
-  ];
-}
+// function bindBoolean(i: Input, state: State, k: 'lfo1' | 'shift' | 'lfo2'): Subscription[] {
+//   return [
+//     i.noteOn(mapping[k].note, mapping[k].channel).subscribe(() => {
+//       state[k] = true;
+//       // console.log(`${k} down`);
+//     }),
+//     i.noteOff(mapping[k].note, mapping[k].channel).subscribe(() => {
+//       state[k] = false;
+//       // console.log(`${k} up`);
+//     }),
+//   ];
+// }
 
 const isMatch = (p: { note: string; channel?: number }, e: { note: { name: any; octave: any }; channel: any }) =>
   p.note === `${e.note.name}${e.note.octave}` && (!p.channel || p.channel === e.channel);
 
-export function setupPresets(state: State): Promise<void> {
+export function setupPresets(state: KeyState): Promise<void> {
   return input.then((i) => {
-    bindBoolean(i, state, 'shift');
-    bindBoolean(i, state, 'lfo1');
-    bindBoolean(i, state, 'lfo2');
-    streams.loadPreset = i.noteOn().pipe(
+    const noteOn = i.noteOn();
+    const allKeys = Object.keys(mapping.keys).map((k) => k as Key);
+
+    streams.keyDown = noteOn.pipe(
+      filter((e) => allKeys.some((k) => isMatch(mapping.keys[k], e))),
+      map((e) => allKeys.find((k) => isMatch(mapping.keys[k], e))!)
+    );
+    streams.keyUp = i.noteOff().pipe(
+      filter((e) => allKeys.some((k) => isMatch(mapping.keys[k], e))),
+      map((e) => allKeys.find((k) => isMatch(mapping.keys[k], e))!)
+    );
+    streams.loadPreset = noteOn.pipe(
       filter((e) => mapping.presets.some((p) => isMatch(p, e))),
       map((e) => mapping.presets.findIndex((p) => isMatch(p, e)))
     );
-    streams.savePreset = i.noteOn().pipe(
+    streams.savePreset = noteOn.pipe(
       filter((e) => state.shift && mapping.presets.some((p) => isMatch(p, e))),
       map((e) => mapping.presets.findIndex((p) => isMatch(p, e)))
     );

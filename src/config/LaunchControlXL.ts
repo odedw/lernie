@@ -47,9 +47,11 @@ const config: Mapping = {
       reset: { note: 'A#3' },
     },
   ],
-  shift: { note: 'A7' },
-  lfo1: { note: 'B7' },
-  lfo2: { note: 'C8' },
+  keys: {
+    shift: { note: 'A7' },
+    lfo1: { note: 'B7' },
+    lfo2: { note: 'C8' },
+  },
   presets: [
     { note: 'C#5' },
     { note: 'D5' },

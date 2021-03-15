@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs';
 import { Subject } from 'rxjs/internal/Subject';
 import { Parameter, SourceType } from '../types';
+import { Key } from '../types/Keys';
 
 export type ParameterChangeEvent = {
   parameter: Parameter;
@@ -23,6 +24,8 @@ export class Streams {
   sourceTypeChange = new Subject<SourceTypeChange>();
   loadPreset!: Observable<number>;
   savePreset!: Observable<number>;
+  keyDown!: Observable<Key>;
+  keyUp!: Observable<Key>;
 }
 
 export default new Streams();
