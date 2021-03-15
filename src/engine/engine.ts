@@ -26,11 +26,14 @@ export class Engine {
     this.savePreset = this.savePreset.bind(this);
     this.loadPreset = this.loadPreset.bind(this);
   }
-  init() {
-    setupSources(this.state);
-    setupPresets(this.state, this.savePreset, this.loadPreset);
-    streams.sourceTypeChange.subscribe((e) => {
-      runSource(this.state, e.sourceIndex, this.screenRatio, this.lfos);
+  init(): Promise<any> {
+    return Promise.all([setupSources(this.state), setupPresets(this.state)]).then(() => {
+      // subscriptions
+      streams.savePreset.subscribe((i) => this.savePreset(i));
+      streams.loadPreset.subscribe((i) => this.loadPreset(i));
+      streams.sourceTypeChange.subscribe((e) => {
+        runSource(this.state, e.sourceIndex, this.screenRatio, this.lfos);
+      });
     });
 
     // debug

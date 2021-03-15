@@ -22,7 +22,7 @@ const FileDrop = styled.input`
 
 function App() {
   const [scopeEnabled, setScopeEnabled] = useState(true);
-
+  const [initialized, setInitialized] = useState(false);
   useEffect(() => {
     function keyPress(evt: KeyboardEvent) {
       const k = evt.key.toLowerCase();
@@ -39,7 +39,12 @@ function App() {
 
     window.addEventListener('keypress', keyPress);
   }, [setScopeEnabled]);
-
+  useEffect(() => {
+    engine.init().then(() => setInitialized(true));
+  }, [setInitialized]);
+  if (!initialized) {
+    return null;
+  }
   return (
     <Container>
       <Hydra />

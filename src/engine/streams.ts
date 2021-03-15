@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs';
 import { Subject } from 'rxjs/internal/Subject';
 import { Parameter, SourceType } from '../types';
 
@@ -20,8 +21,8 @@ export class Streams {
   parameterChange = new Subject<ParameterChangeEvent>();
   lfoChange = new Subject<LfoDestinationChange>();
   sourceTypeChange = new Subject<SourceTypeChange>();
-  loadPreset = new Subject<number>();
-  savePreset = new Subject<number>();
+  loadPreset!: Observable<number>;
+  savePreset!: Observable<number>;
 }
 
 export default new Streams();

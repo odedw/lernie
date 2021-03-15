@@ -5,6 +5,7 @@ import { generateDefaultSourceState } from './state/defaultSourceState';
 import mapping from '../config/LaunchControlXL';
 import { Subscription } from 'rxjs';
 import streams from './streams';
+import { filter, map } from 'rxjs/operators';
 
 let sourceSubscriptions: Subscription[] = [];
 let input = Input.create('Launch Control XL');
@@ -71,13 +72,13 @@ function bindSource(i: Input, s: State, sourceIndex: number, mapping: SourceMapp
   return subs;
 }
 
-export function setupSources(state: State) {
+export function setupSources(state: State): Promise<void> {
   // clear previous setup
   sourceSubscriptions.forEach((s) => s.unsubscribe());
 
   //midi
   // listInputs();
-  input.then((i) => {
+  return input.then((i) => {
     sourceSubscriptions = [
       ...bindSource(i, state, 0, mapping.sources[0]),
       ...bindSource(i, state, 1, mapping.sources[1]),
@@ -103,21 +104,21 @@ function bindBoolean(i: Input, state: State, k: 'lfo1' | 'shift' | 'lfo2'): Subs
   ];
 }
 
-export function setupPresets(state: State, savePreset: (index: number) => void, loadPreset: (index: number) => void) {
-  input.then((i) => {
+const isMatch = (p: { note: string; channel?: number }, e: { note: { name: any; octave: any }; channel: any }) =>
+  p.note === `${e.note.name}${e.note.octave}` && (!p.channel || p.channel === e.channel);
+
+export function setupPresets(state: State): Promise<void> {
+  return input.then((i) => {
     bindBoolean(i, state, 'shift');
     bindBoolean(i, state, 'lfo1');
     bindBoolean(i, state, 'lfo2');
-    mapping.presets.forEach((preset, index) => {
-      i.noteOn(preset.note, preset.channel).subscribe(() => {
-        if (state.shift) {
-          savePreset(index);
-          streams.savePreset.next(index);
-        } else {
-          loadPreset(index);
-          streams.loadPreset.next(index);
-        }
-      });
-    });
+    streams.loadPreset = i.noteOn().pipe(
+      filter((e) => mapping.presets.some((p) => isMatch(p, e))),
+      map((e) => mapping.presets.findIndex((p) => isMatch(p, e)))
+    );
+    streams.savePreset = i.noteOn().pipe(
+      filter((e) => state.shift && mapping.presets.some((p) => isMatch(p, e))),
+      map((e) => mapping.presets.findIndex((p) => isMatch(p, e)))
+    );
   });
 }
