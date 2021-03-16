@@ -26,6 +26,7 @@ export class Streams {
   savePreset!: Observable<number>;
   keyDown!: Observable<Key>;
   keyUp!: Observable<Key>;
+  resetSource!: Observable<number>;
 }
 
 export default new Streams();

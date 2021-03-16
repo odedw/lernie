@@ -3,7 +3,7 @@ import { config } from '../config/parameterConfig';
 import { Parameter, MidiCCBinding, SourceMapping, SourceType, State, SourceTypeValues } from '../types';
 import { generateDefaultSourceState } from './state/defaultSourceState';
 import mapping from '../config/LaunchControlXL';
-import { Subscription } from 'rxjs';
+import { Subscription, merge } from 'rxjs';
 import streams from './streams';
 import { filter, map } from 'rxjs/operators';
 import { Key, KeyState } from '../types/Keys';
@@ -57,19 +57,6 @@ function bindSource(i: Input, s: State, sourceIndex: number, mapping: SourceMapp
     })
   );
 
-  // reset
-  subs.push(
-    i.noteOn(mapping.reset.note, mapping.reset.channel).subscribe(() => {
-      const defaultState = generateDefaultSourceState(ss.sourceType);
-      // copy parameters default state
-      Object.keys(ss.parameters).forEach((k) => {
-        const key = k as Parameter;
-        ss.parameters[key] = defaultState.parameters[key];
-        ss.lfos.forEach((lfo) => (lfo[key] = 0));
-      });
-    })
-  );
-
   return subs;
 }
 
@@ -77,9 +64,16 @@ export function setupSources(state: State, keyState: KeyState): Promise<void> {
   // clear previous setup
   sourceSubscriptions.forEach((s) => s.unsubscribe());
 
-  //midi
   // listInputs();
+
   return input.then((i) => {
+    // reset
+    streams.resetSource = merge(
+      ...mapping.sources.map((mapping, index) =>
+        i.noteOn(mapping.reset.note, mapping.reset.channel).pipe(map(() => index))
+      )
+    );
+
     sourceSubscriptions = [
       ...bindSource(i, state, 0, mapping.sources[0], keyState),
       ...bindSource(i, state, 1, mapping.sources[1], keyState),

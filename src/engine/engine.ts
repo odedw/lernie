@@ -44,6 +44,16 @@ export class Engine {
       streams.lfoDestinationValueChange.subscribe(
         (e) => (this.state.sources[e.sourceIndex].lfos[e.lfoIndex][e.parameter] = e.value)
       );
+      streams.resetSource.subscribe((index) => {
+        const ss = this.state.sources[index];
+        const defaultState = generateDefaultSourceState(ss.sourceType);
+        // copy parameters default state
+        Object.keys(ss.parameters).forEach((k) => {
+          const key = k as Parameter;
+          ss.parameters[key] = defaultState.parameters[key];
+          ss.lfos.forEach((lfo) => (lfo[key] = 0));
+        });
+      });
     });
 
     // debug
