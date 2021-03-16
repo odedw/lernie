@@ -29,7 +29,10 @@ export class Engine {
     this.loadPreset = this.loadPreset.bind(this);
   }
   init(): Promise<any> {
-    return Promise.all([setupSources(this.state, this.keyState), setupPresets(this.keyState)]).then(() => {
+    return Promise.all([
+      setupSources((i) => this.state.sources[i].sourceType, this.keyState),
+      setupPresets(this.keyState),
+    ]).then(() => {
       // subscriptions
       streams.savePreset.subscribe((i) => this.savePreset(i));
       streams.loadPreset.subscribe((i) => this.loadPreset(i));
@@ -129,7 +132,7 @@ export class Engine {
         try {
           const state = JSON.parse(str) as State;
           this.state = state;
-          setupSources(this.state, this.keyState);
+          // setupSources(this.state, this.keyState);
           run(this.state, this.screenRatio, this.lfos);
         } catch (err) {
           console.error('failed to parse file', err);

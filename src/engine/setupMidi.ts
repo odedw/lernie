@@ -1,6 +1,6 @@
 import { Input } from 'rmidi';
 import { config } from '../config/parameterConfig';
-import { Parameter, MidiCCBinding, SourceMapping, State } from '../types';
+import { Parameter, MidiCCBinding, SourceMapping, State, SourceType } from '../types';
 import mapping from '../config/LaunchControlXL';
 import { Subscription, merge } from 'rxjs';
 import streams from './streams';
@@ -15,11 +15,10 @@ function bindParameter(
   sourceIndex: number,
   mapping: MidiCCBinding,
   p: Parameter,
-  s: State,
+  getSourceType: (i: number) => SourceType,
   keyState: KeyState
 ) {
   return i.cc(mapping.cc, mapping.channel).subscribe((e) => {
-    const ss = s.sources[sourceIndex];
     if (keyState.lfo1 || keyState.lfo2) {
       const lfoIndex = keyState.lfo1 ? 0 : 1;
       // send LFO to param
@@ -27,7 +26,9 @@ function bindParameter(
       streams.lfoDestinationValueChange.next({ value, parameter: p, sourceIndex, lfoIndex });
     } else {
       const { min, max } = // mod1/2/3 change between source types
-        p === 'mod1' || p === 'mod2' || p === 'mod3' ? config.sourceMods[ss.sourceType][p] : config.parameters[p];
+        p === 'mod1' || p === 'mod2' || p === 'mod3'
+          ? config.sourceMods[getSourceType(sourceIndex)][p]
+          : config.parameters[p];
       const unit = (max - min) / 127;
       const value = min + unit * e.value;
       streams.parameterValueChange.next({ value, parameter: p, sourceIndex });
@@ -35,21 +36,25 @@ function bindParameter(
   });
 }
 
-function bindSource(i: Input, s: State, sourceIndex: number, mapping: SourceMapping, keyState: KeyState) {
-  const ss = s.sources[sourceIndex];
-  const subs = Object.keys(ss.parameters).map((k) => {
+function bindSource(
+  i: Input,
+  getSourceType: (i: number) => SourceType,
+  sourceIndex: number,
+  mapping: SourceMapping,
+  keyState: KeyState
+) {
+  const subs = Object.keys(mapping.parameters).map((k) => {
     const key = k as Parameter;
-    return bindParameter(i, sourceIndex, mapping.parameters[key], key, s, keyState);
+    return bindParameter(i, sourceIndex, mapping.parameters[key], key, getSourceType, keyState);
   });
   return subs;
 }
 
-export function setupSources(state: State, keyState: KeyState): Promise<void> {
+export function setupSources(getSourceType: (i: number) => SourceType, keyState: KeyState): Promise<void> {
   // clear previous setup
   sourceSubscriptions.forEach((s) => s.unsubscribe());
 
   // listInputs();
-
   return input.then((i) => {
     // reset
     streams.resetSource = merge(
@@ -66,8 +71,8 @@ export function setupSources(state: State, keyState: KeyState): Promise<void> {
     );
 
     sourceSubscriptions = [
-      ...bindSource(i, state, 0, mapping.sources[0], keyState),
-      ...bindSource(i, state, 1, mapping.sources[1], keyState),
+      ...bindSource(i, getSourceType, 0, mapping.sources[0], keyState),
+      ...bindSource(i, getSourceType, 1, mapping.sources[1], keyState),
     ];
 
     // debug
