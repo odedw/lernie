@@ -132,7 +132,6 @@ export class Engine {
         try {
           const state = JSON.parse(str) as State;
           this.state = state;
-          // setupSources(this.state, this.keyState);
           run(this.state, this.screenRatio, this.lfos);
         } catch (err) {
           console.error('failed to parse file', err);
