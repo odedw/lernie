@@ -18,6 +18,7 @@ export class Engine {
     lfo1: false,
     lfo2: false,
     shift: false,
+    audio: false,
   };
 
   constructor() {

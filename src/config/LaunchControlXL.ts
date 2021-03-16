@@ -51,6 +51,7 @@ const config: Mapping = {
     shift: { note: 'A7' },
     lfo1: { note: 'B7' },
     lfo2: { note: 'C8' },
+    audio: { note: 'A#7' },
   },
   presets: [
     { note: 'C#5' },

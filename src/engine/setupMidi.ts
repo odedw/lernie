@@ -1,6 +1,6 @@
 import { Input } from 'rmidi';
 import { config } from '../config/parameterConfig';
-import { Parameter, MidiCCBinding, SourceMapping, State, SourceType } from '../types';
+import { Parameter, MidiCCBinding, SourceMapping, SourceType } from '../types';
 import mapping from '../config/LaunchControlXL';
 import { Subscription, merge } from 'rxjs';
 import streams from './streams';
@@ -19,7 +19,9 @@ function bindParameter(
   keyState: KeyState
 ) {
   return i.cc(mapping.cc, mapping.channel).subscribe((e) => {
-    if (keyState.lfo1 || keyState.lfo2) {
+    if (keyState.audio) {
+      
+    } else if (keyState.lfo1 || keyState.lfo2) {
       const lfoIndex = keyState.lfo1 ? 0 : 1;
       // send LFO to param
       const value = -1 + (2 * e.value) / 127; // always between -1 and 1
