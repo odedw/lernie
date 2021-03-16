@@ -1,7 +1,6 @@
 import { Input } from 'rmidi';
 import { config } from '../config/parameterConfig';
-import { Parameter, MidiCCBinding, SourceMapping, SourceType, State, SourceTypeValues } from '../types';
-import { generateDefaultSourceState } from './state/defaultSourceState';
+import { Parameter, MidiCCBinding, SourceMapping, State } from '../types';
 import mapping from '../config/LaunchControlXL';
 import { Subscription, merge } from 'rxjs';
 import streams from './streams';
@@ -42,21 +41,6 @@ function bindSource(i: Input, s: State, sourceIndex: number, mapping: SourceMapp
     const key = k as Parameter;
     return bindParameter(i, sourceIndex, mapping.parameters[key], key, s, keyState);
   });
-
-  // switch source
-  subs.push(
-    i.noteOn(mapping.switchSource.note, mapping.switchSource.channel).subscribe(() => {
-      ss.sourceType = ((Number(ss.sourceType) + 1) % SourceTypeValues.length) as SourceType;
-
-      const defaultParams = generateDefaultSourceState(ss.sourceType).parameters;
-      Object.keys(ss.parameters)
-        .filter((p) => !['blend', 'diff'].includes(p))
-        .forEach((p) => (ss.parameters[p as Parameter] = defaultParams[p as Parameter]));
-
-      streams.sourceTypeChange.next({ type: ss.sourceType, sourceIndex });
-    })
-  );
-
   return subs;
 }
 
@@ -71,6 +55,13 @@ export function setupSources(state: State, keyState: KeyState): Promise<void> {
     streams.resetSource = merge(
       ...mapping.sources.map((mapping, index) =>
         i.noteOn(mapping.reset.note, mapping.reset.channel).pipe(map(() => index))
+      )
+    );
+
+    // switchSource
+    streams.sourceTypeChange = merge(
+      ...mapping.sources.map((mapping, index) =>
+        i.noteOn(mapping.switchSource.note, mapping.switchSource.channel).pipe(map(() => index))
       )
     );
 

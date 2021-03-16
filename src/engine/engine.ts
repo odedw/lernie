@@ -2,7 +2,7 @@ import gsap from 'gsap';
 import moment from 'moment';
 import { config } from '../config/parameterConfig';
 import { downloadObjectAsJson, loadFile } from '../storage';
-import { Parameter, SourceState, SourceType, State } from '../types';
+import { Parameter, SourceState, SourceType, SourceTypeValues, State } from '../types';
 import { LFO } from './LFO';
 import run, { runSource } from './runHydra';
 import streams from './streams';
@@ -33,8 +33,15 @@ export class Engine {
       // subscriptions
       streams.savePreset.subscribe((i) => this.savePreset(i));
       streams.loadPreset.subscribe((i) => this.loadPreset(i));
-      streams.sourceTypeChange.subscribe((e) => {
-        runSource(this.state, e.sourceIndex, this.screenRatio, this.lfos);
+      streams.sourceTypeChange.subscribe((index) => {
+        const ss = this.state.sources[index];
+        ss.sourceType = ((Number(ss.sourceType) + 1) % SourceTypeValues.length) as SourceType;
+
+        const defaultParams = generateDefaultSourceState(ss.sourceType).parameters;
+        Object.keys(ss.parameters)
+          .filter((p) => !['blend', 'diff'].includes(p))
+          .forEach((p) => (ss.parameters[p as Parameter] = defaultParams[p as Parameter]));
+        runSource(this.state, index, this.screenRatio, this.lfos);
       });
       streams.keyDown.subscribe((e) => (this.keyState[e] = true));
       streams.keyUp.subscribe((e) => (this.keyState[e] = false));

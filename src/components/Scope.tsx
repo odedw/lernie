@@ -4,6 +4,7 @@ import streams from '../engine/streams';
 import { SourceType } from '../types';
 import { merge } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { engine } from '../engine';
 
 const Container = styled.div`
   position: absolute;
@@ -51,7 +52,11 @@ const Scope: React.FC<Props> = ({ enabled }) => {
   );
   useEffect(() => {
     const sub = merge(
-      streams.sourceTypeChange.pipe(map((e) => `${e.sourceIndex + 1} - ${SourceType[e.type].toString()}`)),
+      streams.sourceTypeChange.pipe(
+        map(
+          (sourceIndex) => `${sourceIndex + 1} - ${SourceType[engine.state.sources[sourceIndex].sourceType].toString()}`
+        )
+      ),
       streams.parameterValueChange.pipe(map((e) => `${e.sourceIndex + 1} - ${e.parameter}: ${e.value.toFixed(2)}`)),
       streams.lfoDestinationValueChange.pipe(
         map((e) => `${e.sourceIndex + 1} - LFO ${e.lfoIndex + 1}- ${e.parameter}: ${Math.floor(e.value * 100)}%`)

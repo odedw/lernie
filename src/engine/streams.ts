@@ -21,7 +21,7 @@ export type SourceTypeChange = {
 export class Streams {
   parameterValueChange = new Subject<ParameterValueChangeEvent>();
   lfoDestinationValueChange = new Subject<LfoDestinationValueChange>();
-  sourceTypeChange = new Subject<SourceTypeChange>();
+  sourceTypeChange!: Observable<number>;
   loadPreset!: Observable<number>;
   savePreset!: Observable<number>;
   keyDown!: Observable<Key>;
