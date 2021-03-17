@@ -1,60 +1,16 @@
 import { Input } from 'rmidi';
 import { config } from '../config/parameterConfig';
-import { Parameter, MidiCCBinding, SourceMapping, SourceType } from '../types';
+import { Parameter, SourceType } from '../types';
 import mapping from '../config/LaunchControlXL';
-import { Subscription, merge } from 'rxjs';
-import streams from './streams';
+import { merge } from 'rxjs';
+import streams, { LfoDestinationValueChange, ParameterValueChangeEvent } from './streams';
 import { filter, map } from 'rxjs/operators';
 import { Key, KeyState } from '../types/Keys';
 
-let sourceSubscriptions: Subscription[] = [];
 let input = Input.create('Launch Control XL');
 
-function bindParameter(
-  i: Input,
-  sourceIndex: number,
-  mapping: MidiCCBinding,
-  p: Parameter,
-  getSourceType: (i: number) => SourceType,
-  keyState: KeyState
-) {
-  return i.cc(mapping.cc, mapping.channel).subscribe((e) => {
-    if (keyState.audio) {
-      
-    } else if (keyState.lfo1 || keyState.lfo2) {
-      const lfoIndex = keyState.lfo1 ? 0 : 1;
-      // send LFO to param
-      const value = -1 + (2 * e.value) / 127; // always between -1 and 1
-      streams.lfoDestinationValueChange.next({ value, parameter: p, sourceIndex, lfoIndex });
-    } else {
-      const { min, max } = // mod1/2/3 change between source types
-        p === 'mod1' || p === 'mod2' || p === 'mod3'
-          ? config.sourceMods[getSourceType(sourceIndex)][p]
-          : config.parameters[p];
-      const unit = (max - min) / 127;
-      const value = min + unit * e.value;
-      streams.parameterValueChange.next({ value, parameter: p, sourceIndex });
-    }
-  });
-}
-
-function bindSource(
-  i: Input,
-  getSourceType: (i: number) => SourceType,
-  sourceIndex: number,
-  mapping: SourceMapping,
-  keyState: KeyState
-) {
-  const subs = Object.keys(mapping.parameters).map((k) => {
-    const key = k as Parameter;
-    return bindParameter(i, sourceIndex, mapping.parameters[key], key, getSourceType, keyState);
-  });
-  return subs;
-}
-
 export function setupSources(getSourceType: (i: number) => SourceType, keyState: KeyState): Promise<void> {
-  // clear previous setup
-  sourceSubscriptions.forEach((s) => s.unsubscribe());
+  const allParameters = Object.keys(mapping.sources[0].parameters).map((k) => k as Parameter);
 
   // listInputs();
   return input.then((i) => {
@@ -71,11 +27,59 @@ export function setupSources(getSourceType: (i: number) => SourceType, keyState:
         i.noteOn(mapping.switchSource.note, mapping.switchSource.channel).pipe(map(() => index))
       )
     );
+    const ccObservables = mapping.sources
+      .map((m, sourceIndex) =>
+        allParameters.map((p) =>
+          i.cc(m.parameters[p].cc, m.parameters[p].channel).pipe(map((e) => ({ e, sourceIndex, p })))
+        )
+      )
+      .flatMap((a) => a);
 
-    sourceSubscriptions = [
-      ...bindSource(i, getSourceType, 0, mapping.sources[0], keyState),
-      ...bindSource(i, getSourceType, 1, mapping.sources[1], keyState),
-    ];
+    // LFOs
+    streams.lfoDestinationValueChange = merge(
+      ...ccObservables.map((o) =>
+        o.pipe(
+          filter(() => keyState.lfo1 || keyState.lfo2),
+          map(({ e, sourceIndex, p }) => {
+            const lfoIndex = keyState.lfo1 ? 0 : 1;
+            // // send LFO to param
+            const value = -1 + (2 * e.value) / 127; // between -1 and 1
+            return { value, parameter: p, sourceIndex, lfoIndex } as LfoDestinationValueChange;
+          })
+        )
+      )
+    );
+
+    // Parameter change
+    streams.parameterValueChange = merge(
+      ...ccObservables.map((o) =>
+        o.pipe(
+          filter(() => !(keyState.lfo1 || keyState.lfo2 || keyState.audio)),
+          map(({ e, sourceIndex, p }) => {
+            const { min, max } = // mod1/2/3 change between source types
+              p === 'mod1' || p === 'mod2' || p === 'mod3'
+                ? config.sourceMods[getSourceType(sourceIndex)][p]
+                : config.parameters[p];
+            const unit = (max - min) / 127;
+            const value = min + unit * e.value;
+            return { value, parameter: p, sourceIndex } as ParameterValueChangeEvent;
+          })
+        )
+      )
+    );
+
+    // Audio reactivity
+    streams.audioDestinationValueChange = merge(
+      ...ccObservables.map((o) =>
+        o.pipe(
+          filter(() => keyState.audio),
+          map(({ e, sourceIndex, p }) => {
+            const value = e.value / 127; // between 0 and 1
+            return { value, parameter: p, sourceIndex } as LfoDestinationValueChange;
+          })
+        )
+      )
+    );
 
     // debug
     // i.noteOn().subscribe((e) => {

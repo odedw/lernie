@@ -1,5 +1,4 @@
 import { Observable } from 'rxjs';
-import { Subject } from 'rxjs/internal/Subject';
 import { Parameter, SourceType } from '../types';
 import { Key } from '../types/Keys';
 
@@ -8,6 +7,8 @@ export type ParameterValueChangeEvent = {
   value: number;
   sourceIndex: number;
 };
+
+export type AudioDestinationValueChange = ParameterValueChangeEvent;
 
 export type LfoDestinationValueChange = ParameterValueChangeEvent & {
   lfoIndex: number;
@@ -19,8 +20,9 @@ export type SourceTypeChange = {
 };
 
 export class Streams {
-  parameterValueChange = new Subject<ParameterValueChangeEvent>();
-  lfoDestinationValueChange = new Subject<LfoDestinationValueChange>();
+  parameterValueChange!: Observable<ParameterValueChangeEvent>;
+  lfoDestinationValueChange!: Observable<LfoDestinationValueChange>;
+  audioDestinationValueChange!: Observable<LfoDestinationValueChange>;
   sourceTypeChange!: Observable<number>;
   loadPreset!: Observable<number>;
   savePreset!: Observable<number>;
