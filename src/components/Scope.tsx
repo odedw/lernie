@@ -52,17 +52,20 @@ const Scope: React.FC<Props> = ({ enabled }) => {
   );
   useEffect(() => {
     const sub = merge(
-      streams.sourceTypeChange.pipe(
+      streams.sourceTypeChange$.pipe(
         map(
           (sourceIndex) => `${sourceIndex + 1} - ${SourceType[engine.state.sources[sourceIndex].sourceType].toString()}`
         )
       ),
-      streams.parameterValueChange.pipe(map((e) => `${e.sourceIndex + 1} - ${e.parameter}: ${e.value.toFixed(2)}`)),
-      streams.lfoDestinationValueChange.pipe(
+      streams.parameterValueChange$.pipe(map((e) => `${e.sourceIndex + 1} - ${e.parameter}: ${e.value.toFixed(2)}`)),
+      streams.lfoDestinationValueChange$.pipe(
         map((e) => `${e.sourceIndex + 1} - LFO ${e.lfoIndex + 1}- ${e.parameter}: ${Math.floor(e.value * 100)}%`)
       ),
-      streams.loadPreset.pipe(map((i) => `Load preset ${i + 1}`)),
-      streams.savePreset.pipe(map((i) => `Save preset ${i + 1}`))
+      streams.loadPreset$.pipe(map((i) => `Load preset ${i + 1}`)),
+      streams.savePreset$.pipe(map((i) => `Save preset ${i + 1}`)),
+      streams.clearParameter$.pipe(
+        map((e) => `${e.sourceIndex + 1} ${e.destination ? `- ${e.destination}` : ''}- ${e.parameter} cleared`)
+      )
     ).subscribe(show);
     return () => sub.unsubscribe();
   }, [show]);

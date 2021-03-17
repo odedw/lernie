@@ -35,9 +35,9 @@ export class Engine {
       setupPresets(this.keyState),
     ]).then(() => {
       // subscriptions
-      streams.savePreset.subscribe((i) => this.savePreset(i));
-      streams.loadPreset.subscribe((i) => this.loadPreset(i));
-      streams.sourceTypeChange.subscribe((index) => {
+      streams.savePreset$.subscribe((i) => this.savePreset(i));
+      streams.loadPreset$.subscribe((i) => this.loadPreset(i));
+      streams.sourceTypeChange$.subscribe((index) => {
         const ss = this.state.sources[index];
         ss.sourceType = ((Number(ss.sourceType) + 1) % SourceTypeValues.length) as SourceType;
 
@@ -47,15 +47,15 @@ export class Engine {
           .forEach((p) => (ss.parameters[p as Parameter] = defaultParams[p as Parameter]));
         runSource(this.state, index, this.screenRatio, this.lfos);
       });
-      streams.keyDown.subscribe((e) => (this.keyState[e] = true));
-      streams.keyUp.subscribe((e) => (this.keyState[e] = false));
-      streams.parameterValueChange.subscribe(
+      streams.keyDown$.subscribe((e) => (this.keyState[e] = true));
+      streams.keyUp$.subscribe((e) => (this.keyState[e] = false));
+      streams.parameterValueChange$.subscribe(
         (e) => (this.state.sources[e.sourceIndex].parameters[e.parameter] = e.value)
       );
-      streams.lfoDestinationValueChange.subscribe(
+      streams.lfoDestinationValueChange$.subscribe(
         (e) => (this.state.sources[e.sourceIndex].lfos[e.lfoIndex][e.parameter] = e.value)
       );
-      streams.resetSource.subscribe((index) => {
+      streams.resetSource$.subscribe((index) => {
         const ss = this.state.sources[index];
         const defaultState = generateDefaultSourceState(ss.sourceType);
         // copy parameters default state
@@ -64,6 +64,18 @@ export class Engine {
           ss.parameters[key] = defaultState.parameters[key];
           ss.lfos.forEach((lfo) => (lfo[key] = 0));
         });
+      });
+      streams.clearParameter$.subscribe((e) => {
+        const ss = this.state.sources[e.sourceIndex];
+        if (e.destination === 'lfo1') {
+          ss.lfos[0][e.parameter] = 0;
+        } else if (e.destination === 'lfo2') {
+          ss.lfos[1][e.parameter] = 0;
+        } else if (e.destination === 'audio') {
+          // ss.audio[e.parameter] = 0;
+        } else {
+          ss.parameters[e.parameter] = generateDefaultSourceState(ss.sourceType).parameters[e.parameter];
+        }
       });
     });
 

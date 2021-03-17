@@ -8,6 +8,12 @@ export type ParameterValueChangeEvent = {
   sourceIndex: number;
 };
 
+export type ClearParameterEvent = {
+  parameter: Parameter;
+  sourceIndex: number;
+  destination?: 'lfo1' | 'lfo2' | 'audio';
+};
+
 export type AudioDestinationValueChange = ParameterValueChangeEvent;
 
 export type LfoDestinationValueChange = ParameterValueChangeEvent & {
@@ -20,15 +26,16 @@ export type SourceTypeChange = {
 };
 
 export class Streams {
-  parameterValueChange!: Observable<ParameterValueChangeEvent>;
-  lfoDestinationValueChange!: Observable<LfoDestinationValueChange>;
-  audioDestinationValueChange!: Observable<LfoDestinationValueChange>;
-  sourceTypeChange!: Observable<number>;
-  loadPreset!: Observable<number>;
-  savePreset!: Observable<number>;
-  keyDown!: Observable<Key>;
-  keyUp!: Observable<Key>;
-  resetSource!: Observable<number>;
+  parameterValueChange$!: Observable<ParameterValueChangeEvent>;
+  lfoDestinationValueChange$!: Observable<LfoDestinationValueChange>;
+  audioDestinationValueChange$!: Observable<LfoDestinationValueChange>;
+  clearParameter$!: Observable<ClearParameterEvent>;
+  sourceTypeChange$!: Observable<number>;
+  loadPreset$!: Observable<number>;
+  savePreset$!: Observable<number>;
+  keyDown$!: Observable<Key>;
+  keyUp$!: Observable<Key>;
+  resetSource$!: Observable<number>;
 }
 
 export default new Streams();

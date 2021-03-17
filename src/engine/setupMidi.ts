@@ -3,7 +3,7 @@ import { config } from '../config/parameterConfig';
 import { Parameter, SourceType } from '../types';
 import mapping from '../config/LaunchControlXL';
 import { merge } from 'rxjs';
-import streams, { LfoDestinationValueChange, ParameterValueChangeEvent } from './streams';
+import streams, { ClearParameterEvent, LfoDestinationValueChange, ParameterValueChangeEvent } from './streams';
 import { filter, map } from 'rxjs/operators';
 import { Key, KeyState } from '../types/Keys';
 
@@ -15,14 +15,14 @@ export function setupSources(getSourceType: (i: number) => SourceType, keyState:
   // listInputs();
   return input.then((i) => {
     // reset
-    streams.resetSource = merge(
+    streams.resetSource$ = merge(
       ...mapping.sources.map((mapping, index) =>
         i.noteOn(mapping.reset.note, mapping.reset.channel).pipe(map(() => index))
       )
     );
 
     // switchSource
-    streams.sourceTypeChange = merge(
+    streams.sourceTypeChange$ = merge(
       ...mapping.sources.map((mapping, index) =>
         i.noteOn(mapping.switchSource.note, mapping.switchSource.channel).pipe(map(() => index))
       )
@@ -36,10 +36,10 @@ export function setupSources(getSourceType: (i: number) => SourceType, keyState:
       .flatMap((a) => a);
 
     // LFOs
-    streams.lfoDestinationValueChange = merge(
+    streams.lfoDestinationValueChange$ = merge(
       ...ccObservables.map((o) =>
         o.pipe(
-          filter(() => keyState.lfo1 || keyState.lfo2),
+          filter(() => (keyState.lfo1 || keyState.lfo2) && !keyState.shift),
           map(({ e, sourceIndex, p }) => {
             const lfoIndex = keyState.lfo1 ? 0 : 1;
             // // send LFO to param
@@ -51,10 +51,10 @@ export function setupSources(getSourceType: (i: number) => SourceType, keyState:
     );
 
     // Parameter change
-    streams.parameterValueChange = merge(
+    streams.parameterValueChange$ = merge(
       ...ccObservables.map((o) =>
         o.pipe(
-          filter(() => !(keyState.lfo1 || keyState.lfo2 || keyState.audio)),
+          filter(() => !(keyState.lfo1 || keyState.lfo2 || keyState.audio || keyState.shift)),
           map(({ e, sourceIndex, p }) => {
             const { min, max } = // mod1/2/3 change between source types
               p === 'mod1' || p === 'mod2' || p === 'mod3'
@@ -69,13 +69,26 @@ export function setupSources(getSourceType: (i: number) => SourceType, keyState:
     );
 
     // Audio reactivity
-    streams.audioDestinationValueChange = merge(
+    streams.audioDestinationValueChange$ = merge(
       ...ccObservables.map((o) =>
         o.pipe(
-          filter(() => keyState.audio),
+          filter(() => keyState.audio && !keyState.shift),
           map(({ e, sourceIndex, p }) => {
             const value = e.value / 127; // between 0 and 1
             return { value, parameter: p, sourceIndex } as LfoDestinationValueChange;
+          })
+        )
+      )
+    );
+
+    // Clear parameter
+    streams.clearParameter$ = merge(
+      ...ccObservables.map((o) =>
+        o.pipe(
+          filter(() => keyState.shift),
+          map(({ sourceIndex, p }) => {
+            const destination = keyState.lfo1 ? 'lfo1' : keyState.lfo2 ? 'lfo2' : keyState.audio ? 'audio' : null;
+            return { parameter: p, sourceIndex, destination } as ClearParameterEvent;
           })
         )
       )
@@ -96,19 +109,19 @@ export function setupPresets(state: KeyState): Promise<void> {
     const noteOn = i.noteOn();
     const allKeys = Object.keys(mapping.keys).map((k) => k as Key);
 
-    streams.keyDown = noteOn.pipe(
+    streams.keyDown$ = noteOn.pipe(
       filter((e) => allKeys.some((k) => isNoteMatch(mapping.keys[k], e))),
       map((e) => allKeys.find((k) => isNoteMatch(mapping.keys[k], e))!)
     );
-    streams.keyUp = i.noteOff().pipe(
+    streams.keyUp$ = i.noteOff().pipe(
       filter((e) => allKeys.some((k) => isNoteMatch(mapping.keys[k], e))),
       map((e) => allKeys.find((k) => isNoteMatch(mapping.keys[k], e))!)
     );
-    streams.loadPreset = noteOn.pipe(
+    streams.loadPreset$ = noteOn.pipe(
       filter((e) => mapping.presets.some((p) => isNoteMatch(p, e))),
       map((e) => mapping.presets.findIndex((p) => isNoteMatch(p, e)))
     );
-    streams.savePreset = noteOn.pipe(
+    streams.savePreset$ = noteOn.pipe(
       filter((e) => state.shift && mapping.presets.some((p) => isNoteMatch(p, e))),
       map((e) => mapping.presets.findIndex((p) => isNoteMatch(p, e)))
     );
