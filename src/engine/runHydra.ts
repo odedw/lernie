@@ -28,41 +28,62 @@ function getValueGenerator(ss: SourceState, p: Parameter, lfos: LFO[]): (co: Cal
   };
 }
 
+function getOsc(ss: SourceState, lfos: LFO[]): HydraStream {
+  return osc(
+    getValueGenerator(ss, 'mod1', lfos),
+    getValueGenerator(ss, 'mod2', lfos),
+    getValueGenerator(ss, 'mod3', lfos)
+  );
+  // .kaleid(() => ss.parameters.kaleid);
+}
+
+function getNoise(ss: SourceState, screenRatio: number, lfos: LFO[]): HydraStream {
+  return noise(80, getValueGenerator(ss, 'mod1', lfos))
+    .scale(1, 1, screenRatio)
+    .contrast(getValueGenerator(ss, 'mod2', lfos));
+  // .kaleid(getValueGenerator(ss, 'kaleid', lfo));
+}
+
+function getVoronoi(ss: SourceState, screenRatio: number, lfos: LFO[]): HydraStream {
+  return voronoi(100, getValueGenerator(ss, 'mod1', lfos), getValueGenerator(ss, 'mod2', lfos)).scale(
+    1,
+    1,
+    screenRatio
+  );
+  // .kaleid(getValueGenerator(ss, 'kaleid', lfo));
+}
+
+function getScreen(ss: SourceState, sb: SourceBuffer, screenRatio: number, lfos: LFO[]): HydraStream {
+  sb.initScreen();
+  return (
+    src(sb)
+      // .saturate(getValueGenerator(ss, 'mod2', lfo))
+      .color(
+        getValueGenerator(ss, 'mod1', lfos),
+        getValueGenerator(ss, 'mod2', lfos),
+        getValueGenerator(ss, 'mod3', lfos)
+      )
+  );
+}
+
+function getShape(ss: SourceState, screenRatio: number, lfos: LFO[]): HydraStream {
+  return shape(getValueGenerator(ss, 'mod1', lfos), getValueGenerator(ss, 'mod2', lfos))
+    .scale(1, 1, screenRatio)
+    .rotate(({ time }) => ((time * ss.parameters.mod3) % 360) * (Math.PI / 180));
+}
+
 function getSource(ss: SourceState, sb: SourceBuffer, screenRatio: number, lfos: LFO[]): HydraStream {
-  if (ss.sourceType === SourceType.noise) {
-    return noise(80, getValueGenerator(ss, 'mod1', lfos))
-      .scale(1, 1, screenRatio)
-      .contrast(getValueGenerator(ss, 'mod2', lfos));
-    // .kaleid(getValueGenerator(ss, 'kaleid', lfo));
-  } else if (ss.sourceType === SourceType.voronoi) {
-    return voronoi(100, getValueGenerator(ss, 'mod1', lfos), getValueGenerator(ss, 'mod2', lfos)).scale(
-      1,
-      1,
-      screenRatio
-    );
-    // .kaleid(getValueGenerator(ss, 'kaleid', lfo));
-  } else if (ss.sourceType === SourceType.screen) {
-    sb.initScreen();
-    return (
-      src(sb)
-        // .saturate(getValueGenerator(ss, 'mod2', lfo))
-        .color(
-          getValueGenerator(ss, 'mod1', lfos),
-          getValueGenerator(ss, 'mod2', lfos),
-          getValueGenerator(ss, 'mod3', lfos)
-        )
-    );
-  } else if (ss.sourceType === SourceType.shape) {
-    return shape(getValueGenerator(ss, 'mod1', lfos), getValueGenerator(ss, 'mod2', lfos))
-      .scale(1, 1, screenRatio)
-      .rotate(({ time }) => ((time * ss.parameters.mod3) % 360) * (Math.PI / 180));
-  } else {
-    return osc(
-      getValueGenerator(ss, 'mod1', lfos),
-      getValueGenerator(ss, 'mod2', lfos),
-      getValueGenerator(ss, 'mod3', lfos)
-    );
-    // .kaleid(() => ss.parameters.kaleid);
+  switch (ss.sourceType) {
+    case SourceType.noise:
+      return getNoise(ss, screenRatio, lfos);
+    case SourceType.voronoi:
+      return getVoronoi(ss, screenRatio, lfos);
+    case SourceType.screen:
+      return getScreen(ss, sb, screenRatio, lfos);
+    case SourceType.shape:
+      return getShape(ss, screenRatio, lfos);
+    default:
+      return getOsc(ss, lfos);
   }
 }
 
