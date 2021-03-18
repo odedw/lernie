@@ -1,5 +1,6 @@
 import { SourceType } from './source';
 import { Parameter } from './parameters';
+import { allParameters } from '../engine/state/defaultSourceState';
 
 export class SourceState {
   parameters!: Record<Parameter, number>;
@@ -13,7 +14,7 @@ export class SourceState {
 
   generateLfoMap() {
     const lfo = { ...this.parameters };
-    Object.keys(lfo).forEach((k) => (lfo[k as Parameter] = 0));
+    allParameters.forEach((p) => (lfo[p] = 0));
     return lfo;
   }
 }

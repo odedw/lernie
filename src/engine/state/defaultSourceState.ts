@@ -1,4 +1,4 @@
-import { SourceState, SourceType } from '../../types';
+import { Parameter, SourceState, SourceType } from '../../types';
 const defaultParams = {
   rotation: 0,
   // kaleid: 1,
@@ -53,3 +53,7 @@ export const generateDefaultSourceState = (sourceType: SourceType, primary: bool
   res.parameters.blend = primary ? res.parameters.blend : 0;
   return res;
 };
+
+export const allParameters = Object.keys(generateDefaultSourceState(SourceType.osc).parameters).map(
+  (k) => k as Parameter
+);

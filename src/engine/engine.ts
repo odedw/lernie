@@ -7,7 +7,7 @@ import { LFO } from './LFO';
 import run, { runSource } from './runHydra';
 import streams from './streams';
 import { setupSources, setupPresets } from './setupMidi';
-import { generateDefaultSourceState } from './state/defaultSourceState';
+import { allParameters, generateDefaultSourceState } from './state/defaultSourceState';
 import { KeyState } from '../types/Keys';
 
 export class Engine {
@@ -42,7 +42,7 @@ export class Engine {
         ss.sourceType = ((Number(ss.sourceType) + 1) % SourceTypeValues.length) as SourceType;
 
         const defaultParams = generateDefaultSourceState(ss.sourceType).parameters;
-        Object.keys(ss.parameters)
+        allParameters
           .filter((p) => !['blend', 'diff'].includes(p))
           .forEach((p) => (ss.parameters[p as Parameter] = defaultParams[p as Parameter]));
         runSource(this.state, index, this.screenRatio, this.lfos);
@@ -59,10 +59,9 @@ export class Engine {
         const ss = this.state.sources[index];
         const defaultState = generateDefaultSourceState(ss.sourceType);
         // copy parameters default state
-        Object.keys(ss.parameters).forEach((k) => {
-          const key = k as Parameter;
-          ss.parameters[key] = defaultState.parameters[key];
-          ss.lfos.forEach((lfo) => (lfo[key] = 0));
+        allParameters.forEach((p) => {
+          ss.parameters[p] = defaultState.parameters[p];
+          ss.lfos.forEach((lfo) => (lfo[p] = 0));
         });
       });
       streams.clearParameter$.subscribe((e) => {
@@ -95,7 +94,7 @@ export class Engine {
     run(this.state, this.screenRatio, this.lfos);
   }
   randomize() {
-    Object.keys(this.state.sources[0].parameters).forEach((k) => {
+    allParameters.forEach((k) => {
       if (k.startsWith('modulate')) {
         return;
       }
