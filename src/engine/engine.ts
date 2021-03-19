@@ -1,13 +1,13 @@
 import gsap from 'gsap';
 import moment from 'moment';
-import { config } from '../config/parameterConfig';
+import { config, allParameters } from '../config/parameterConfig';
 import { downloadObjectAsJson, loadFile } from '../storage';
 import { Parameter, SourceState, SourceType, SourceTypeValues, State } from '../types';
 import { LFO } from './LFO';
 import run, { runSource } from './runHydra';
 import streams from './streams';
 import { setupSources, setupPresets } from './setupMidi';
-import { allParameters, generateDefaultSourceState } from './state/defaultSourceState';
+import { generateDefaultSourceState } from './state/defaultSourceState';
 import { KeyState } from '../types/Keys';
 
 export class Engine {

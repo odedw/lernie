@@ -1,6 +1,6 @@
 import { SourceType } from './source';
 import { Parameter } from './parameters';
-import { allParameters } from '../engine/state/defaultSourceState';
+import { allParameters } from '../config/parameterConfig';
 
 export class SourceState {
   parameters!: Record<Parameter, number>;

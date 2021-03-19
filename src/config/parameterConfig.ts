@@ -56,3 +56,5 @@ export const config: ParameterConfig = {
     },
   },
 };
+
+export const allParameters = Object.keys(config.parameters).map((k) => k as Parameter);
