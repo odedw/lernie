@@ -6,16 +6,18 @@ export class SourceState {
   parameters!: Record<Parameter, number>;
   sourceType!: SourceType;
   lfos!: Record<Parameter, number>[];
+  audio!: Record<Parameter, number>;
   constructor(parameters: Record<Parameter, number>, sourceType: SourceType) {
     this.parameters = parameters;
     this.sourceType = sourceType;
-    this.lfos = [this.generateLfoMap(), this.generateLfoMap()];
+    this.lfos = [this.generateZeroParametersRecord(), this.generateZeroParametersRecord()];
+    this.audio = this.generateZeroParametersRecord();
   }
 
-  generateLfoMap() {
-    const lfo = { ...this.parameters };
-    allParameters.forEach((p) => (lfo[p] = 0));
-    return lfo;
+  generateZeroParametersRecord() {
+    const record = { ...this.parameters };
+    allParameters.forEach((p) => (record[p] = 0));
+    return record;
   }
 }
 

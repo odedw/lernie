@@ -9,7 +9,10 @@ import { Key, KeyState } from '../types/Keys';
 
 let input = Input.create('Launch Control XL');
 
-export function setupSources(getSourceType: (i: number) => SourceType, keyState: KeyState): Promise<void> {
+const isNoteMatch = (p: { note: string; channel?: number }, e: { note: { name: any; octave: any }; channel: any }) =>
+  p.note === `${e.note.name}${e.note.octave}` && (!p.channel || p.channel === e.channel);
+
+export function setupMidi(getSourceType: (i: number) => SourceType, keyState: KeyState): Promise<void> {
   const allParameters = Object.keys(mapping.sources[0].parameters).map((k) => k as Parameter);
 
   // listInputs();
@@ -94,18 +97,6 @@ export function setupSources(getSourceType: (i: number) => SourceType, keyState:
       )
     );
 
-    // debug
-    // i.noteOn().subscribe((e) => {
-    //   console.log(`${e.note.name}${e.note.octave}`);
-    // });
-  });
-}
-
-const isNoteMatch = (p: { note: string; channel?: number }, e: { note: { name: any; octave: any }; channel: any }) =>
-  p.note === `${e.note.name}${e.note.octave}` && (!p.channel || p.channel === e.channel);
-
-export function setupPresets(state: KeyState): Promise<void> {
-  return input.then((i) => {
     const noteOn = i.noteOn();
     const allKeys = Object.keys(mapping.keys).map((k) => k as Key);
 
@@ -122,8 +113,13 @@ export function setupPresets(state: KeyState): Promise<void> {
       map((e) => mapping.presets.findIndex((p) => isNoteMatch(p, e)))
     );
     streams.savePreset$ = noteOn.pipe(
-      filter((e) => state.shift && mapping.presets.some((p) => isNoteMatch(p, e))),
+      filter((e) => keyState.shift && mapping.presets.some((p) => isNoteMatch(p, e))),
       map((e) => mapping.presets.findIndex((p) => isNoteMatch(p, e)))
     );
+
+    // debug
+    // i.noteOn().subscribe((e) => {
+    //   console.log(`${e.note.name}${e.note.octave}`);
+    // });
   });
 }

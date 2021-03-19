@@ -1,5 +1,3 @@
-
-
 export enum SourceType {
   osc = 0,
   noise,

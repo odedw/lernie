@@ -6,7 +6,7 @@ import { Parameter, SourceState, SourceType, SourceTypeValues, State } from '../
 import { LFO } from './LFO';
 import run, { runSource } from './runHydra';
 import streams from './streams';
-import { setupSources, setupPresets } from './setupMidi';
+import { setupMidi } from './setupMidi';
 import { generateDefaultSourceState } from './state/defaultSourceState';
 import { KeyState } from '../types/Keys';
 
@@ -30,10 +30,7 @@ export class Engine {
     this.loadPreset = this.loadPreset.bind(this);
   }
   init(): Promise<any> {
-    return Promise.all([
-      setupSources((i) => this.state.sources[i].sourceType, this.keyState),
-      setupPresets(this.keyState),
-    ]).then(() => {
+    return setupMidi((i) => this.state.sources[i].sourceType, this.keyState).then(() => {
       // subscriptions
       streams.savePreset$.subscribe((i) => this.savePreset(i));
       streams.loadPreset$.subscribe((i) => this.loadPreset(i));
@@ -54,6 +51,9 @@ export class Engine {
       );
       streams.lfoDestinationValueChange$.subscribe(
         (e) => (this.state.sources[e.sourceIndex].lfos[e.lfoIndex][e.parameter] = e.value)
+      );
+      streams.audioDestinationValueChange$.subscribe(
+        (e) => (this.state.sources[e.sourceIndex].audio[e.parameter] = e.value)
       );
       streams.resetSource$.subscribe((index) => {
         const ss = this.state.sources[index];

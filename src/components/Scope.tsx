@@ -59,7 +59,10 @@ const Scope: React.FC<Props> = ({ enabled }) => {
       ),
       streams.parameterValueChange$.pipe(map((e) => `${e.sourceIndex + 1} - ${e.parameter}: ${e.value.toFixed(2)}`)),
       streams.lfoDestinationValueChange$.pipe(
-        map((e) => `${e.sourceIndex + 1} - LFO ${e.lfoIndex + 1}- ${e.parameter}: ${Math.floor(e.value * 100)}%`)
+        map((e) => `${e.sourceIndex + 1} - LFO ${e.lfoIndex + 1} - ${e.parameter}: ${Math.floor(e.value * 100)}%`)
+      ),
+      streams.audioDestinationValueChange$.pipe(
+        map((e) => `${e.sourceIndex + 1} - Audio - ${e.parameter}: ${Math.floor(e.value * 100)}%`)
       ),
       streams.loadPreset$.pipe(map((i) => `Load preset ${i + 1}`)),
       streams.savePreset$.pipe(map((i) => `Save preset ${i + 1}`)),

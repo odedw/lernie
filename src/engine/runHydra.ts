@@ -11,19 +11,19 @@ function debug(val: number): number {
 function getValueGenerator(ss: SourceState, p: Parameter, lfos: LFO[]): (co: CallbackObject) => number {
   return ({ time }) => {
     let value = ss.parameters[p];
+    const valueRange = config.parameters[p].max - config.parameters[p].min;
 
     lfos.forEach((lfo, i) => {
-      const lfoValue = ss.lfos[i][p] < 0 ? 1 - lfo.getValue(time) : lfo.getValue(time);
       // add lfo
-      value += lfoValue * Math.abs(ss.lfos[i][p]) * (config.parameters[p].max - config.parameters[p].min);
+      const lfoValue = ss.lfos[i][p] < 0 ? 1 - lfo.getValue(time) : lfo.getValue(time);
+      value += lfoValue * Math.abs(ss.lfos[i][p]) * valueRange;
     });
+
+    // add audio
+    value += ss.audio[p] * valueRange * a.fft[0];
 
     // clamp
     value = Math.min(Math.max(config.parameters[p].min, value), config.parameters[p].max);
-
-    // if (p === 'blend') {
-    //   console.log(value);
-    // }
     return value;
   };
 }
@@ -129,4 +129,14 @@ export default function run(state: State, screenRatio: number, lfos: LFO[]) {
     .diff(solid(0, 0, 0, 0).blend(src(o1), getValueGenerator(state.sources[0], 'diff', lfos)))
     .diff(solid(0, 0, 0, 0).blend(src(o2), getValueGenerator(state.sources[1], 'diff', lfos)))
     .out(o0);
+
+  // @ts-ignore
+  navigator.mediaDevices.getDisplayMedia({ video: true, audio: true }).then((desktopStream) => {
+    // @ts-ignore
+    const desktopSource = a.context.createMediaStreamSource(desktopStream);
+    // @ts-ignore
+    a.meyda.setSource(desktopSource);
+  });
+
+  a.show();
 }
