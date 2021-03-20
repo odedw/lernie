@@ -106,6 +106,7 @@ export function runSource(s: State, i: number, screenRatio: number, lfos: LFO[])
       getValueGenerator(ss, 'colorG', lfos),
       getValueGenerator(ss, 'colorB', lfos)
     )
+    .contrast(getValueGenerator(ss, 'contrast', lfos))
     .pixelate(
       (obj) => getValueGenerator(ss, 'pixelate', lfos)(obj) * screenRatio,
       getValueGenerator(ss, 'pixelate', lfos)

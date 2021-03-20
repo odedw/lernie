@@ -30,6 +30,7 @@ export const config: ParameterConfig = {
     colorR: { min: 0, max: 1 },
     colorG: { min: 0, max: 1 },
     colorB: { min: 0, max: 1 },
+    contrast: { min: 0, max: 20 },
   },
   sourceMods: {
     [SourceType.osc]: {

@@ -1,5 +1,5 @@
-import { SourceState, SourceType } from '../../types';
-const defaultParams = {
+import { Parameter, SourceState, SourceType } from '../../types';
+const defaultParams: Record<Parameter, number> = {
   rotation: 0,
   // kaleid: 1,
   brightness: 0,
@@ -17,6 +17,10 @@ const defaultParams = {
   colorR: 1,
   colorG: 1,
   colorB: 1,
+  contrast: 1,
+  mod1: 0,
+  mod2: 0,
+  mod3: 0,
 };
 const defaultSourceMods = {
   [SourceType.osc]: {
@@ -48,8 +52,8 @@ const defaultSourceMods = {
 export const generateDefaultSourceState = (sourceType: SourceType, primary: boolean = true): SourceState => {
   const res = new SourceState(
     {
-      ...defaultSourceMods[sourceType],
       ...defaultParams,
+      ...defaultSourceMods[sourceType],
     },
     sourceType
   );

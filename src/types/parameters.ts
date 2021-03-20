@@ -18,4 +18,5 @@ export type Parameter =
   | 'selfModulate'
   | 'colorR'
   | 'colorG'
-  | 'colorB';
+  | 'colorB'
+  | 'contrast';
