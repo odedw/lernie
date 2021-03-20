@@ -4,7 +4,6 @@ import { Parameter } from './parameters';
 export type MidiCCBinding = {
   cc: number;
   channel?: number;
-  keys?: Record<Key, boolean>;
 };
 
 export type MidiNoteBinding = {

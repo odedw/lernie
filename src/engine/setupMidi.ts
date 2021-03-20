@@ -33,7 +33,7 @@ export function setupMidi(getSourceType: (i: number) => SourceType, keyState: Ke
 
     streams.selectAudioBin$ = merge(
       ...mapping.sources.map((mapping, index) =>
-        i.noteOn(mapping.reset.note, mapping.reset.channel).pipe(
+        i.noteOn(mapping.switchSource.note, mapping.switchSource.channel).pipe(
           filter(() => keyState.audio),
           map(() => index)
         )
@@ -58,7 +58,11 @@ export function setupMidi(getSourceType: (i: number) => SourceType, keyState: Ke
     streams.lfoDestinationValueChange$ = merge(
       ...ccObservables.map((o) =>
         o.pipe(
-          filter(() => (keyState.lfo1 || keyState.lfo2) && !keyState.shift && !(keyState.lfo1 && keyState.lfo2)),
+          filter(
+            () =>
+              keyStateMatches(keyState, generateKeyRecord(['lfo1'])) ||
+              keyStateMatches(keyState, generateKeyRecord(['lfo2']))
+          ),
           map(({ e, sourceIndex, p }) => {
             const lfoIndex = keyState.lfo1 ? 0 : 1;
             // // send LFO to param
@@ -73,8 +77,7 @@ export function setupMidi(getSourceType: (i: number) => SourceType, keyState: Ke
     streams.parameterValueChange$ = merge(
       ...ccObservables.map((o) =>
         o.pipe(
-          filter(({ p, m }) => keyStateMatches(keyState, m.parameters[p].keys)),
-          // filter(() => !(keyState.lfo1 || keyState.lfo2 || keyState.audio || keyState.shift)),
+          filter(() => keyStateMatches(keyState)),
 
           map(({ e, sourceIndex, p }) => {
             const { min, max } = // mod1/2/3 change between source types

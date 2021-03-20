@@ -1,4 +1,4 @@
-import { generateKeyRecord, Mapping } from '../types';
+import { Mapping } from '../types';
 
 const config: Mapping = {
   sources: [
@@ -20,10 +20,10 @@ const config: Mapping = {
         modulateRotate: { cc: 50 },
         modulateScale: { cc: 51 },
         repeatXY: { cc: 52 },
-        colorR: { cc: 13, keys: generateKeyRecord(['lfo1', 'lfo2']) },
-        colorG: { cc: 14, keys: generateKeyRecord(['lfo1', 'lfo2']) },
-        colorB: { cc: 15, keys: generateKeyRecord(['lfo1', 'lfo2']) },
-        contrast: { cc: 16, keys: generateKeyRecord(['lfo1', 'lfo2']) },
+        colorR: { cc: 37 },
+        colorG: { cc: 38 },
+        colorB: { cc: 39 },
+        contrast: { cc: 40 },
       },
       switchSource: { note: 'F2' },
       reset: { note: 'F#2' },
@@ -46,10 +46,10 @@ const config: Mapping = {
         modulateRotate: { cc: 54 },
         modulateScale: { cc: 55 },
         repeatXY: { cc: 56 },
-        colorR: { cc: 17, keys: generateKeyRecord(['lfo1', 'lfo2']) },
-        colorG: { cc: 18, keys: generateKeyRecord(['lfo1', 'lfo2']) },
-        colorB: { cc: 19, keys: generateKeyRecord(['lfo1', 'lfo2']) },
-        contrast: { cc: 20, keys: generateKeyRecord(['lfo1', 'lfo2']) },
+        colorR: { cc: 41 },
+        colorG: { cc: 42 },
+        colorB: { cc: 43 },
+        contrast: { cc: 44 },
       },
       switchSource: { note: 'A3' },
       reset: { note: 'A#3' },
