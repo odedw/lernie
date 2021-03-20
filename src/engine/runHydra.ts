@@ -55,15 +55,15 @@ function getVoronoi(ss: SourceState, screenRatio: number, lfos: LFO[]): HydraStr
 
 function getScreen(ss: SourceState, sb: SourceBuffer, screenRatio: number, lfos: LFO[]): HydraStream {
   sb.initScreen();
-  return (
-    src(sb)
-      // .saturate(getValueGenerator(ss, 'mod2', lfo))
-      .color(
-        getValueGenerator(ss, 'mod1', lfos),
-        getValueGenerator(ss, 'mod2', lfos),
-        getValueGenerator(ss, 'mod3', lfos)
-      )
-  );
+  return src(sb)
+    .saturate(getValueGenerator(ss, 'mod1', lfos))
+    .invert(getValueGenerator(ss, 'mod3', lfos))
+    .luma(getValueGenerator(ss, 'mod2', lfos), 0);
+  // .color(
+  //   getValueGenerator(ss, 'mod1', lfos),
+  //   getValueGenerator(ss, 'mod2', lfos),
+  //   getValueGenerator(ss, 'mod3', lfos)
+  // )
 }
 
 function getShape(ss: SourceState, screenRatio: number, lfos: LFO[]): HydraStream {
