@@ -1,9 +1,10 @@
-import { Key } from './Keys';
+import { allKeys, Key } from './Keys';
 import { Parameter } from './parameters';
 
 export type MidiCCBinding = {
   cc: number;
   channel?: number;
+  keys?: Record<Key, boolean>;
 };
 
 export type MidiNoteBinding = {
@@ -31,3 +32,10 @@ export type Mapping = {
     MidiNoteBinding
   ];
 };
+
+export function generateKeyRecord(keys: Key[] = []): Record<Key, boolean> {
+  return allKeys.reduce<Record<Key, boolean>>((p, c) => {
+    p[c] = keys.includes(c);
+    return p;
+  }, {} as Record<Key, boolean>);
+}

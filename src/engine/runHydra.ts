@@ -101,6 +101,11 @@ export function runSource(s: State, i: number, screenRatio: number, lfos: LFO[])
   source
     .blend(o, getValueGenerator(ss, 'feedback', lfos))
     .rotate(getValueGenerator(ss, 'rotation', lfos), 0)
+    .color(
+      getValueGenerator(ss, 'colorR', lfos),
+      getValueGenerator(ss, 'colorG', lfos),
+      getValueGenerator(ss, 'colorB', lfos)
+    )
     .pixelate(
       (obj) => getValueGenerator(ss, 'pixelate', lfos)(obj) * screenRatio,
       getValueGenerator(ss, 'pixelate', lfos)

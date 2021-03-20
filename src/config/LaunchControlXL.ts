@@ -1,4 +1,4 @@
-import { Mapping } from '../types';
+import { generateKeyRecord, Mapping } from '../types';
 
 const config: Mapping = {
   sources: [
@@ -20,6 +20,9 @@ const config: Mapping = {
         modulateRotate: { cc: 50 },
         modulateScale: { cc: 51 },
         repeatXY: { cc: 52 },
+        colorR: { cc: 13, keys: generateKeyRecord(['lfo1', 'lfo2']) },
+        colorG: { cc: 14, keys: generateKeyRecord(['lfo1', 'lfo2']) },
+        colorB: { cc: 15, keys: generateKeyRecord(['lfo1', 'lfo2']) },
       },
       switchSource: { note: 'F2' },
       reset: { note: 'F#2' },
@@ -42,6 +45,9 @@ const config: Mapping = {
         modulateRotate: { cc: 54 },
         modulateScale: { cc: 55 },
         repeatXY: { cc: 56 },
+        colorR: { cc: 17, keys: generateKeyRecord(['lfo1', 'lfo2']) },
+        colorG: { cc: 18, keys: generateKeyRecord(['lfo1', 'lfo2']) },
+        colorB: { cc: 19, keys: generateKeyRecord(['lfo1', 'lfo2']) },
       },
       switchSource: { note: 'A3' },
       reset: { note: 'A#3' },

@@ -27,6 +27,9 @@ export const config: ParameterConfig = {
     diff: { min: 0, max: 1 },
     feedback: { min: 0, max: 1 },
     selfModulate: { min: 0, max: 1 },
+    colorR: { min: 0, max: 1 },
+    colorG: { min: 0, max: 1 },
+    colorB: { min: 0, max: 1 },
   },
   sourceMods: {
     [SourceType.osc]: {

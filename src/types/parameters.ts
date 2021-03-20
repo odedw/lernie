@@ -15,4 +15,7 @@ export type Parameter =
   | 'blend'
   | 'diff'
   | 'feedback'
-  | 'selfModulate';
+  | 'selfModulate'
+  | 'colorR'
+  | 'colorG'
+  | 'colorB';

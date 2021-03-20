@@ -1,16 +1,20 @@
 import { Input } from 'rmidi';
 import { config } from '../config/parameterConfig';
-import { Parameter, SourceType } from '../types';
+import { generateKeyRecord, Parameter, SourceType } from '../types';
 import mapping from '../config/LaunchControlXL';
 import { merge } from 'rxjs';
 import streams, { ClearParameterEvent, LfoDestinationValueChange, ParameterValueChangeEvent } from './streams';
 import { filter, map } from 'rxjs/operators';
-import { Key, KeyState } from '../types/Keys';
+import { allKeys, Key, KeyState } from '../types/Keys';
 
 let input = Input.create('Launch Control XL');
 
 const isNoteMatch = (p: { note: string; channel?: number }, e: { note: { name: any; octave: any }; channel: any }) =>
   p.note === `${e.note.name}${e.note.octave}` && (!p.channel || p.channel === e.channel);
+
+const keyStateMatches = (ks: KeyState, keys: Record<Key, boolean> = generateKeyRecord()): boolean => {
+  return allKeys.every((k) => keys[k] === ks[k]);
+};
 
 export function setupMidi(getSourceType: (i: number) => SourceType, keyState: KeyState): Promise<void> {
   const allParameters = Object.keys(mapping.sources[0].parameters).map((k) => k as Parameter);
@@ -45,7 +49,7 @@ export function setupMidi(getSourceType: (i: number) => SourceType, keyState: Ke
     const ccObservables = mapping.sources
       .map((m, sourceIndex) =>
         allParameters.map((p) =>
-          i.cc(m.parameters[p].cc, m.parameters[p].channel).pipe(map((e) => ({ e, sourceIndex, p })))
+          i.cc(m.parameters[p].cc, m.parameters[p].channel).pipe(map((e) => ({ e, sourceIndex, p, m })))
         )
       )
       .flatMap((a) => a);
@@ -54,7 +58,7 @@ export function setupMidi(getSourceType: (i: number) => SourceType, keyState: Ke
     streams.lfoDestinationValueChange$ = merge(
       ...ccObservables.map((o) =>
         o.pipe(
-          filter(() => (keyState.lfo1 || keyState.lfo2) && !keyState.shift),
+          filter(() => (keyState.lfo1 || keyState.lfo2) && !keyState.shift && !(keyState.lfo1 && keyState.lfo2)),
           map(({ e, sourceIndex, p }) => {
             const lfoIndex = keyState.lfo1 ? 0 : 1;
             // // send LFO to param
@@ -69,7 +73,9 @@ export function setupMidi(getSourceType: (i: number) => SourceType, keyState: Ke
     streams.parameterValueChange$ = merge(
       ...ccObservables.map((o) =>
         o.pipe(
-          filter(() => !(keyState.lfo1 || keyState.lfo2 || keyState.audio || keyState.shift)),
+          filter(({ p, m }) => keyStateMatches(keyState, m.parameters[p].keys)),
+          // filter(() => !(keyState.lfo1 || keyState.lfo2 || keyState.audio || keyState.shift)),
+
           map(({ e, sourceIndex, p }) => {
             const { min, max } = // mod1/2/3 change between source types
               p === 'mod1' || p === 'mod2' || p === 'mod3'

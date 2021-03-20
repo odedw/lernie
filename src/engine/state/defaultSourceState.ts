@@ -14,6 +14,9 @@ const defaultParams = {
   diff: 0,
   feedback: 0,
   selfModulate: 0,
+  colorR: 1,
+  colorG: 1,
+  colorB: 1,
 };
 const defaultSourceMods = {
   [SourceType.osc]: {
