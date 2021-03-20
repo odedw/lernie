@@ -129,11 +129,14 @@ export default function run(state: State, screenRatio: number, lfos: LFO[]) {
     .diff(solid(0, 0, 0, 0).blend(src(o1), getValueGenerator(state.sources[0], 'diff', lfos)))
     .diff(solid(0, 0, 0, 0).blend(src(o2), getValueGenerator(state.sources[1], 'diff', lfos)))
     .out(o0);
+}
 
+export function runAudio() {
   // @ts-ignore
   navigator.mediaDevices.getDisplayMedia({ video: true, audio: true }).then((desktopStream) => {
     // @ts-ignore
     const desktopSource = a.context.createMediaStreamSource(desktopStream);
+    a.setSmooth(0.5);
     // @ts-ignore
     a.meyda.setSource(desktopSource);
   });

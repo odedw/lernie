@@ -4,7 +4,7 @@ import { config, allParameters } from '../config/parameterConfig';
 import { downloadObjectAsJson, loadFile } from '../storage';
 import { Parameter, SourceState, SourceType, SourceTypeValues, State } from '../types';
 import { LFO } from './LFO';
-import run, { runSource } from './runHydra';
+import run, { runAudio, runSource } from './runHydra';
 import streams from './streams';
 import { setupMidi } from './setupMidi';
 import { generateDefaultSourceState } from './state/defaultSourceState';
@@ -14,6 +14,7 @@ export class Engine {
   state: State;
   screenRatio: number = 1;
   lfos = [new LFO(), new LFO(2)];
+  ranAudio = false;
   keyState: KeyState = {
     lfo1: false,
     lfo2: false,
@@ -71,9 +72,16 @@ export class Engine {
         } else if (e.destination === 'lfo2') {
           ss.lfos[1][e.parameter] = 0;
         } else if (e.destination === 'audio') {
-          // ss.audio[e.parameter] = 0;
+          ss.audio[e.parameter] = 0;
         } else {
           ss.parameters[e.parameter] = generateDefaultSourceState(ss.sourceType).parameters[e.parameter];
+        }
+      });
+
+      streams.selectAudioBin$.subscribe((e) => {
+        if (!this.ranAudio) {
+          this.ranAudio = true;
+          runAudio();
         }
       });
     });

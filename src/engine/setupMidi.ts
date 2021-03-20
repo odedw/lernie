@@ -20,7 +20,19 @@ export function setupMidi(getSourceType: (i: number) => SourceType, keyState: Ke
     // reset
     streams.resetSource$ = merge(
       ...mapping.sources.map((mapping, index) =>
-        i.noteOn(mapping.reset.note, mapping.reset.channel).pipe(map(() => index))
+        i.noteOn(mapping.reset.note, mapping.reset.channel).pipe(
+          filter(() => !keyState.audio),
+          map(() => index)
+        )
+      )
+    );
+
+    streams.selectAudioBin$ = merge(
+      ...mapping.sources.map((mapping, index) =>
+        i.noteOn(mapping.reset.note, mapping.reset.channel).pipe(
+          filter(() => keyState.audio),
+          map(() => index)
+        )
       )
     );
 

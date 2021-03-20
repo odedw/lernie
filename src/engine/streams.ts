@@ -36,6 +36,7 @@ export class Streams {
   keyDown$!: Observable<Key>;
   keyUp$!: Observable<Key>;
   resetSource$!: Observable<number>;
+  selectAudioBin$!: Observable<number>;
 }
 
 export default new Streams();
