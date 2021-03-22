@@ -43,7 +43,10 @@ export function setupMidi(getSourceType: (i: number) => SourceType, keyState: Ke
     // switchSource
     streams.sourceTypeChange$ = merge(
       ...mapping.sources.map((mapping, index) =>
-        i.noteOn(mapping.switchSource.note, mapping.switchSource.channel).pipe(map(() => index))
+        i.noteOn(mapping.switchSource.note, mapping.switchSource.channel).pipe(
+          filter(() => keyStateMatches(keyState, generateKeyRecord())),
+          map(() => index)
+        )
       )
     );
     const ccObservables = mapping.sources
