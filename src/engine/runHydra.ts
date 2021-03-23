@@ -15,7 +15,7 @@ function getValueGenerator(ss: SourceState, p: Parameter, lfos: LFO[]): (co: Cal
 
     lfos.forEach((lfo, i) => {
       // add lfo
-      const lfoValue = ss.lfos[i][p] < 0 ? 1 - lfo.getValue(time) : lfo.getValue(time);
+      const lfoValue = ss.lfos[i][p] < 0 ? 1 - lfo.getValue() : lfo.getValue();
       value += lfoValue * Math.abs(ss.lfos[i][p]) * valueRange;
     });
 
@@ -147,5 +147,5 @@ export function runAudio() {
     a.meyda.setSource(desktopSource);
   });
 
-  a.show();
+  // a.show();
 }

@@ -5,11 +5,14 @@ import { SourceType } from '../types';
 import { merge } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { engine } from '../engine';
+import LFO from './LFO';
 
 const Container = styled.div`
   position: absolute;
   left: 0;
   right: 0;
+  top: 0;
+  bottom: 0;
   text-align: center;
   bottom: 20vh;
   font-size: 5vh;
@@ -24,6 +27,18 @@ const Container = styled.div`
     color: #dfc;
   }
 `;
+const LFOContainer = styled.div`
+  position: absolute;
+  right: 20px;
+  top: 20px;
+`;
+const TextContainer = styled.div`
+  top: 66vh;
+  position: absolute;
+  margin: auto;
+  left: 0;
+  right: 0;
+`;
 const Text = styled.div``;
 let timers: NodeJS.Timeout[] = [];
 type Props = {
@@ -32,6 +47,8 @@ type Props = {
 const Scope: React.FC<Props> = ({ enabled }) => {
   const [text1, setText1] = useState('');
   const [text2, setText2] = useState('');
+  const [lfo1Value, setLfo1Value] = useState<number>(0);
+
   const show = useCallback(
     (text: string, force: boolean = false) => {
       const index = text.startsWith('2 - ') ? 1 : 0;
@@ -75,10 +92,16 @@ const Scope: React.FC<Props> = ({ enabled }) => {
   useEffect(() => {
     show(`Scope ${enabled ? 'on' : 'off'}`, true);
   }, [enabled, show]);
+  // useEffect(() => {
+  //   setLfo1Value(engine.lfos[0].getValue());
+  // });
   return (
     <Container>
-      <Text className="text-1">{text1}</Text>
-      <Text className="text-2">{text2}</Text>
+      <TextContainer>
+        <Text className="text-1">{text1}</Text>
+        <Text className="text-2">{text2}</Text>
+      </TextContainer>
+      <LFOContainer>{/* <LFO value={lfo1Value} /> */}</LFOContainer>
     </Container>
   );
 };

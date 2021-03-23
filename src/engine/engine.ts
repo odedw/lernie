@@ -13,7 +13,7 @@ import { KeyState } from '../types/Keys';
 export class Engine {
   state: State;
   screenRatio: number = 1;
-  lfos = [new LFO(), new LFO(2)];
+  lfos = [new LFO(1000), new LFO(2002)];
   ranAudio = false;
   keyState: KeyState = {
     lfo1: false,
