@@ -16,10 +16,13 @@ export type SourceMapping = {
   switchSource: MidiNoteBinding;
   reset: MidiNoteBinding;
 };
-
+export type LFOControl = {
+  type: MidiCCBinding;
+};
 export type Mapping = {
-  sources: SourceMapping[];
+  sources: [SourceMapping, SourceMapping];
   keys: Record<Key, MidiNoteBinding>;
+  lfosControl: [LFOControl, LFOControl];
   presets: [
     MidiNoteBinding,
     MidiNoteBinding,

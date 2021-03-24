@@ -84,6 +84,8 @@ export class Engine {
           runAudio();
         }
       });
+
+      streams.lfoTypeChange$.subscribe((e) => (this.lfos[e.lfoIndex].type = e.type));
     });
 
     // debug

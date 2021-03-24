@@ -1,7 +1,7 @@
 const now = require('right-now');
 
 export enum LFOType {
-  Sine,
+  Sine = 0,
   Square,
   Triangle,
   Saw,

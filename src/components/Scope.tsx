@@ -5,6 +5,7 @@ import { SourceType } from '../types';
 import { merge } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { engine } from '../engine';
+import { LFOType } from '../engine/LFO';
 // import LFO from './LFO';
 
 const Container = styled.div`
@@ -85,7 +86,8 @@ const Scope: React.FC<Props> = ({ enabled }) => {
       streams.savePreset$.pipe(map((i) => `Save preset ${i + 1}`)),
       streams.clearParameter$.pipe(
         map((e) => `${e.sourceIndex + 1} ${e.destination ? `- ${e.destination}` : ''}- ${e.parameter} cleared`)
-      )
+      ),
+      streams.lfoTypeChange$.pipe(map((e) => `LFO ${e.lfoIndex + 1} - ${LFOType[e.type]}`))
     ).subscribe(show);
     return () => sub.unsubscribe();
   }, [show]);

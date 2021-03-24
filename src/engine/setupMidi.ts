@@ -3,9 +3,16 @@ import { config } from '../config/parameterConfig';
 import { generateKeyRecord, Parameter, SourceType } from '../types';
 import mapping from '../config/LaunchControlXL';
 import { merge } from 'rxjs';
-import streams, { ClearParameterEvent, LfoDestinationValueChange, ParameterValueChangeEvent } from './streams';
+import streams, {
+  ClearParameterEvent,
+  LfoDestinationValueChange,
+  LFOTypeChangeEvent,
+  ParameterValueChangeEvent,
+} from './streams';
 import { filter, map } from 'rxjs/operators';
 import { allKeys, Key, KeyState } from '../types/Keys';
+import { InputEventControlchange } from 'webmidi';
+import { LFOType } from './LFO';
 
 let input = Input.create('Launch Control XL');
 
@@ -120,7 +127,18 @@ export function setupMidi(getSourceType: (i: number) => SourceType, keyState: Ke
         )
       )
     );
+    // lfo control
+    const numOfLfoTypes = Object.keys(LFOType).length / 2;
+    const divisor = 128 / numOfLfoTypes;
+    streams.lfoTypeChange$ = merge(
+      ...mapping.lfosControl.map((control, lfoIndex) =>
+        i.cc(control.type.cc, control.type.channel).pipe(
+          map<InputEventControlchange, LFOTypeChangeEvent>((e) => ({ lfoIndex, type: Math.floor(e.value / divisor) }))
+        )
+      )
+    );
 
+    // keys
     const noteOn = i.noteOn();
     const allKeys = Object.keys(mapping.keys).map((k) => k as Key);
 

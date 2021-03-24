@@ -71,6 +71,14 @@ const config: Mapping = {
     { note: 'G6' },
     { note: 'G#6' },
   ],
+  lfosControl: [
+    {
+      type: { cc: 86 },
+    },
+    {
+      type: { cc: 90 },
+    },
+  ],
 };
 
 export default config;
