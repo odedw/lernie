@@ -5,7 +5,7 @@ import { SourceType } from '../types';
 import { merge } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { engine } from '../engine';
-import LFO from './LFO';
+// import LFO from './LFO';
 
 const Container = styled.div`
   position: absolute;
@@ -47,7 +47,7 @@ type Props = {
 const Scope: React.FC<Props> = ({ enabled }) => {
   const [text1, setText1] = useState('');
   const [text2, setText2] = useState('');
-  const [lfo1Value, setLfo1Value] = useState<number>(0);
+  // const [lfo1Value, setLfo1Value] = useState<number>(0);
 
   const show = useCallback(
     (text: string, force: boolean = false) => {

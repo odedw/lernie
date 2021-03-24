@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs';
 import { Parameter, SourceType } from '../types';
 import { Key } from '../types/Keys';
+import { LFOType } from './LFO';
 
 export type ParameterValueChangeEvent = {
   parameter: Parameter;
@@ -25,6 +26,16 @@ export type SourceTypeChange = {
   type: SourceType;
 };
 
+export type LFORateChangeEvent = {
+  lfoIndex: number;
+  rate: number;
+};
+
+export type LFOTypeChangeEvent = {
+  lfoIndex: number;
+  type: LFOType;
+};
+
 export class Streams {
   parameterValueChange$!: Observable<ParameterValueChangeEvent>;
   lfoDestinationValueChange$!: Observable<LfoDestinationValueChange>;
@@ -37,6 +48,8 @@ export class Streams {
   keyUp$!: Observable<Key>;
   resetSource$!: Observable<number>;
   selectAudioBin$!: Observable<number>;
+  lfoRateChange$!: Observable<LFORateChangeEvent>;
+  lfoTypeChange$!: Observable<LFOTypeChangeEvent>;
 }
 
 export default new Streams();
