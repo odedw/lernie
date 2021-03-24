@@ -87,7 +87,12 @@ const Scope: React.FC<Props> = ({ enabled }) => {
       streams.clearParameter$.pipe(
         map((e) => `${e.sourceIndex + 1} ${e.destination ? `- ${e.destination}` : ''}- ${e.parameter} cleared`)
       ),
-      streams.lfoTypeChange$.pipe(map((e) => `LFO ${e.lfoIndex + 1} - ${LFOType[e.type]}`))
+      streams.lfoTypeChange$.pipe(map((e) => `LFO ${e.lfoIndex + 1} - ${LFOType[e.type]}`)),
+      streams.lfoRateChange$.pipe(
+        map(
+          (e) => `LFO ${e.lfoIndex + 1} - ${e.rate < 1000 ? `${e.rate} ms` : `${(e.rate / 1000).toFixed(2)} seconds`}`
+        )
+      )
     ).subscribe(show);
     return () => sub.unsubscribe();
   }, [show]);

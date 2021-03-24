@@ -18,6 +18,7 @@ export type SourceMapping = {
 };
 export type LFOControl = {
   type: MidiCCBinding;
+  rate: MidiCCBinding;
 };
 export type Mapping = {
   sources: [SourceMapping, SourceMapping];

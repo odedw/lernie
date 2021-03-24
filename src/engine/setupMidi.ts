@@ -6,6 +6,7 @@ import { merge } from 'rxjs';
 import streams, {
   ClearParameterEvent,
   LfoDestinationValueChange,
+  LFORateChangeEvent,
   LFOTypeChangeEvent,
   ParameterValueChangeEvent,
 } from './streams';
@@ -13,6 +14,7 @@ import { filter, map } from 'rxjs/operators';
 import { allKeys, Key, KeyState } from '../types/Keys';
 import { InputEventControlchange } from 'webmidi';
 import { LFOType } from './LFO';
+import { lfoConfig } from '../config/lfoConfig';
 
 let input = Input.create('Launch Control XL');
 
@@ -134,6 +136,17 @@ export function setupMidi(getSourceType: (i: number) => SourceType, keyState: Ke
       ...mapping.lfosControl.map((control, lfoIndex) =>
         i.cc(control.type.cc, control.type.channel).pipe(
           map<InputEventControlchange, LFOTypeChangeEvent>((e) => ({ lfoIndex, type: Math.floor(e.value / divisor) }))
+        )
+      )
+    );
+
+    streams.lfoRateChange$ = merge(
+      ...mapping.lfosControl.map((control, lfoIndex) =>
+        i.cc(control.rate.cc, control.rate.channel).pipe(
+          map<InputEventControlchange, LFORateChangeEvent>((e) => ({
+            lfoIndex,
+            rate: lfoConfig.rate.min + Math.floor(((lfoConfig.rate.max - lfoConfig.rate.min) * e.value) / 127),
+          }))
         )
       )
     );

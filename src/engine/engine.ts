@@ -86,6 +86,7 @@ export class Engine {
       });
 
       streams.lfoTypeChange$.subscribe((e) => (this.lfos[e.lfoIndex].type = e.type));
+      streams.lfoRateChange$.subscribe((e) => (this.lfos[e.lfoIndex].rate = e.rate));
     });
 
     // debug

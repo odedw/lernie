@@ -73,9 +73,11 @@ const config: Mapping = {
   ],
   lfosControl: [
     {
+      rate: { cc: 85 },
       type: { cc: 86 },
     },
     {
+      rate: { cc: 89 },
       type: { cc: 90 },
     },
   ],
