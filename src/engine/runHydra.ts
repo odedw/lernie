@@ -59,11 +59,14 @@ function getScreen(ss: SourceState, sb: SourceBuffer, screenRatio: number, lfos:
     .saturate(getValueGenerator(ss, 'mod1', lfos))
     .invert(getValueGenerator(ss, 'mod3', lfos))
     .luma(getValueGenerator(ss, 'mod2', lfos), 0);
-  // .color(
-  //   getValueGenerator(ss, 'mod1', lfos),
-  //   getValueGenerator(ss, 'mod2', lfos),
-  //   getValueGenerator(ss, 'mod3', lfos)
-  // )
+}
+function getP5(ss: SourceState, sb: SourceBuffer, screenRatio: number, lfos: LFO[]): HydraStream {
+  //@ts-ignore
+  sb.init({ src: document.getElementById('defaultCanvas0') });
+  return src(sb)
+    .saturate(getValueGenerator(ss, 'mod1', lfos))
+    .invert(getValueGenerator(ss, 'mod3', lfos))
+    .luma(getValueGenerator(ss, 'mod2', lfos), 0);
 }
 
 function getShape(ss: SourceState, screenRatio: number, lfos: LFO[]): HydraStream {
@@ -80,6 +83,8 @@ function getSource(ss: SourceState, sb: SourceBuffer, screenRatio: number, lfos:
       return getVoronoi(ss, screenRatio, lfos);
     case SourceType.screen:
       return getScreen(ss, sb, screenRatio, lfos);
+    case SourceType.p5:
+      return getP5(ss, sb, screenRatio, lfos);
     case SourceType.shape:
       return getShape(ss, screenRatio, lfos);
     default:

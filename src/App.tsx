@@ -4,6 +4,7 @@ import Hydra from './components/Hydra';
 import styled from 'styled-components';
 import { engine } from './engine/engine';
 import Scope from './components/Scope';
+import P5 from './components/P5';
 
 const Container = styled.div`
   height: 100%;
@@ -48,6 +49,7 @@ function App() {
   return (
     <Container>
       <Hydra />
+      <P5 />
       <Scope enabled={scopeEnabled} />
       <FileDrop type="file" id="file-selector" accept=".json" onChange={(e) => loadFile(e)} />
     </Container>
