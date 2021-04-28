@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { run } from '../sketches/2021-04-21-2';
+import { run } from '../sketches/template';
 
 const Canvas = styled.canvas`
   height: 100%;

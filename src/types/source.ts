@@ -3,8 +3,8 @@ export enum SourceType {
   noise,
   voronoi,
   shape,
-  screen,
   p5,
+  screen,
 }
 
 export const SourceTypeValues = Object.keys(SourceType).filter((k) => isNaN(Number(k)));
