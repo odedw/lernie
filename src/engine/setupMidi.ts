@@ -16,7 +16,8 @@ import { InputEventControlchange } from 'webmidi';
 import { LFOType } from './LFO';
 import { lfoConfig } from '../config/lfoConfig';
 
-let input = Input.create('Launch Control XL');
+// let input = Input.create('Launch Control XL');
+let input = Input.create('lernie');
 
 const isNoteMatch = (p: { note: string; channel?: number }, e: { note: { name: any; octave: any }; channel: any }) =>
   p.note === `${e.note.name}${e.note.octave}` && (!p.channel || p.channel === e.channel);

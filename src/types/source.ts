@@ -1,9 +1,9 @@
 export enum SourceType {
   osc = 0,
   noise,
+  p5,
   voronoi,
   shape,
-  p5,
   screen,
 }
 

@@ -41,12 +41,12 @@ const defaultSourceMods = {
   [SourceType.screen]: {
     mod1: 1,
     mod2: 0,
-    mod3: 0,
+    mod3: 0.01,
   },
   [SourceType.p5]: {
     mod1: 1,
     mod2: 0,
-    mod3: 0,
+    mod3: 0.01,
   },
   [SourceType.shape]: {
     mod1: 3,

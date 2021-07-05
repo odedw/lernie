@@ -63,10 +63,10 @@ function getScreen(ss: SourceState, sb: SourceBuffer, screenRatio: number, lfos:
 function getP5(ss: SourceState, sb: SourceBuffer, screenRatio: number, lfos: LFO[]): HydraStream {
   //@ts-ignore
   sb.init({ src: document.getElementById('defaultCanvas0') });
-  return src(sb)
-    .saturate(getValueGenerator(ss, 'mod1', lfos))
-    .invert(getValueGenerator(ss, 'mod3', lfos))
-    .luma(getValueGenerator(ss, 'mod2', lfos), 0);
+  return src(sb);
+  // .saturate(getValueGenerator(ss, 'mod1', lfos))
+  // .invert(getValueGenerator(ss, 'mod3', lfos))
+  // .luma(getValueGenerator(ss, 'mod2', lfos), 0);
 }
 
 function getShape(ss: SourceState, screenRatio: number, lfos: LFO[]): HydraStream {
@@ -150,6 +150,7 @@ export function runAudio() {
     a.setSmooth(0.5);
     // @ts-ignore
     a.meyda.setSource(desktopSource);
+    a.setBins(10);
   });
 
   // a.show();
