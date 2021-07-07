@@ -53,11 +53,6 @@ export const config: ParameterConfig = {
       mod2: { min: 0, max: 1 },
       mod3: { min: 0, max: 1 },
     },
-    [SourceType.p5]: {
-      mod1: { min: 0, max: 1 },
-      mod2: { min: 0, max: 1 },
-      mod3: { min: 0, max: 1 },
-    },
     [SourceType.shape]: {
       mod1: { min: 1, max: 20 },
       mod2: { min: 0, max: 1 },
