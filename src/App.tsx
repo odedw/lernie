@@ -4,6 +4,7 @@ import Hydra from './components/Hydra';
 import styled from 'styled-components';
 import { engine } from './engine/engine';
 import Scope from './components/Scope';
+import Settings from './components/Settings';
 
 const Container = styled.div`
   height: 100%;
@@ -22,6 +23,7 @@ const FileDrop = styled.input`
 
 function App() {
   const [scopeEnabled, setScopeEnabled] = useState(true);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [initialized, setInitialized] = useState(false);
   useEffect(() => {
     function keyPress(evt: KeyboardEvent) {
@@ -34,6 +36,8 @@ function App() {
         engine.randomize();
       } else if (k === 'i') {
         setScopeEnabled((enabled) => !enabled);
+      } else if (k === '`') {
+        setSettingsOpen((settingsOpen) => !settingsOpen);
       }
     }
 
@@ -49,6 +53,7 @@ function App() {
     <Container>
       <Hydra />
       <Scope enabled={scopeEnabled} />
+      {settingsOpen && <Settings />}
       <FileDrop type="file" id="file-selector" accept=".json" onChange={(e) => loadFile(e)} />
     </Container>
   );
