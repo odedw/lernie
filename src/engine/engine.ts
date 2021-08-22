@@ -9,12 +9,15 @@ import streams from './streams';
 import { setupMidi } from './setupMidi';
 import { generateDefaultSourceState } from './state/defaultSourceState';
 import { KeyState } from '../types/Keys';
+import { Subject, Subscription } from 'rxjs';
 
 export class Engine {
+  subscriptions: Subscription[] = [];
   state: State;
   screenRatio: number = 1;
   lfos = [new LFO(), new LFO()];
   ranAudio = false;
+  initialized$ = new Subject();
   keyState: KeyState = {
     lfo1: false,
     lfo2: false,
@@ -30,11 +33,17 @@ export class Engine {
     this.savePreset = this.savePreset.bind(this);
     this.loadPreset = this.loadPreset.bind(this);
   }
-  init(): Promise<any> {
-    return setupMidi((i) => this.state.sources[i].sourceType, this.keyState).then(() => {
-      // subscriptions
-      streams.savePreset$.subscribe((i) => this.savePreset(i));
-      streams.loadPreset$.subscribe((i) => this.loadPreset(i));
+  async init(input: string | null): Promise<any> {
+    console.log(`===========================engine.init start`);
+    this.subscriptions.forEach((s) => s.unsubscribe());
+    if (!input) {
+      return;
+    }
+    await this.setupMidi(input);
+    // subscriptions
+    this.subscriptions = [
+      streams.savePreset$.subscribe((i) => this.savePreset(i)),
+      streams.loadPreset$.subscribe((i) => this.loadPreset(i)),
       streams.sourceTypeChange$.subscribe((index) => {
         const ss = this.state.sources[index];
         ss.sourceType = ((Number(ss.sourceType) + 1) % SourceTypeValues.length) as SourceType;
@@ -44,18 +53,18 @@ export class Engine {
           .filter((p) => !['blend', 'diff'].includes(p))
           .forEach((p) => (ss.parameters[p as Parameter] = defaultParams[p as Parameter]));
         runSource(this.state, index, this.screenRatio, this.lfos);
-      });
-      streams.keyDown$.subscribe((e) => (this.keyState[e] = true));
-      streams.keyUp$.subscribe((e) => (this.keyState[e] = false));
+      }),
+      streams.keyDown$.subscribe((e) => (this.keyState[e] = true)),
+      streams.keyUp$.subscribe((e) => (this.keyState[e] = false)),
       streams.parameterValueChange$.subscribe(
         (e) => (this.state.sources[e.sourceIndex].parameters[e.parameter] = e.value)
-      );
+      ),
       streams.lfoDestinationValueChange$.subscribe(
         (e) => (this.state.sources[e.sourceIndex].lfos[e.lfoIndex][e.parameter] = e.value)
-      );
+      ),
       streams.audioDestinationValueChange$.subscribe(
         (e) => (this.state.sources[e.sourceIndex].audio[e.parameter] = e.value)
-      );
+      ),
       streams.resetSource$.subscribe((index) => {
         const ss = this.state.sources[index];
         const defaultState = generateDefaultSourceState(ss.sourceType);
@@ -64,7 +73,7 @@ export class Engine {
           ss.parameters[p] = defaultState.parameters[p];
           ss.lfos.forEach((lfo) => (lfo[p] = 0));
         });
-      });
+      }),
       streams.clearParameter$.subscribe((e) => {
         const ss = this.state.sources[e.sourceIndex];
         if (e.destination === 'lfo1') {
@@ -76,19 +85,21 @@ export class Engine {
         } else {
           ss.parameters[e.parameter] = generateDefaultSourceState(ss.sourceType).parameters[e.parameter];
         }
-      });
+      }),
 
       streams.selectAudioBin$.subscribe((e) => {
         if (!this.ranAudio) {
           this.ranAudio = true;
           runAudio();
         }
-      });
+      }),
 
-      streams.lfoTypeChange$.subscribe((e) => (this.lfos[e.lfoIndex].type = e.type));
-      streams.lfoRateChange$.subscribe((e) => (this.lfos[e.lfoIndex].rate = e.rate));
-    });
+      streams.lfoTypeChange$.subscribe((e) => (this.lfos[e.lfoIndex].type = e.type)),
+      streams.lfoRateChange$.subscribe((e) => (this.lfos[e.lfoIndex].rate = e.rate)),
+    ];
+    console.log(`===========================engine.init end`);
 
+    this.initialized$.next();
     // debug
     // merge(
     //   engine.scopeSubjects.sourceTypeChange,
@@ -163,6 +174,10 @@ export class Engine {
       .catch((err) => {
         console.error('failed to read file', err);
       });
+  }
+
+  private setupMidi(name: string) {
+    return setupMidi(name, (i) => this.state.sources[i].sourceType, this.keyState);
   }
 
   private cloneSourceState(s: SourceState): SourceState {

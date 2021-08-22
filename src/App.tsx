@@ -5,6 +5,8 @@ import styled from 'styled-components';
 import { engine } from './engine/engine';
 import Scope from './components/Scope';
 import Settings from './components/Settings';
+import { storage } from './storage';
+import init from './init';
 
 const Container = styled.div`
   height: 100%;
@@ -21,9 +23,17 @@ const FileDrop = styled.input`
   display: none;
 `;
 
+function shouldShowSettings(): boolean {
+  if (!storage.get(storage.keys.MIDI_INPUT)) {
+    return true;
+  }
+
+  return false;
+}
+
 function App() {
   const [scopeEnabled, setScopeEnabled] = useState(true);
-  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(shouldShowSettings());
   const [initialized, setInitialized] = useState(false);
   useEffect(() => {
     function keyPress(evt: KeyboardEvent) {
@@ -44,7 +54,7 @@ function App() {
     window.addEventListener('keypress', keyPress);
   }, [setScopeEnabled]);
   useEffect(() => {
-    engine.init().then(() => setInitialized(true));
+    init().then(() => setInitialized(true));
   }, [setInitialized]);
   if (!initialized) {
     return null;
@@ -52,7 +62,7 @@ function App() {
   return (
     <Container>
       <Hydra />
-      <Scope enabled={scopeEnabled} />
+      {/* <Scope enabled={scopeEnabled} /> */}
       {settingsOpen && <Settings />}
       <FileDrop type="file" id="file-selector" accept=".json" onChange={(e) => loadFile(e)} />
     </Container>

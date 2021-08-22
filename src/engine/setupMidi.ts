@@ -17,7 +17,6 @@ import { LFOType } from './LFO';
 import { lfoConfig } from '../config/lfoConfig';
 
 // let input = Input.create('Launch Control XL');
-let input = Input.create('lernie');
 
 const isNoteMatch = (p: { note: string; channel?: number }, e: { note: { name: any; octave: any }; channel: any }) =>
   p.note === `${e.note.name}${e.note.octave}` && (!p.channel || p.channel === e.channel);
@@ -26,8 +25,15 @@ const keyStateMatches = (ks: KeyState, keys: Record<Key, boolean> = generateKeyR
   return allKeys.every((k) => keys[k] === ks[k]);
 };
 
-export function setupMidi(getSourceType: (i: number) => SourceType, keyState: KeyState): Promise<void> {
+export function setupMidi(
+  inputName: string,
+  getSourceType: (i: number) => SourceType,
+  keyState: KeyState
+): Promise<void> {
+  let input = Input.create(inputName);
+
   const allParameters = Object.keys(mapping.sources[0].parameters).map((k) => k as Parameter);
+  console.log(`===========================setupMidi`);
 
   // listInputs();
   return input.then((i) => {
@@ -93,7 +99,10 @@ export function setupMidi(getSourceType: (i: number) => SourceType, keyState: Ke
           filter(() => keyStateMatches(keyState)),
 
           map(({ e, sourceIndex, p }) => {
-            const { min, max } = // mod1/2/3 change between source types
+            const {
+              min,
+              max,
+            } = // mod1/2/3 change between source types
               p === 'mod1' || p === 'mod2' || p === 'mod3'
                 ? config.sourceMods[getSourceType(sourceIndex)][p]
                 : config.parameters[p];
@@ -135,9 +144,11 @@ export function setupMidi(getSourceType: (i: number) => SourceType, keyState: Ke
     const divisor = 128 / numOfLfoTypes;
     streams.lfoTypeChange$ = merge(
       ...mapping.lfosControl.map((control, lfoIndex) =>
-        i.cc(control.type.cc, control.type.channel).pipe(
-          map<InputEventControlchange, LFOTypeChangeEvent>((e) => ({ lfoIndex, type: Math.floor(e.value / divisor) }))
-        )
+        i
+          .cc(control.type.cc, control.type.channel)
+          .pipe(
+            map<InputEventControlchange, LFOTypeChangeEvent>((e) => ({ lfoIndex, type: Math.floor(e.value / divisor) }))
+          )
       )
     );
 

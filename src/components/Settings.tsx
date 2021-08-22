@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import WebMidi from 'webmidi';
+import { engine } from '../engine';
+import { storage } from '../storage';
 import { SectionHeader } from './Settings/SectionHeader';
 
 const Container = styled.div`
@@ -15,13 +17,26 @@ const MidiInputItem = styled.div`
 `;
 const MidiInputSelectionContainer = styled.div``;
 const Settings: React.FC = () => {
+  const [selectedInput, setSelectedInput] = React.useState(storage.get(storage.keys.MIDI_INPUT));
+
   return (
     <Container>
       <MidiInputSelectionContainer>
         <SectionHeader>MIDI Input</SectionHeader>
         {WebMidi.inputs.map((i) => (
-          <MidiInputItem>
-            <input type="radio" id={i.name} name="midi-input" value="HTML" />
+          <MidiInputItem key={i.name}>
+            <input
+              type="radio"
+              id={i.name}
+              name="midi-input"
+              value="HTML"
+              checked={i.name === selectedInput}
+              onChange={() => {
+                storage.set(storage.keys.MIDI_INPUT, i.name);
+                setSelectedInput(i.name);
+                engine.init(i.name);
+              }}
+            />
             <label htmlFor={i.name}>{i.name}</label>
           </MidiInputItem>
         ))}
