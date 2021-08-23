@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { Observable, ReplaySubject } from 'rxjs';
 import { Parameter, SourceType } from '../types';
 import { Key } from '../types/Keys';
 import { LFOType } from './LFO';
@@ -50,6 +50,15 @@ export class Streams {
   selectAudioBin$!: Observable<number>;
   lfoRateChange$!: Observable<LFORateChangeEvent>;
   lfoTypeChange$!: Observable<LFOTypeChangeEvent>;
+
+  lifecycle = {
+    engine: {
+      initialized$: new ReplaySubject(1),
+    },
+    settings: {
+      midiInputChanged$: new ReplaySubject<string>(1),
+    },
+  };
 }
 
 export default new Streams();

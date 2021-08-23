@@ -33,7 +33,7 @@ export function setupMidi(
   let input = Input.create(inputName);
 
   const allParameters = Object.keys(mapping.sources[0].parameters).map((k) => k as Parameter);
-  console.log(`===========================setupMidi`);
+  // console.log(`===========================setupMidi`);
 
   // listInputs();
   return input.then((i) => {

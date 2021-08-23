@@ -62,7 +62,7 @@ function App() {
   return (
     <Container>
       <Hydra />
-      {/* <Scope enabled={scopeEnabled} /> */}
+      <Scope enabled={scopeEnabled} />
       {settingsOpen && <Settings />}
       <FileDrop type="file" id="file-selector" accept=".json" onChange={(e) => loadFile(e)} />
     </Container>

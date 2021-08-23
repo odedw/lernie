@@ -9,7 +9,7 @@ import streams from './streams';
 import { setupMidi } from './setupMidi';
 import { generateDefaultSourceState } from './state/defaultSourceState';
 import { KeyState } from '../types/Keys';
-import { Subject, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 export class Engine {
   subscriptions: Subscription[] = [];
@@ -17,7 +17,6 @@ export class Engine {
   screenRatio: number = 1;
   lfos = [new LFO(), new LFO()];
   ranAudio = false;
-  initialized$ = new Subject();
   keyState: KeyState = {
     lfo1: false,
     lfo2: false,
@@ -33,81 +32,8 @@ export class Engine {
     this.savePreset = this.savePreset.bind(this);
     this.loadPreset = this.loadPreset.bind(this);
   }
-  async init(input: string | null): Promise<any> {
-    console.log(`===========================engine.init start`);
-    this.subscriptions.forEach((s) => s.unsubscribe());
-    if (!input) {
-      return;
-    }
-    await this.setupMidi(input);
-    // subscriptions
-    this.subscriptions = [
-      streams.savePreset$.subscribe((i) => this.savePreset(i)),
-      streams.loadPreset$.subscribe((i) => this.loadPreset(i)),
-      streams.sourceTypeChange$.subscribe((index) => {
-        const ss = this.state.sources[index];
-        ss.sourceType = ((Number(ss.sourceType) + 1) % SourceTypeValues.length) as SourceType;
-
-        const defaultParams = generateDefaultSourceState(ss.sourceType).parameters;
-        allParameters
-          .filter((p) => !['blend', 'diff'].includes(p))
-          .forEach((p) => (ss.parameters[p as Parameter] = defaultParams[p as Parameter]));
-        runSource(this.state, index, this.screenRatio, this.lfos);
-      }),
-      streams.keyDown$.subscribe((e) => (this.keyState[e] = true)),
-      streams.keyUp$.subscribe((e) => (this.keyState[e] = false)),
-      streams.parameterValueChange$.subscribe(
-        (e) => (this.state.sources[e.sourceIndex].parameters[e.parameter] = e.value)
-      ),
-      streams.lfoDestinationValueChange$.subscribe(
-        (e) => (this.state.sources[e.sourceIndex].lfos[e.lfoIndex][e.parameter] = e.value)
-      ),
-      streams.audioDestinationValueChange$.subscribe(
-        (e) => (this.state.sources[e.sourceIndex].audio[e.parameter] = e.value)
-      ),
-      streams.resetSource$.subscribe((index) => {
-        const ss = this.state.sources[index];
-        const defaultState = generateDefaultSourceState(ss.sourceType);
-        // copy parameters default state
-        allParameters.forEach((p) => {
-          ss.parameters[p] = defaultState.parameters[p];
-          ss.lfos.forEach((lfo) => (lfo[p] = 0));
-        });
-      }),
-      streams.clearParameter$.subscribe((e) => {
-        const ss = this.state.sources[e.sourceIndex];
-        if (e.destination === 'lfo1') {
-          ss.lfos[0][e.parameter] = 0;
-        } else if (e.destination === 'lfo2') {
-          ss.lfos[1][e.parameter] = 0;
-        } else if (e.destination === 'audio') {
-          ss.audio[e.parameter] = 0;
-        } else {
-          ss.parameters[e.parameter] = generateDefaultSourceState(ss.sourceType).parameters[e.parameter];
-        }
-      }),
-
-      streams.selectAudioBin$.subscribe((e) => {
-        if (!this.ranAudio) {
-          this.ranAudio = true;
-          runAudio();
-        }
-      }),
-
-      streams.lfoTypeChange$.subscribe((e) => (this.lfos[e.lfoIndex].type = e.type)),
-      streams.lfoRateChange$.subscribe((e) => (this.lfos[e.lfoIndex].rate = e.rate)),
-    ];
-    console.log(`===========================engine.init end`);
-
-    this.initialized$.next();
-    // debug
-    // merge(
-    //   engine.scopeSubjects.sourceTypeChange,
-    //   engine.scopeSubjects.parameterChange,
-
-    //   engine.scopeSubjects.loadPreset,
-    //   engine.scopeSubjects.savePreset
-    // ).subscribe((e) => console.log(e));
+  async init(): Promise<any> {
+    streams.lifecycle.settings.midiInputChanged$.subscribe((i) => this.setupMidi(i));
   }
   run(screenRatio?: number) {
     if (screenRatio) {
@@ -176,8 +102,80 @@ export class Engine {
       });
   }
 
-  private setupMidi(name: string) {
-    return setupMidi(name, (i) => this.state.sources[i].sourceType, this.keyState);
+  private async setupMidi(input: string) {
+    this.subscriptions.forEach((s) => s.unsubscribe());
+    if (!input) {
+      return;
+    }
+    await setupMidi(input, (i) => this.state.sources[i].sourceType, this.keyState);
+    // subscriptions
+    this.subscriptions = [
+      streams.savePreset$.subscribe((i) => this.savePreset(i)),
+      streams.loadPreset$.subscribe((i) => this.loadPreset(i)),
+      streams.sourceTypeChange$.subscribe((index) => {
+        const ss = this.state.sources[index];
+        ss.sourceType = ((Number(ss.sourceType) + 1) % SourceTypeValues.length) as SourceType;
+
+        const defaultParams = generateDefaultSourceState(ss.sourceType).parameters;
+        allParameters
+          .filter((p) => !['blend', 'diff'].includes(p))
+          .forEach((p) => (ss.parameters[p as Parameter] = defaultParams[p as Parameter]));
+        runSource(this.state, index, this.screenRatio, this.lfos);
+      }),
+      streams.keyDown$.subscribe((e) => (this.keyState[e] = true)),
+      streams.keyUp$.subscribe((e) => (this.keyState[e] = false)),
+      streams.parameterValueChange$.subscribe(
+        (e) => (this.state.sources[e.sourceIndex].parameters[e.parameter] = e.value)
+      ),
+      streams.lfoDestinationValueChange$.subscribe(
+        (e) => (this.state.sources[e.sourceIndex].lfos[e.lfoIndex][e.parameter] = e.value)
+      ),
+      streams.audioDestinationValueChange$.subscribe(
+        (e) => (this.state.sources[e.sourceIndex].audio[e.parameter] = e.value)
+      ),
+      streams.resetSource$.subscribe((index) => {
+        const ss = this.state.sources[index];
+        const defaultState = generateDefaultSourceState(ss.sourceType);
+        // copy parameters default state
+        allParameters.forEach((p) => {
+          ss.parameters[p] = defaultState.parameters[p];
+          ss.lfos.forEach((lfo) => (lfo[p] = 0));
+        });
+      }),
+      streams.clearParameter$.subscribe((e) => {
+        const ss = this.state.sources[e.sourceIndex];
+        if (e.destination === 'lfo1') {
+          ss.lfos[0][e.parameter] = 0;
+        } else if (e.destination === 'lfo2') {
+          ss.lfos[1][e.parameter] = 0;
+        } else if (e.destination === 'audio') {
+          ss.audio[e.parameter] = 0;
+        } else {
+          ss.parameters[e.parameter] = generateDefaultSourceState(ss.sourceType).parameters[e.parameter];
+        }
+      }),
+
+      streams.selectAudioBin$.subscribe((e) => {
+        if (!this.ranAudio) {
+          this.ranAudio = true;
+          runAudio();
+        }
+      }),
+
+      streams.lfoTypeChange$.subscribe((e) => (this.lfos[e.lfoIndex].type = e.type)),
+      streams.lfoRateChange$.subscribe((e) => (this.lfos[e.lfoIndex].rate = e.rate)),
+    ];
+    // console.log(`===========================engine.init end`);
+
+    streams.lifecycle.engine.initialized$.next();
+    // debug
+    // merge(
+    //   engine.scopeSubjects.sourceTypeChange,
+    //   engine.scopeSubjects.parameterChange,
+
+    //   engine.scopeSubjects.loadPreset,
+    //   engine.scopeSubjects.savePreset
+    // ).subscribe((e) => console.log(e));
   }
 
   private cloneSourceState(s: SourceState): SourceState {

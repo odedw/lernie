@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import streams from '../engine/streams';
 import { SourceType } from '../types';
-import { merge } from 'rxjs';
+import { merge, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { engine } from '../engine';
 import { LFOType } from '../engine/LFO';
@@ -47,6 +47,7 @@ type Props = {
 const Scope: React.FC<Props> = ({ enabled }) => {
   const [text1, setText1] = useState('');
   const [text2, setText2] = useState('');
+  const [change$, setChange$] = useState<Observable<string>>();
 
   const show = useCallback(
     (text: string, force: boolean = false) => {
@@ -67,33 +68,45 @@ const Scope: React.FC<Props> = ({ enabled }) => {
     [setText1, setText2, enabled]
   );
   useEffect(() => {
-    const sub = merge(
-      streams.sourceTypeChange$.pipe(
-        map(
-          (sourceIndex) => `${sourceIndex + 1} - ${SourceType[engine.state.sources[sourceIndex].sourceType].toString()}`
+    const sub = streams.lifecycle.engine.initialized$.subscribe(() => {
+      setChange$(
+        merge(
+          streams.sourceTypeChange$.pipe(
+            map(
+              (sourceIndex) =>
+                `${sourceIndex + 1} - ${SourceType[engine.state.sources[sourceIndex].sourceType].toString()}`
+            )
+          ),
+          streams.parameterValueChange$.pipe(
+            map((e) => `${e.sourceIndex + 1} - ${e.parameter}: ${e.value.toFixed(2)}`)
+          ),
+          streams.lfoDestinationValueChange$.pipe(
+            map((e) => `${e.sourceIndex + 1} - LFO ${e.lfoIndex + 1} - ${e.parameter}: ${Math.floor(e.value * 100)}%`)
+          ),
+          streams.audioDestinationValueChange$.pipe(
+            map((e) => `${e.sourceIndex + 1} - Audio - ${e.parameter}: ${Math.floor(e.value * 100)}%`)
+          ),
+          streams.loadPreset$.pipe(map((i) => `Load preset ${i + 1}`)),
+          streams.savePreset$.pipe(map((i) => `Save preset ${i + 1}`)),
+          streams.clearParameter$.pipe(
+            map((e) => `${e.sourceIndex + 1} ${e.destination ? `- ${e.destination}` : ''}- ${e.parameter} cleared`)
+          ),
+          streams.lfoTypeChange$.pipe(map((e) => `LFO ${e.lfoIndex + 1} - ${LFOType[e.type]}`)),
+          streams.lfoRateChange$.pipe(
+            map(
+              (e) =>
+                `LFO ${e.lfoIndex + 1} - ${e.rate < 1000 ? `${e.rate} ms` : `${(e.rate / 1000).toFixed(2)} seconds`}`
+            )
+          )
         )
-      ),
-      streams.parameterValueChange$.pipe(map((e) => `${e.sourceIndex + 1} - ${e.parameter}: ${e.value.toFixed(2)}`)),
-      streams.lfoDestinationValueChange$.pipe(
-        map((e) => `${e.sourceIndex + 1} - LFO ${e.lfoIndex + 1} - ${e.parameter}: ${Math.floor(e.value * 100)}%`)
-      ),
-      streams.audioDestinationValueChange$.pipe(
-        map((e) => `${e.sourceIndex + 1} - Audio - ${e.parameter}: ${Math.floor(e.value * 100)}%`)
-      ),
-      streams.loadPreset$.pipe(map((i) => `Load preset ${i + 1}`)),
-      streams.savePreset$.pipe(map((i) => `Save preset ${i + 1}`)),
-      streams.clearParameter$.pipe(
-        map((e) => `${e.sourceIndex + 1} ${e.destination ? `- ${e.destination}` : ''}- ${e.parameter} cleared`)
-      ),
-      streams.lfoTypeChange$.pipe(map((e) => `LFO ${e.lfoIndex + 1} - ${LFOType[e.type]}`)),
-      streams.lfoRateChange$.pipe(
-        map(
-          (e) => `LFO ${e.lfoIndex + 1} - ${e.rate < 1000 ? `${e.rate} ms` : `${(e.rate / 1000).toFixed(2)} seconds`}`
-        )
-      )
-    ).subscribe(show);
+      );
+    });
     return () => sub.unsubscribe();
-  }, [show]);
+  }, []);
+  useEffect(() => {
+    const sub = change$?.subscribe(show);
+    return () => sub?.unsubscribe();
+  }, [show, change$]);
   useEffect(() => {
     show(`Scope ${enabled ? 'on' : 'off'}`, true);
   }, [enabled, show]);

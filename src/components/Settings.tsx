@@ -1,8 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import WebMidi from 'webmidi';
-import { engine } from '../engine';
-import { storage } from '../storage';
+import { settings, storage } from '../storage';
 import { SectionHeader } from './Settings/SectionHeader';
 
 const Container = styled.div`
@@ -32,9 +31,8 @@ const Settings: React.FC = () => {
               value="HTML"
               checked={i.name === selectedInput}
               onChange={() => {
-                storage.set(storage.keys.MIDI_INPUT, i.name);
+                settings.midiInput = i.name;
                 setSelectedInput(i.name);
-                engine.init(i.name);
               }}
             />
             <label htmlFor={i.name}>{i.name}</label>
