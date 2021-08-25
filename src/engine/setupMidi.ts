@@ -176,11 +176,11 @@ export function setupMidi(
       map((e) => allKeys.find((k) => isNoteMatch(mapping.keys[k], e))!)
     );
     streams.loadPreset$ = noteOn.pipe(
-      filter((e) => mapping.presets.some((p) => isNoteMatch(p, e))),
+      filter((e) => keyStateMatches(keyState, generateKeyRecord()) && mapping.presets.some((p) => isNoteMatch(p, e))),
       map((e) => mapping.presets.findIndex((p) => isNoteMatch(p, e)))
     );
     streams.savePreset$ = noteOn.pipe(
-      filter((e) => keyState.shift && mapping.presets.some((p) => isNoteMatch(p, e))),
+      filter((e) => keyStateMatches(keyState, generateKeyRecord(['shift'])) && mapping.presets.some((p) => isNoteMatch(p, e))),
       map((e) => mapping.presets.findIndex((p) => isNoteMatch(p, e)))
     );
 
