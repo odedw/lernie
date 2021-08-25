@@ -1,4 +1,4 @@
-import gsap from 'gsap';
+// import gsap from 'gsap';
 import moment from 'moment';
 import { config, allParameters } from '../config/parameterConfig';
 import { downloadObjectAsJson, loadFile } from '../storage';
@@ -71,11 +71,13 @@ export class Engine {
     this.state.sources.forEach((s, i) => {
       const preset = this.state.presets[index][i];
       s.sourceType = preset.sourceType;
-      gsap.to(s.parameters, {
-        ...preset.parameters,
-        duration: 0.001,
-        repeat: 0,
-      });
+      allParameters.forEach((p) => (s.parameters[p] = preset.parameters[p]));
+      // this polutes the prototype and causes circular errors when serializing to file
+      // gsap.to(s.parameters, {
+      //   ...preset.parameters,
+      //   duration: 0.001,
+      //   repeat: 0,
+      // });
     });
     if (rerun) {
       run(this.state, this.screenRatio, this.lfos);
