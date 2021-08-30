@@ -80,8 +80,8 @@ const config: Mapping = {
         colorB: { cc: 59 },
         contrast: { cc: 60 },
       },
-      switchSource: { note: 'C3' },
-      reset: { note: 'C#3' },
+      switchSource: { note: 'D3' },
+      reset: { note: 'D#3' },
     },
     {
       // 4
@@ -107,8 +107,8 @@ const config: Mapping = {
         colorB: { cc: 79 },
         contrast: { cc: 80 },
       },
-      switchSource: { note: 'D3' },
-      reset: { note: 'D#3' },
+      switchSource: { note: 'C3' },
+      reset: { note: 'C#3' },
     },
   ],
   keys: {
