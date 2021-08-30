@@ -21,7 +21,7 @@ export type LFOControl = {
   rate: MidiCCBinding;
 };
 export type Mapping = {
-  sources: [SourceMapping, SourceMapping];
+  sources: [SourceMapping, SourceMapping, SourceMapping, SourceMapping];
   keys: Record<Key, MidiNoteBinding>;
   lfosControl: [LFOControl, LFOControl];
   presets: [

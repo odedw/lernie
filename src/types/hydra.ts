@@ -136,6 +136,7 @@ declare global {
   const o1: OutputBuffer;
   const o2: OutputBuffer;
   const o3: OutputBuffer;
+  const o4: OutputBuffer;
   const s0: SourceBuffer;
   const s1: SourceBuffer;
   const s2: SourceBuffer;

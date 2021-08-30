@@ -19,6 +19,7 @@ export default () => {
       canvasRef.current.height = h;
       const hydra = new Hydra({
         canvas: canvasRef.current,
+        numOutputs: 5,
         // makeGlobal: false,
         //   precision: 'highp',
       });
