@@ -83,6 +83,8 @@ export class Engine {
       const preset = this.state.presets[index][i];
       s.sourceType = preset.sourceType;
       allParameters.forEach((p) => (s.parameters[p] = preset.parameters[p]));
+      s.lfos = [{ ...preset.lfos[0] }, { ...preset.lfos[1] }];
+      s.audio = preset.audio;
       // this polutes the prototype and causes circular errors when serializing to file
       // gsap.to(s.parameters, {
       //   ...preset.parameters,
@@ -192,7 +194,7 @@ export class Engine {
   }
 
   private cloneSourceState(s: SourceState): SourceState {
-    return new SourceState({ ...s.parameters }, s.sourceType);
+    return new SourceState({ ...s.parameters }, s.sourceType, s.lfos, s.audio);
   }
 }
 

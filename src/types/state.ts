@@ -7,11 +7,18 @@ export class SourceState {
   sourceType!: SourceType;
   lfos!: Record<Parameter, number>[];
   audio!: Record<Parameter, number>;
-  constructor(parameters: Record<Parameter, number>, sourceType: SourceType) {
+  constructor(
+    parameters: Record<Parameter, number>,
+    sourceType: SourceType,
+    lfos?: Record<Parameter, number>[],
+    audio?: Record<Parameter, number>
+  ) {
     this.parameters = parameters;
     this.sourceType = sourceType;
-    this.lfos = [this.generateZeroParametersRecord(), this.generateZeroParametersRecord()];
-    this.audio = this.generateZeroParametersRecord();
+    this.lfos = lfos
+      ? [{ ...lfos[0] }, { ...lfos[1] }]
+      : [this.generateZeroParametersRecord(), this.generateZeroParametersRecord()];
+    this.audio = audio ? { ...audio } : this.generateZeroParametersRecord();
   }
 
   generateZeroParametersRecord() {
