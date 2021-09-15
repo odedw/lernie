@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { engine } from './engine/engine';
 import Scope from './components/Scope';
 import Settings from './components/Settings';
-import { storage } from './storage';
+import { settings, storage } from './storage';
 import init from './init';
 
 const Container = styled.div`
@@ -31,10 +31,9 @@ function shouldShowSettings(): boolean {
   return false;
 }
 
-function App() {
-  const [scopeEnabled, setScopeEnabled] = useState(true);
+const InitializedApp = () => {
+  const [scopeEnabled, setScopeEnabled] = useState(settings.scopeEnabled);
   const [settingsOpen, setSettingsOpen] = useState(shouldShowSettings());
-  const [initialized, setInitialized] = useState(false);
   useEffect(() => {
     function keyPress(evt: KeyboardEvent) {
       const k = evt.key.toLowerCase();
@@ -45,6 +44,7 @@ function App() {
       } else if (k === 'r') {
         engine.randomize();
       } else if (k === 'i') {
+        settings.scopeEnabled = !scopeEnabled;
         setScopeEnabled((enabled) => !enabled);
       } else if (k === '`') {
         setSettingsOpen((settingsOpen) => !settingsOpen);
@@ -52,13 +52,8 @@ function App() {
     }
 
     window.addEventListener('keypress', keyPress);
-  }, [setScopeEnabled]);
-  useEffect(() => {
-    init().then(() => setInitialized(true));
-  }, [setInitialized]);
-  if (!initialized) {
-    return null;
-  }
+  }, [setScopeEnabled, scopeEnabled]);
+
   return (
     <Container>
       <Hydra />
@@ -67,6 +62,13 @@ function App() {
       <FileDrop type="file" id="file-selector" accept=".json" onChange={(e) => loadFile(e)} />
     </Container>
   );
+};
+function App() {
+  const [initialized, setInitialized] = useState(false);
+  useEffect(() => {
+    init().then(() => setInitialized(true));
+  }, [setInitialized]);
+  return initialized ? <InitializedApp /> : null;
 }
 
 export default App;
