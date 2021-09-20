@@ -29,8 +29,8 @@ export class Engine {
       sources: [
         generateDefaultSourceState(SourceType.osc),
         generateDefaultSourceState(SourceType.osc, false),
-        generateDefaultSourceState(SourceType.osc, false),
-        generateDefaultSourceState(SourceType.osc, false),
+        // generateDefaultSourceState(SourceType.osc, false),
+        // generateDefaultSourceState(SourceType.osc, false),
       ],
       presets: [],
     };
@@ -57,10 +57,10 @@ export class Engine {
           Math.random() * (config.parameters[key].max - config.parameters[key].min + 1) + config.parameters[key].min;
         this.state.sources[1].parameters[key] =
           Math.random() * (config.parameters[key].max - config.parameters[key].min + 1) + config.parameters[key].min;
-        this.state.sources[2].parameters[key] =
-          Math.random() * (config.parameters[key].max - config.parameters[key].min + 1) + config.parameters[key].min;
-        this.state.sources[3].parameters[key] =
-          Math.random() * (config.parameters[key].max - config.parameters[key].min + 1) + config.parameters[key].min;
+        // this.state.sources[2].parameters[key] =
+        //   Math.random() * (config.parameters[key].max - config.parameters[key].min + 1) + config.parameters[key].min;
+        // this.state.sources[3].parameters[key] =
+        //   Math.random() * (config.parameters[key].max - config.parameters[key].min + 1) + config.parameters[key].min;
       }
     });
   }
@@ -69,8 +69,8 @@ export class Engine {
     this.state.presets[index] = [
       this.cloneSourceState(this.state.sources[0]),
       this.cloneSourceState(this.state.sources[1]),
-      this.cloneSourceState(this.state.sources[2]),
-      this.cloneSourceState(this.state.sources[3]),
+      // this.cloneSourceState(this.state.sources[2]),
+      // this.cloneSourceState(this.state.sources[3]),
     ];
   }
 

@@ -82,9 +82,9 @@ function getSource(ss: SourceState, sb: SourceBuffer, screenRatio: number, lfos:
   }
 }
 
-const outputBufferByIndex = (i: number) => [o1, o2, o3, o4][i];
-const modSourceByIndex = (i: number) => [o2, o1, o4, o3][i];
-const sourceBufferByIndex = (i: number) => [s0, s1, s2, s3][i];
+const outputBufferByIndex = (i: number) => [o1, o2][i];
+const modSourceByIndex = (i: number) => [o2, o1][i];
+const sourceBufferByIndex = (i: number) => [s0, s1][i];
 
 export function runSource(s: State, i: number, screenRatio: number, lfos: LFO[]) {
   const ss = s.sources[i];
@@ -123,18 +123,18 @@ export function runSource(s: State, i: number, screenRatio: number, lfos: LFO[])
 export default function run(state: State, screenRatio: number, lfos: LFO[]) {
   runSource(state, 0, screenRatio, lfos);
   runSource(state, 1, screenRatio, lfos);
-  runSource(state, 2, screenRatio, lfos);
-  runSource(state, 3, screenRatio, lfos);
+  // runSource(state, 2, screenRatio, lfos);
+  // runSource(state, 3, screenRatio, lfos);
 
   solid(0, 0, 0, 0)
     .blend(src(o1), getValueGenerator(state.sources[0], 'blend', lfos))
     .blend(src(o2), getValueGenerator(state.sources[1], 'blend', lfos))
     .diff(solid(0, 0, 0, 0).blend(src(o1), getValueGenerator(state.sources[0], 'diff', lfos)))
     .diff(solid(0, 0, 0, 0).blend(src(o2), getValueGenerator(state.sources[1], 'diff', lfos)))
-    .blend(src(o3), getValueGenerator(state.sources[2], 'blend', lfos))
-    .blend(src(o4), getValueGenerator(state.sources[3], 'blend', lfos))
-    .diff(solid(0, 0, 0, 0).blend(src(o1), getValueGenerator(state.sources[2], 'diff', lfos)))
-    .diff(solid(0, 0, 0, 0).blend(src(o2), getValueGenerator(state.sources[3], 'diff', lfos)))
+    // .blend(src(o3), getValueGenerator(state.sources[2], 'blend', lfos))
+    // .blend(src(o4), getValueGenerator(state.sources[3], 'blend', lfos))
+    // .diff(solid(0, 0, 0, 0).blend(src(o1), getValueGenerator(state.sources[2], 'diff', lfos)))
+    // .diff(solid(0, 0, 0, 0).blend(src(o2), getValueGenerator(state.sources[3], 'diff', lfos)))
     .out(o0);
 }
 
