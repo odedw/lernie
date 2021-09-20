@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "https://www.odedwelgreen.com/lernie/static/css/main.68cd2164.chunk.css",
-    "main.js": "https://www.odedwelgreen.com/lernie/static/js/main.3e7b18eb.chunk.js",
-    "main.js.map": "https://www.odedwelgreen.com/lernie/static/js/main.3e7b18eb.chunk.js.map",
+    "main.js": "https://www.odedwelgreen.com/lernie/static/js/main.13efbd81.chunk.js",
+    "main.js.map": "https://www.odedwelgreen.com/lernie/static/js/main.13efbd81.chunk.js.map",
     "runtime-main.js": "https://www.odedwelgreen.com/lernie/static/js/runtime-main.f1bf9c85.js",
     "runtime-main.js.map": "https://www.odedwelgreen.com/lernie/static/js/runtime-main.f1bf9c85.js.map",
     "static/js/2.d361f297.chunk.js": "https://www.odedwelgreen.com/lernie/static/js/2.d361f297.chunk.js",
@@ -17,6 +17,6 @@
     "static/js/runtime-main.f1bf9c85.js",
     "static/js/2.d361f297.chunk.js",
     "static/css/main.68cd2164.chunk.css",
-    "static/js/main.3e7b18eb.chunk.js"
+    "static/js/main.13efbd81.chunk.js"
   ]
 }
