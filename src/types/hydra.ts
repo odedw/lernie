@@ -1,7 +1,7 @@
 export type OutputBuffer = {};
 export type SourceBuffer = {
   initCam: (index?: number) => void;
-  initScreen: () => void;
+  initScreen: (num?: number, options?: any) => void;
   init: (options: { src: any; dyanmic: boolean }) => void;
 };
 export type Buffer = OutputBuffer | SourceBuffer;
@@ -141,6 +141,9 @@ declare global {
   const s1: SourceBuffer;
   const s2: SourceBuffer;
   const s3: SourceBuffer;
+
+  // config
+  const setResolution: (w: number, h: number) => void;
 
   // audio
   const a: HydraAudio;

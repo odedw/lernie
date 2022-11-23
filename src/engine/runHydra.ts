@@ -54,7 +54,8 @@ function getVoronoi(ss: SourceState, screenRatio: number, lfos: LFO[]): HydraStr
 }
 
 function getScreen(ss: SourceState, sb: SourceBuffer, screenRatio: number, lfos: LFO[]): HydraStream {
-  sb.initScreen();
+  sb.initScreen(0, { min: 'linear', mag: 'linear' });
+
   return src(sb)
     .saturate(getValueGenerator(ss, 'mod1', lfos))
     .invert(getValueGenerator(ss, 'mod3', lfos))
@@ -136,6 +137,9 @@ export default function run(state: State, screenRatio: number, lfos: LFO[]) {
     // .diff(solid(0, 0, 0, 0).blend(src(o1), getValueGenerator(state.sources[2], 'diff', lfos)))
     // .diff(solid(0, 0, 0, 0).blend(src(o2), getValueGenerator(state.sources[3], 'diff', lfos)))
     .out(o0);
+
+  setResolution(window.innerWidth, window.innerHeight);
+  console.log(`Size - ${window.innerWidth}, ${window.innerHeight}`);
 }
 
 export function runAudio() {
